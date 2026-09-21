@@ -2,7 +2,6 @@ using Sprint0.Interfaces;
 
 namespace Sprint0.Input
 {
-    // Available when the team wants multiple input adapters.
     public class CombinedController : IController
     {
         private readonly IController[] _controllers;
