@@ -5,6 +5,7 @@ namespace Sprint0.Entities
 {
     public class Goomba
     {
+        private GoombaStateMachine stateMachine;
         public const int Size = 40;
         public Vector2 Position { get; private set; }
 
@@ -22,5 +23,11 @@ namespace Sprint0.Entities
         {
             // Enemy drawing goes here.
         }
+    }
+
+    public class GoombaStateMachine
+    {
+        private enum GoombaState {LeftNormal, RightNormal, LeftStomped, RightStomped, FlippedMoveUp, FlippedMoveDown};
+        private GoombaState currentState = GoombaState.LeftNormal;
     }
 }
