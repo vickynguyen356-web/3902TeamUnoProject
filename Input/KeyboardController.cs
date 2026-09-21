@@ -1,62 +1,97 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
 using Microsoft.Xna.Framework.Input;
+using Sprint0.Commands;
 using Sprint0.Interfaces;
 
 namespace Sprint0.Input
 {
     public class KeyboardController : IController
     {
-        private KeyboardState _currentKeyRef;
+        private readonly ICommand _moveLeftCommand;
+        private readonly ICommand _moveRightCommand;
+        private readonly ICommand _jumpCommand;
+        private readonly ICommand _crouchCommand;
+        private readonly ICommand _standCommand;
+        private readonly ICommand _throwFireballCommand;
+        private readonly ICommand _quitCommand;
+        private readonly ICommand _resetCommand;
+        private KeyboardState _previousKeyState;
+        private KeyboardState _currentKeyState;
 
-        /// <summary>
-        /// gets current KeyboardState
-        /// </summary>
-        public void Update()
+        public KeyboardController(IPlayer player, IGameActions gameActions)
         {
-            _currentKeyRef = Keyboard.GetState();
-        }
-
-        /// <summary>
-        /// exits the game 
-        /// </summary>
-        /// <returns> true if esc key was pressed; false otherwise</returns>
-        public bool EscQuit()
-        {
-            return _currentKeyRef.IsKeyDown(Keys.Escape);
-        }
-
-        /// <summary>
-        /// gets direction that character moves based on keyboard input
-        /// </summary>
-        /// <returns> unit vector, if not (0,0), for direction of movement for character </returns>
-        public Vector2 GetMovementDirection()
-        {
-            Vector2 direction = Vector2.Zero;
-
-            if (_currentKeyRef.IsKeyDown(Keys.W)) direction.Y -= 1;
-            if (_currentKeyRef.IsKeyDown(Keys.S)) direction.Y += 1;
-            if (_currentKeyRef.IsKeyDown(Keys.A)) direction.X -= 1;
-            if (_currentKeyRef.IsKeyDown(Keys.D)) direction.X += 1;
-
-            // turns vector into unit vector 
-            if (direction != Vector2.Zero)
+            if (player == null)
             {
-                direction.Normalize();
+                throw new ArgumentNullException(nameof(player));
             }
 
-            return direction;
+            if (gameActions == null)
+            {
+                throw new ArgumentNullException(nameof(gameActions));
+            }
+
+            _moveLeftCommand = new MoveCommand(player, -1);
+            _moveRightCommand = new MoveCommand(player, 1);
+            _jumpCommand = new JumpCommand(player);
+            _crouchCommand = new CrouchCommand(player, true);
+            _standCommand = new CrouchCommand(player, false);
+            _throwFireballCommand = new ThrowFireballCommand(player);
+            _quitCommand = new QuitCommand(gameActions);
+            _resetCommand = new ResetCommand(gameActions);
         }
 
-        public float GetRotation(Vector2 charPosition)
+        public void Update()
         {
-            // keyboard input doesn't control rotation
-            return 0f;
+            _previousKeyState = _currentKeyState;
+            _currentKeyState = Keyboard.GetState();
+
+            bool moveLeft = _currentKeyState.IsKeyDown(Keys.A) || _currentKeyState.IsKeyDown(Keys.Left);
+            bool moveRight = _currentKeyState.IsKeyDown(Keys.D) || _currentKeyState.IsKeyDown(Keys.Right);
+            bool crouch = _currentKeyState.IsKeyDown(Keys.S) || _currentKeyState.IsKeyDown(Keys.Down);
+
+            if (moveLeft && !moveRight)
+            {
+                _moveLeftCommand.Execute();
+            }
+
+            if (moveRight && !moveLeft)
+            {
+                _moveRightCommand.Execute();
+            }
+
+            if (crouch)
+            {
+                _crouchCommand.Execute();
+            }
+            else
+            {
+                _standCommand.Execute();
+            }
+
+            if (WasPressed(Keys.W) || WasPressed(Keys.Up) || WasPressed(Keys.Space))
+            {
+                _jumpCommand.Execute();
+            }
+
+            if (WasPressed(Keys.Z) || WasPressed(Keys.N))
+            {
+                _throwFireballCommand.Execute();
+            }
+
+            if (WasPressed(Keys.Q) || WasPressed(Keys.Escape))
+            {
+                _quitCommand.Execute();
+            }
+
+            if (WasPressed(Keys.R))
+            {
+                _resetCommand.Execute();
+            }
         }
 
-        public bool IsJumpRequested()
+        private bool WasPressed(Keys key)
         {
-            // keyboard input doesn't control jump
-            return false;
+            return _currentKeyState.IsKeyDown(key) && !_previousKeyState.IsKeyDown(key);
         }
     }
 }
