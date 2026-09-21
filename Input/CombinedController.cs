@@ -1,39 +1,27 @@
-﻿using Microsoft.Xna.Framework;
-using MonoGameLibrary.Interfaces;
+using Sprint0.Interfaces;
 
-namespace MonoGameLibrary.Input
+namespace Sprint0.Input
 {
+    // Available when the team wants multiple input adapters.
     public class CombinedController : IController
     {
-        private KeyboardController _keyboard;
-        private MouseController _mouse;
+        private readonly IController[] _controllers;
 
-        /* implements IController interface by combining keyboard & mouse input handling */
-        public CombinedController()
+        public CombinedController(params IController[] controllers)
         {
-            _keyboard = new KeyboardController();
-            _mouse = new MouseController();
+            _controllers = new IController[controllers.Length];
+            for (int controllerIndex = 0; controllerIndex < controllers.Length; controllerIndex++)
+            {
+                _controllers[controllerIndex] = controllers[controllerIndex];
+            }
         }
 
         public void Update()
         {
-            _keyboard.Update();
-            _mouse.Update();
-        }
-
-        public bool EscQuit()
-        {
-            return _keyboard.EscQuit();
-        }
-
-        public Vector2 GetMovementDirection()
-        {
-            return _keyboard.GetMovementDirection();
-        }
-
-        public bool IsJumpRequested()
-        {
-            return _mouse.IsJumpRequested();
+            foreach (IController controller in _controllers)
+            {
+                controller.Update();
+            }
         }
     }
 }

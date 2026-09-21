@@ -1,98 +1,87 @@
-﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGameLibrary;
-
-// importing interfaces
-using MonoGameLibrary.Interfaces;
-using MonoGameLibrary.Input;
-using MonoGameLibrary.Entities;
+using Sprint0.Entities;
+using Sprint0.Input;
+using Sprint0.Interfaces;
+using Sprint0.World;
 
 namespace Sprint0
 {
     public class Game1 : Core
     {
-        private Texture2D _spriteSheet;
+        private const int WindowWidth = 1280;
+        private const int WindowHeight = 720;
+        private const int DemoFloorY = 528;
+
         private Texture2D _backgroundTexture;
+        private Texture2D _whitePixelTexture;
+        private GameSession _gameSession;
+        private GameRenderer _gameRenderer;
+        private IController _keyboardController;
 
-        // char reference 
-        private KeyboardPlayer _player;
-        private CombinedController _controller;
-
-        // font
-        private SpriteFont _font;
-        private Vector2 _textPos;
-        Color backgroundColor;
-        public Game1() : base("Sprint0", 1280, 720, false)
+        public Game1() : base("Sprint 2 Player Demo", WindowWidth, WindowHeight, false)
         {
-
-        }
-
-        protected override void Initialize()
-        {
-            base.Initialize();
         }
 
         protected override void LoadContent()
-        { 
+        {
             base.LoadContent();
 
-            // load sprite sheet & background texture
-            _spriteSheet = Content.Load<Texture2D>("images/spritesheet");
-            _backgroundTexture = Content.Load<Texture2D>("images/background");
+            Texture2D marioTexture = Content.Load<Texture2D>("mario");
+            SpriteFont controlsFont = Content.Load<SpriteFont>("MyFont");
+            _backgroundTexture = Content.Load<Texture2D>("background");
 
-            _controller = new CombinedController();
+            _whitePixelTexture = new Texture2D(GraphicsDevice, 1, 1);
+            // Stretch this pixel to draw the demo floor 
+            _whitePixelTexture.SetData(new Color[] { Color.White });
 
-            // physical char logic types
-            Vector2 center = new Vector2(
-                Window.ClientBounds.Width / 2f,
-                Window.ClientBounds.Height / 2f
-                );
-           
-            // making cat sprite spawn on the floor 
-            float backgroundFloorY = 500f;
-            float calcGroundY = backgroundFloorY - (_spriteSheet.Height / 5f);
-            Vector2 spawnPos = new Vector2(center.X, calcGroundY);
+            MarioPlayer player = new MarioPlayer(
+                MarioSpriteFactory.Create(marioTexture),
+                new Vector2(96, DemoFloorY - MarioPlayer.StandingHeight),
+                PlayerForm.Fire);
+            Level level = new Level();
 
-            _player = new KeyboardPlayer(_spriteSheet, spawnPos, calcGroundY);
-
-            _font = Content.Load<SpriteFont>("MyFont.spritefont");
-            _textPos = new Vector2(160, 575);
-
-            backgroundColor = Color.LightPink;
+            _gameSession = new GameSession(
+                player,
+                level,
+                new DemoMovement(WindowWidth, DemoFloorY),
+                new CollisionSystem(level));
+            _keyboardController = new KeyboardController(player, _gameSession);
+            _gameRenderer = new GameRenderer(_whitePixelTexture, controlsFont);
         }
 
         protected override void Update(GameTime gameTime)
         {
-            // update InputManager first
-            base.Update(gameTime);
-
-            _controller.Update();
-
-            if(_controller.EscQuit())
+            _keyboardController.Update();
+            if (_gameSession.ShouldExit)
             {
                 Exit();
+                return;
             }
 
-            _player.Update(gameTime, _controller);
+            _gameSession.Update(gameTime);
+            base.Update(gameTime);
         }
+
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(backgroundColor);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // begin sprite batch for rendering
+            // PointClamp keeps the scaled sprites sharp.
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
-
-            // draw background and then cat sprite
-            Core.SpriteBatch.Draw(_backgroundTexture, GraphicsDevice.Viewport.Bounds, Color.White);
-            _player.Draw(SpriteBatch);
-            Core.SpriteBatch.DrawString(_font, "Credits\nProgram Made By: Vy Nguyen\nSprites from: https://opengameart.org/content/cat-sprites\nBackground from: https://dribbble.com/shots/27573605-2D-Game-Background-Design", _textPos, Color.White);
-
-            // end sprite batch
+            SpriteBatch.Draw(_backgroundTexture, GraphicsDevice.Viewport.Bounds, Color.White * 0.45f);
+            _gameRenderer.DrawDemoFloor(SpriteBatch, GraphicsDevice.Viewport.Bounds, DemoFloorY);
+            _gameRenderer.DrawWorld(SpriteBatch, _gameSession.Level, _gameSession.Player);
+            _gameRenderer.DrawControls(SpriteBatch);
             SpriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        protected override void UnloadContent()
+        {
+            _whitePixelTexture.Dispose();
+            base.UnloadContent();
         }
     }
 }
