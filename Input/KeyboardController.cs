@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using MonoGameLibrary.Interfaces;
+using Sprint0.Interfaces;
 
-namespace MonoGameLibrary.Input
+namespace Sprint0.Input
 {
     public class KeyboardController : IController
     {
