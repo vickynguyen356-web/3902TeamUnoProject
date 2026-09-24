@@ -1,25 +1,19 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using Sprint0.Interfaces;
+using Sprint0.Items;
 
 namespace Sprint0.Entities
 {
-    public class Coin
+    public class Coin : Item
     {
-        public Vector2 Position { get; private set; }
-
         public Coin(Vector2 position)
+            : this(position, ItemSpriteFactory.Instance.CreateCoinSprite())
         {
-            Position = position;
         }
 
-        public void Update(GameTime gameTime)
+        public Coin(Vector2 position, IItemSprite sprite)
+            : base(ItemType.Coin, position, sprite)
         {
-            // Item animation and state changes go here.
-        }
-
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            // Item drawing goes here.
         }
     }
 }
