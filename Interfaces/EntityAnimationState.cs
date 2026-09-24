@@ -8,6 +8,8 @@ namespace Sprint0.Interfaces
         Dead,
         Jump,
         Fall,
-        ThrowFireball
+        ThrowFireball,
+        Swim,
+        Climb
     }
 }

@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Sprint0.Interfaces;
 
 namespace Sprint0.Entities
 {
-    public class MarioPlayer : IPlayer, ISpriteState
+    public class MarioPlayer : IPlayer
     {
         public const int StandingHeight = 72;
         private const int BodyWidth = 42;
@@ -17,6 +18,9 @@ namespace Sprint0.Entities
         private const float JumpVelocity = -700f;
 
         private readonly ISprite _sprite;
+        private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _superAnimations;
+        private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _smallAnimations;
+        private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _fireAnimations;
         private readonly PlayerStateMachine _stateMachine;
         private readonly Vector2 _startingPosition;
         private Vector2 _velocity;
@@ -92,12 +96,16 @@ namespace Sprint0.Entities
             }
 
             _sprite = sprite;
+            _superAnimations = MarioSpriteFactory.CreateSuperAnimations();
+            _smallAnimations = MarioSpriteFactory.CreateSmallAnimations();
+            _fireAnimations = MarioSpriteFactory.CreateFireAnimations();
             _stateMachine = new PlayerStateMachine(startingForm);
             _startingPosition = position;
             Position = position;
+            UpdateAnimation(new GameTime());
         }
 
-        // Save input until the next update.
+        
         public void Move(float movementDirection)
         {
             _movementDirection = MathHelper.Clamp(movementDirection, -1, 1);
@@ -120,7 +128,6 @@ namespace Sprint0.Entities
             {
                 UpdateHorizontalVelocity(elapsedSeconds);
 
-                // Mario can jump from the ground when he is not crouching.
                 if (_jumpRequested && IsGrounded && !IsCrouching)
                 {
                     _velocity.Y = JumpVelocity;
@@ -128,7 +135,7 @@ namespace Sprint0.Entities
                 }
             }
 
-            // Set the facing direction before starting a throw.
+            // Set the facing direction before starting a throw
             if (_fireballRequested && _stateMachine.TryThrowFireball())
             {
                 if (FireballRequested != null)
@@ -139,7 +146,7 @@ namespace Sprint0.Entities
 
             _velocity.Y += Gravity * elapsedSeconds;
 
-            // Clear the input after using it.
+            // Clear the input 
             _movementDirection = 0;
             _jumpRequested = false;
             _fireballRequested = false;
@@ -169,7 +176,7 @@ namespace Sprint0.Entities
                 return;
             }
 
-            // Slow down when movement is released or Mario crouches.
+            // Slow down when movement is released or Mario crouches
             float speedReduction = HorizontalFriction * elapsedSeconds;
             if (_velocity.X > 0)
             {
@@ -199,7 +206,31 @@ namespace Sprint0.Entities
         internal void UpdateAnimation(GameTime gameTime)
         {
             _stateMachine.Update(IsGrounded, _velocity);
-            _sprite.Update(gameTime, this);
+            _sprite.Update(gameTime, GetAnimation());
+        }
+
+        private SpriteAnimation GetAnimation()
+        {
+            IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> formAnimations;
+            switch (Form)
+            {
+                case PlayerForm.Small:
+                    formAnimations = _smallAnimations;
+                    break;
+                case PlayerForm.Fire:
+                    formAnimations = _fireAnimations;
+                    break;
+                default:
+                    formAnimations = _superAnimations;
+                    break;
+            }
+
+            if (formAnimations.TryGetValue(AnimationState, out SpriteAnimation animation))
+            {
+                return animation;
+            }
+
+            return formAnimations[EntityAnimationState.Idle];
         }
 
         public void Reset()
@@ -213,6 +244,7 @@ namespace Sprint0.Entities
             FacingDirection = SpriteEffects.None;
             _stateMachine.Reset();
             _sprite.Reset();
+            UpdateAnimation(new GameTime());
         }
 
         public void TakeDamage()
@@ -227,14 +259,14 @@ namespace Sprint0.Entities
             _stateMachine.SetCrouching(crouching);
             if (wasCrouching != IsCrouching)
             {
-                // Move the top of the body so the feet stay in place.
+                // Move the top of the body so the feet stay in place
                 Position = new Vector2(Position.X, feetPositionY - Bounds.Height);
             }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            _sprite.Draw(spriteBatch, this);
+            _sprite.Draw(spriteBatch, Bounds, FacingDirection);
         }
     }
 }

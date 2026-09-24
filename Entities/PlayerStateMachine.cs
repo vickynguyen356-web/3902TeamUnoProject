@@ -44,7 +44,7 @@ namespace Sprint0.Entities
 
         public bool TryThrowFireball()
         {
-            // Only Fire Mario can start a throw.
+            // Only Fire Mario can start a throw
             if (Form != PlayerForm.Fire || IsDead || IsCrouching || IsThrowing)
             {
                 return false;
@@ -56,7 +56,7 @@ namespace Sprint0.Entities
 
         public void Update(bool isGrounded, Vector2 velocity)
         {
-            // Check special poses before walking or jumping.
+            // Check special poses before movements
             if (IsDead)
             {
                 AnimationState = EntityAnimationState.Dead;
@@ -71,7 +71,7 @@ namespace Sprint0.Entities
             }
             else if (!isGrounded)
             {
-                // A negative Y velocity means Mario is going up.
+                // A negative Y velocity means Mario is going up 
                 if (velocity.Y < 0)
                 {
                     AnimationState = EntityAnimationState.Jump;
@@ -110,7 +110,7 @@ namespace Sprint0.Entities
             IsCrouching = crouching && !IsSmall && !IsDead;
             if (IsCrouching)
             {
-                // Crouching ends the throw pose.
+                // Crouching ends the throw pose
                 _throwTimeRemaining = 0;
             }
         }
