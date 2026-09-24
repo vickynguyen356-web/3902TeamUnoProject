@@ -37,3 +37,13 @@
 /processor:FontDescriptionProcessor
 /processorParam:TextureFormat=Color
 /build:MyFont.spritefont
+
+#begin items.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyEnabled=True
+/processorParam:ColorKeyColor=146,144,255,255
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:items.png
