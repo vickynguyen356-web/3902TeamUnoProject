@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Sprint0.Entities;
 
 namespace Sprint0.World
@@ -17,24 +18,31 @@ namespace Sprint0.World
         private readonly List<Rectangle> _solidTiles = new List<Rectangle>();
         private readonly List<Coin> _coins = new List<Coin>();
         private readonly List<Goomba> _enemies = new List<Goomba>();
+        private readonly Texture2D _goombaTexture;
 
         public IReadOnlyList<Rectangle> SolidTiles { get; }
         public IReadOnlyList<Coin> Coins { get; }
         public IReadOnlyList<Goomba> Enemies { get; }
         public Rectangle Goal { get; private set; }
 
-        public Level() : this(LevelDefinition.CreateDefault())
-        {
-        }
+        //public Level() : this(LevelDefinition.CreateDefault())
+        //{
+        //}
 
-        public Level(LevelDefinition levelDefinition)
+        public Level(LevelDefinition levelDefinition, Texture2D goombaTexture)
         {
             if (levelDefinition == null)
             {
                 throw new ArgumentNullException(nameof(levelDefinition));
             }
 
+            if (goombaTexture == null)
+            {
+                throw new ArgumentNullException(nameof(goombaTexture));
+            }
+
             _levelDefinition = levelDefinition;
+            _goombaTexture = goombaTexture;
 
             // Other classes can read these lists.
             SolidTiles = _solidTiles.AsReadOnly();
@@ -75,8 +83,8 @@ namespace Sprint0.World
 
             foreach (EnemySpawnDefinition enemySpawn in _levelDefinition.Enemies)
             {
-                Vector2 spawnPosition = new Vector2(enemySpawn.TileX * TileSize, GroundY - Goomba.Size);
-                _enemies.Add(new Goomba(spawnPosition));
+                Vector2 spawnPosition = new Vector2(enemySpawn.TileX * TileSize, GroundY - Goomba.GoombaHeight);
+                _enemies.Add(new Goomba(GoombaSpriteFactory.Create(_goombaTexture), spawnPosition));
             }
 
             if (_levelDefinition.Goal.HeightInTiles > 0)

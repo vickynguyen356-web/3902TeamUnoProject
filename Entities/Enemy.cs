@@ -1,24 +1,24 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Sprint0.Interfaces;
 
 namespace Sprint0.Entities
 {
     public abstract class Enemy
     {
         protected readonly EnemyStateMachine StateMachine;
-        protected readonly SpriteSheetSprite Sprite;
+        protected readonly ISprite Sprite;
         protected Vector2 Velocity;
-        protected Vector2 Position { get; protected set; }
+        protected Vector2 Position { get; set; }
         public abstract int Width { get; }
         public abstract int Height { get; }
 
-        protected Enemy(Vector2 position, Texture2D texture, float scale)
+        protected Enemy(ISprite sprite, Vector2 position)
         {
+            Sprite = sprite;
             Position = position;
 
             StateMachine = new EnemyStateMachine();
-
-            Sprite = new SpriteSheetSprite(texture, scale);
 
         }
 
