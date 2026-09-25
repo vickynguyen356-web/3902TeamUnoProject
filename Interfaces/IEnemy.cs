@@ -11,5 +11,4 @@ namespace Sprint0.Interfaces
         void Draw(SpriteBatch spriteBatch);
         void TakeDamage();
     }
-    }
 }

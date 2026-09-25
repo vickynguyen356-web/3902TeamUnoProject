@@ -1,61 +1,92 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Sprint0.Interfaces;
+using System.Collections.Generic;
 
 namespace Sprint0.Entities
 {
     public class Goomba : Enemy
     {
+        /* goomba fields */
+        public const int GoombaWidth = 23;
+        public const int GoombaHeight = 24;
+
+        // references available after creating Goomba
+        public override int Width => GoombaWidth;
+        public override int Height => GoombaHeight;
+        private const float RunSpeed = 13f;
+        /* animation related fields */
         private readonly Texture2D _texture;
-        public const int Size = 40;
-        public override int Width => 23;
-        public override int Height => 24;
-        private const float MovementSpeed = 13f;
-        private Vector2 _velocity;
+        private readonly ISprite _sprite;
         private readonly EnemyStateMachine _stateMachine;
-        private readonly SpriteAnimation _idleAnimation;
-        private readonly SpriteAnimation _runAnimation;
-        private readonly SpriteAnimation _deadAnimation;
+        private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _goombaAnimations;
+        private readonly Vector2 _startingPos;
 
-
-
-        public Goomba(Vector2 position, Texture2D texture) : base(position, texture, 1.0f)
+        public Goomba(ISprite sprite, Vector2 position) 
+            : base(sprite, position)
         {
-            Velocity = new Vector2(-MovementSpeed, 0); // Goomba moves left by default
-
-            _idleAnimation = new SpriteAnimation(0.2f, )
+            _goombaAnimations = GoombaSpriteFactory.CreateGoombaAnimations();
+            _startingPos = position;
+            UpdateAnimation(new GameTime());
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (IsDead)
+            float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (!IsDead)
             {
-                _stateMachine.Update(_velocity);
-                return;
+                Velocity.X = RunSpeed;
+                Position += Velocity * elapsedSeconds;
             }
 
-            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Position += _velocity * deltaTime;
-
-            _stateMachine.Update(_velocity);
+            UpdateAnimation(gameTime);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        private void UpdateAnimation(GameTime gameTime)
         {
-            SpriteEffects spriteEffects = _stateMachine.IsFlipped
-                ? SpriteEffects.FlipHorizontally
-                : SpriteEffects.None;
+            StateMachine.Update(Velocity);
 
-            spriteBatch.Draw(
-                _texture,
-                Position,
-                null,
-                Color.White,
-                0f,
-                Vector2.Zero,
-                1f,
-                spriteEffects,
-                0f);
+            Sprite.Update(gameTime, GetCurrentAnimation());
         }
+
+        private SpriteAnimation GetCurrentAnimation()
+        {
+            if (_goombaAnimations.TryGetValue(StateMachine.AnimationState, out SpriteAnimation animation))
+            {
+                return animation;
+            }
+
+            return _goombaAnimations[EntityAnimationState.Idle];
+        }
+
+        public void Reset()
+        {
+            Position = _startingPos;
+            Velocity = Vector2.Zero;
+
+            StateMachine.Reset();
+            Sprite.Reset();
+
+            UpdateAnimation(new GameTime());
+        }
+
+        //public override void Draw(SpriteBatch spriteBatch)
+        //{
+        //    SpriteEffects spriteEffects = _stateMachine.IsFlipped
+        //        ? SpriteEffects.FlipHorizontally
+        //        : SpriteEffects.None;
+
+        //    spriteBatch.Draw(
+        //        _texture,
+        //        Position,
+        //        null,
+        //        Color.White,
+        //        0f,
+        //        Vector2.Zero,
+        //        1f,
+        //        spriteEffects,
+        //        0f);
+        //}
     }
 }
