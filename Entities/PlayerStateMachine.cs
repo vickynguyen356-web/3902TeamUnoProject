@@ -103,6 +103,29 @@ namespace Sprint0.Entities
         public void TakeDamage()
         {
             // Damage and power-up changes go here.
+            if (IsDead)
+            {
+                return;
+            }
+
+            if (Form == PlayerForm.Small)
+            {
+                IsDead = true;
+                AnimationState = EntityAnimationState.Dead;
+                return;
+            }
+
+            if (Form == PlayerForm.Fire)
+            {
+                Form = PlayerForm.Super;
+            }
+            else
+            {
+                Form = PlayerForm.Small;
+            }
+
+            AnimationState = EntityAnimationState.Dead;
+            IsCrouching = false;
         }
 
         public void SetCrouching(bool crouching)
@@ -110,7 +133,7 @@ namespace Sprint0.Entities
             IsCrouching = crouching && !IsSmall && !IsDead;
             if (IsCrouching)
             {
-                // Crouching ends the throw pose
+                // Crouching ends the throw pose.
                 _throwTimeRemaining = 0;
             }
         }

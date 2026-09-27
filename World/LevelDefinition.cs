@@ -23,12 +23,35 @@ namespace Sprint0.World
 
         public static LevelDefinition CreateDefault()
         {
-            // Add the level layout here.
+            var platforms = new List<PlatformDefinition>
+            {
+                new PlatformDefinition(0, 11, 18),
+                new PlatformDefinition(20, 10, 5),
+                new PlatformDefinition(27, 9, 4),
+                new PlatformDefinition(34, 8, 3),
+                new PlatformDefinition(40, 9, 5),
+                new PlatformDefinition(48, 10, 6),
+                new PlatformDefinition(58, 11, 25)
+            };
+
+            var coinLines = new List<CoinLineDefinition>
+            {
+                new CoinLineDefinition(21, 8, 3),
+                new CoinLineDefinition(35, 6, 3),
+                new CoinLineDefinition(49, 8, 3)
+            };
+
+            var enemies = new List<EnemySpawnDefinition>
+            {
+                new EnemySpawnDefinition(30),
+                new EnemySpawnDefinition(52)
+            };
+
             return new LevelDefinition(
-                new List<PlatformDefinition>(),
-                new List<CoinLineDefinition>(),
-                new List<EnemySpawnDefinition>(),
-                new GoalDefinition(0, 0));
+                platforms,
+                coinLines,
+                enemies,
+                new GoalDefinition(70, 2));
         }
     }
 

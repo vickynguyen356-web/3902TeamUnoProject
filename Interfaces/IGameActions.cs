@@ -4,5 +4,6 @@ namespace Sprint0.Interfaces
     {
         void Quit();
         void Reset();
+        void TriggerDamage();
     }
 }
