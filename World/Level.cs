@@ -93,15 +93,13 @@ namespace Sprint0.World
                 }
             }
 
-            foreach (EnemySpawnDefinition enemySpawn in _levelDefinition.Enemies)
+            if (_goombaTexture != null)
             {
-                if (_goombaTexture == null)
+                foreach (EnemySpawnDefinition enemySpawn in _levelDefinition.Enemies)
                 {
-                    throw new InvalidOperationException("Goomba sprite texture is not loaded.");
+                    Vector2 spawnPosition = new Vector2(enemySpawn.TileX * TileSize, GroundY - Goomba.GoombaHeight);
+                    _enemies.Add(new Goomba(GoombaSpriteFactory.Create(_goombaTexture), spawnPosition));
                 }
-
-                Vector2 spawnPosition = new Vector2(enemySpawn.TileX * TileSize, GroundY - Goomba.GoombaHeight);
-                _enemies.Add(new Goomba(GoombaSpriteFactory.Create(_goombaTexture), spawnPosition));
             }
 
             if (_levelDefinition.Goal.HeightInTiles > 0)
