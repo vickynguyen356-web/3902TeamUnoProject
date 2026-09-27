@@ -15,6 +15,7 @@ namespace Sprint0.Input
         private readonly ICommand _throwFireballCommand;
         private readonly ICommand _quitCommand;
         private readonly ICommand _resetCommand;
+        private readonly ICommand _damageCommand;
         private KeyboardState _previousKeyState;
         private KeyboardState _currentKeyState;
 
@@ -38,6 +39,7 @@ namespace Sprint0.Input
             _throwFireballCommand = new ThrowFireballCommand(player);
             _quitCommand = new QuitCommand(gameActions);
             _resetCommand = new ResetCommand(gameActions);
+            _damageCommand = new DamageCommand(gameActions);
         }
 
         public void Update()
@@ -86,6 +88,11 @@ namespace Sprint0.Input
             if (WasPressed(Keys.R))
             {
                 _resetCommand.Execute();
+            }
+
+            if (WasPressed(Keys.E))
+            {
+                _damageCommand.Execute();
             }
         }
 

@@ -74,5 +74,10 @@ namespace Sprint0.World
             Level.Reset();
             Player.Reset();
         }
+
+        public void TriggerDamage()
+        {
+            Player.TakeDamage();
+        }
     }
 }

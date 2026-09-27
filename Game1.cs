@@ -14,6 +14,7 @@ namespace Sprint0
         private const int DemoFloorY = 528;
 
         private Texture2D _backgroundTexture;
+        private Texture2D _blockTexture;
         private Texture2D _whitePixelTexture;
         private GameSession _gameSession;
         private GameRenderer _gameRenderer;
@@ -32,6 +33,7 @@ namespace Sprint0
             Texture2D goombaTexture = Content.Load<Texture2D>("goombaSpritesheet");
             SpriteFont controlsFont = Content.Load<SpriteFont>("MyFont");
             _backgroundTexture = Content.Load<Texture2D>("background");
+            _blockTexture = Content.Load<Texture2D>("bricksobstacles");
 
             _whitePixelTexture = new Texture2D(GraphicsDevice, 1, 1);
             // Stretch this pixel to draw the demo floor 
@@ -52,7 +54,7 @@ namespace Sprint0
                 new DemoMovement(WindowWidth, DemoFloorY),
                 new CollisionSystem(level));
             _keyboardController = new KeyboardController(player, _gameSession);
-            _gameRenderer = new GameRenderer(_whitePixelTexture, controlsFont);
+            _gameRenderer = new GameRenderer(_whitePixelTexture, _blockTexture, controlsFont);
         }
 
         protected override void Update(GameTime gameTime)

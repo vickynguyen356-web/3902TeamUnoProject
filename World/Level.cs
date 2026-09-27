@@ -15,30 +15,31 @@ namespace Sprint0.World
         public const int GroundY = 11 * TileSize;
 
         private readonly LevelDefinition _levelDefinition;
+        private readonly Texture2D _goombaTexture;
         private readonly List<Rectangle> _solidTiles = new List<Rectangle>();
         private readonly List<Coin> _coins = new List<Coin>();
         private readonly List<Goomba> _enemies = new List<Goomba>();
-        private readonly Texture2D _goombaTexture;
+        private readonly List<Block> _blocks = new List<Block>();
 
         public IReadOnlyList<Rectangle> SolidTiles { get; }
         public IReadOnlyList<Coin> Coins { get; }
         public IReadOnlyList<Goomba> Enemies { get; }
+        public IReadOnlyList<Block> Blocks { get; }
         public Rectangle Goal { get; private set; }
 
-        //public Level() : this(LevelDefinition.CreateDefault())
-        //{
-        //}
+        public Level() : this(LevelDefinition.CreateDefault(), null)
+        {
+        }
 
-        public Level(LevelDefinition levelDefinition, Texture2D goombaTexture)
+        public Level(Texture2D goombaTexture) : this(LevelDefinition.CreateDefault(), goombaTexture)
+        {
+        }
+
+        public Level(LevelDefinition levelDefinition, Texture2D goombaTexture = null)
         {
             if (levelDefinition == null)
             {
                 throw new ArgumentNullException(nameof(levelDefinition));
-            }
-
-            if (goombaTexture == null)
-            {
-                throw new ArgumentNullException(nameof(goombaTexture));
             }
 
             _levelDefinition = levelDefinition;
@@ -48,6 +49,7 @@ namespace Sprint0.World
             SolidTiles = _solidTiles.AsReadOnly();
             Coins = _coins.AsReadOnly();
             Enemies = _enemies.AsReadOnly();
+            Blocks = _blocks.AsReadOnly();
             Reset();
         }
 
@@ -56,6 +58,7 @@ namespace Sprint0.World
             _solidTiles.Clear();
             _coins.Clear();
             _enemies.Clear();
+            _blocks.Clear();
             Goal = Rectangle.Empty;
 
             // Convert tile positions to pixel positions.
@@ -70,6 +73,15 @@ namespace Sprint0.World
                 }
             }
 
+            // Demo block selection for Sprint 2. These are meant to cycle with T/Y and to render as decorative obstacles.
+            _blocks.Add(new Block(new Vector2(256, 420), BlockType.Brick, 48, 48));
+            _blocks.Add(new Block(new Vector2(304, 420), BlockType.Question, 48, 48));
+            _blocks.Add(new Block(new Vector2(352, 420), BlockType.Used, 48, 48));
+            _blocks.Add(new Block(new Vector2(400, 420), BlockType.Ground, 48, 48));
+            _blocks.Add(new Block(new Vector2(448, 420), BlockType.Solid, 48, 48));
+            _blocks.Add(new Block(new Vector2(496, 420), BlockType.Coin, 48, 48));
+            _blocks.Add(new Block(new Vector2(544, 420), BlockType.Pipe, 64, 64));
+
             foreach (CoinLineDefinition coinLine in _levelDefinition.CoinLines)
             {
                 for (int coinIndex = 0; coinIndex < coinLine.Count; coinIndex++)
@@ -83,6 +95,11 @@ namespace Sprint0.World
 
             foreach (EnemySpawnDefinition enemySpawn in _levelDefinition.Enemies)
             {
+                if (_goombaTexture == null)
+                {
+                    throw new InvalidOperationException("Goomba sprite texture is not loaded.");
+                }
+
                 Vector2 spawnPosition = new Vector2(enemySpawn.TileX * TileSize, GroundY - Goomba.GoombaHeight);
                 _enemies.Add(new Goomba(GoombaSpriteFactory.Create(_goombaTexture), spawnPosition));
             }
@@ -96,6 +113,7 @@ namespace Sprint0.World
                     TileSize,
                     goalHeight);
             }
+
         }
 
         public void Update(GameTime gameTime)
