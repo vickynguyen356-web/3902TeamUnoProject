@@ -43,10 +43,7 @@ namespace Sprint0
                 MarioSpriteFactory.Create(marioTexture),
                 new Vector2(96, DemoFloorY - MarioPlayer.StandingHeight),
                 PlayerForm.Fire);
-            Level level = new Level();
-
-            Goomba goomba = new Goomba(GoombaSpriteFactory.Create(goombaTexture),
-                new Vector2(200, DemoFloorY - Goomba.GoombaHeight));
+            Level level = new Level(goombaTexture);
 
             _gameSession = new GameSession(
                 player,
