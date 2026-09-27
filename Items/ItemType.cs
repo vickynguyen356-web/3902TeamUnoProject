@@ -6,6 +6,7 @@ namespace Sprint0.Items
         FireFlower,
         Coin,
         Star,
-        OneUpMushroom
+        OneUpMushroom,
+        BlockCoin
     }
 }
