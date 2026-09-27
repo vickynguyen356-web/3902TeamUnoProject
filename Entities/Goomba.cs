@@ -16,9 +16,6 @@ namespace Sprint0.Entities
         public override int Height => GoombaHeight;
         private const float RunSpeed = 13f;
         /* animation related fields */
-        private readonly Texture2D _texture;
-        private readonly ISprite _sprite;
-        private readonly EnemyStateMachine _stateMachine;
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _goombaAnimations;
         private readonly Vector2 _startingPos;
 
