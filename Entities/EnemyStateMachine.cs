@@ -9,7 +9,7 @@ namespace Sprint0.Entities
         private const float MinimumRunningSpeed = 13f;
         public EntityAnimationState AnimationState { get; private set; } = EntityAnimationState.Idle;
         public bool IsDead { get; private set; }
-        public bool IsFlipped { get; private set; }
+        public bool IsFlipped { get; set; }
 
         public EnemyStateMachine()
         {
@@ -25,11 +25,10 @@ namespace Sprint0.Entities
                 return;
             }
 
-            // flip sprite based on horizontal movement
-            if (velocity.X <0)
+            if (velocity.X < 0)
             {
                 IsFlipped = true;
-            }
+            } 
             else if (velocity.X > 0)
             {
                 IsFlipped = false;
@@ -43,6 +42,23 @@ namespace Sprint0.Entities
             {
                 AnimationState = EntityAnimationState.Idle;
             }
+        }
+
+        public void SetFacingDirection(float horizontalVelocity)
+        {
+            if (horizontalVelocity < 0)
+            {
+                IsFlipped = true;
+            }
+            else if (horizontalVelocity > 0)
+            {
+                IsFlipped = false;
+            }
+        }
+
+        public void SetFacingDirection(int direction)
+        {
+            IsFlipped = direction < 0;
         }
 
         public void Reset()

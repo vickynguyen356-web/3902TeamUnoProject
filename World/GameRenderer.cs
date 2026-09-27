@@ -48,6 +48,7 @@ namespace Sprint0.World
             spriteBatch.DrawString(_controlsFont, "A/D or Left/Right: move   W/Up/Space: jump", new Vector2(32, 24), Color.White);
             spriteBatch.DrawString(_controlsFont, "S/Down: crouch   Z/N: throw fireball", new Vector2(32, 56), Color.White);
             spriteBatch.DrawString(_controlsFont, "R: reset   Q/Escape: quit", new Vector2(32, 88), Color.White);
+            spriteBatch.DrawString(_controlsFont, "O/P: cycle to previous and next enemy", new Vector2(32, 120), Color.White);
         }
     }
 }

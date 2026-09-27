@@ -45,7 +45,9 @@ namespace Sprint0
             IEnemyFactory enemyFactory = new EnemyFactory(
                 () => GoombaSpriteFactory.Create(enemyTexture),
                 () => KoopaSpriteFactory.Create(enemyTexture),
-                () => PiranhaSpriteFactory.Create(enemyTexture));
+                () => PiranhaSpriteFactory.Create(enemyTexture),
+                () => HammerBroSpriteFactory.Create(enemyTexture),
+                () => BowserSpriteFactory.Create(enemyTexture));
 
             Level level = new Level(LevelDefinition.CreateDefault(), enemyFactory);
 

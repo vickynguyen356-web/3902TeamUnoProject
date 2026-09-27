@@ -10,10 +10,11 @@ namespace Sprint0.Entities
         private readonly Texture2D _spriteSheetTexture;
         private readonly float _spriteScale;
         private SpriteAnimation _currentAnimation;
+        private readonly bool _useSpriteEffects;
         private float _frameTimer;
         private int _frameIndex;
 
-        public SpriteSheetSprite(Texture2D spriteSheetTexture, float spriteScale)
+        public SpriteSheetSprite(Texture2D spriteSheetTexture, float spriteScale, bool useSpriteEffects = false)
         {
             if (spriteSheetTexture == null)
             {
@@ -22,6 +23,7 @@ namespace Sprint0.Entities
 
             _spriteSheetTexture = spriteSheetTexture;
             _spriteScale = spriteScale;
+            _useSpriteEffects = useSpriteEffects;
         }
 
         public void Reset()
@@ -70,14 +72,27 @@ namespace Sprint0.Entities
             }
 
             SpriteFrame selectedFrame = _currentAnimation.Frames[_frameIndex];
-            Rectangle sourceRectangle = selectedFrame.GetSourceRectangle(facingDirection);
+            //Rectangle sourceRectangle = selectedFrame.GetSourceRectangle(facingDirection);
+            Rectangle sourceRectangle;
+            SpriteEffects spriteEffects;
+
+            if (_useSpriteEffects)
+            {
+                // one direction spritesheet
+                sourceRectangle = selectedFrame.LeftSource;
+                spriteEffects = facingDirection;
+            }
+            else
+            {
+                sourceRectangle = selectedFrame.GetSourceRectangle(facingDirection);
+                spriteEffects = SpriteEffects.None;
+            }
 
             // Line up the bottom of the picture with the entity's feet
             Vector2 drawingOrigin = new Vector2(sourceRectangle.Width / 2f, sourceRectangle.Height);
             Vector2 feetPosition = new Vector2(bounds.Center.X, bounds.Bottom);
             Vector2 frameOffset = new Vector2(selectedFrame.OffsetX, selectedFrame.OffsetY) * _spriteScale;
 
-            // Both directions are already on the sheet
             spriteBatch.Draw(
                 _spriteSheetTexture,
                 feetPosition + frameOffset,
@@ -86,7 +101,7 @@ namespace Sprint0.Entities
                 0,
                 drawingOrigin,
                 _spriteScale,
-                SpriteEffects.None,
+                spriteEffects,
                 0);
         }
     }
