@@ -25,7 +25,7 @@ namespace Sprint0.Items
             itemSprite.Update(gameTime);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
             itemSprite.Draw(spriteBatch, Position);
         }

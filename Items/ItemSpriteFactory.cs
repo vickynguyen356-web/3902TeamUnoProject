@@ -52,6 +52,11 @@ namespace Sprint0.Items
             return CreateAnimatedSprite(180, 36, 8, 10);
         }
 
+        public IItemSprite CreateBlockCoinSprite()
+        {
+            return CreateAnimatedSprite(180, 36, 8, 10);
+        }
+
         private IItemSprite CreateAnimatedSprite(int x, int y, int width, int spacing)
         {
             const int frameCount = 4;
