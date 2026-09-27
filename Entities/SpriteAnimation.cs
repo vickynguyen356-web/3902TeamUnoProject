@@ -21,7 +21,7 @@ namespace Sprint0.Entities
             }
 
             FrameDuration = frameDuration;
-            // Keep our own copy of the frames.
+            // Keep our own copy of the frames
             Frames = new List<SpriteFrame>(frames).AsReadOnly();
         }
     }

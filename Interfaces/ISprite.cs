@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Sprint0.Entities;
 
 namespace Sprint0.Interfaces
 {
@@ -7,8 +8,8 @@ namespace Sprint0.Interfaces
     {
         void Reset();
 
-        void Update(GameTime gameTime, ISpriteState spriteState);
+        void Update(GameTime gameTime, SpriteAnimation animation);
 
-        void Draw(SpriteBatch spriteBatch, ISpriteState spriteState);
+        void Draw(SpriteBatch spriteBatch, Rectangle bounds, SpriteEffects facingDirection);
     }
 }
