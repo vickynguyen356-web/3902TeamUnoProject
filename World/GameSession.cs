@@ -84,5 +84,10 @@ namespace Sprint0.World
         {
             Level.NextEnemy();
         }
+
+        //public void SpitFire()
+        //{
+        //    Level.SpitFire();
+        //}
     }
 }

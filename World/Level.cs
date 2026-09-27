@@ -22,7 +22,7 @@ namespace Sprint0.World
         private readonly List<Enemy> _enemies = new List<Enemy>();
         private readonly EnemyType[] _enemyTypes = 
             { 
-            EnemyType.Goomba, EnemyType.Koopa, EnemyType.PiranhaPlant
+            EnemyType.Goomba, EnemyType.Koopa, EnemyType.PiranhaPlant, EnemyType.HammerBro, EnemyType.Bowser
             };
         private readonly IEnemyFactory _enemyFactory;
         private int _currentEnemyIndex;
@@ -169,9 +169,9 @@ namespace Sprint0.World
             return _enemyTypes[_currentEnemyIndex];
         }
 
-        private Enemy CreateEnemy(EnemyType enemyType, Vector2 position) 
-        {
-            return _enemyFactory.Create(enemyType, position);
-        }
+        //private void SpitFire()
+        //{
+            
+        //}
     }
 }

@@ -9,6 +9,8 @@ namespace Sprint0.Entities
     {
     Goomba,
     Koopa,
-    PiranhaPlant
+    PiranhaPlant,
+    HammerBro,
+    Bowser
     }
 }

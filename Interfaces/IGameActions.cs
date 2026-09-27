@@ -6,5 +6,6 @@ namespace Sprint0.Interfaces
         void Reset();
         void PreviousEnemy();
         void NextEnemy();
+        // void SpitFire();
     }
 }
