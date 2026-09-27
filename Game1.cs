@@ -29,7 +29,7 @@ namespace Sprint0
 
             /* loading player & enemy sprites */
             Texture2D marioTexture = Content.Load<Texture2D>("mario");
-            Texture2D goombaTexture = Content.Load<Texture2D>("goombaSpritesheet");
+            Texture2D enemyTexture = Content.Load<Texture2D>("enemiesSprites");
             SpriteFont controlsFont = Content.Load<SpriteFont>("MyFont");
             _backgroundTexture = Content.Load<Texture2D>("background");
 
@@ -41,10 +41,13 @@ namespace Sprint0
                 MarioSpriteFactory.Create(marioTexture),
                 new Vector2(96, DemoFloorY - MarioPlayer.StandingHeight),
                 PlayerForm.Fire);
-            Level level = new Level();
 
-            Goomba goomba = new Goomba(GoombaSpriteFactory.Create(goombaTexture),
-                new Vector2(200, DemoFloorY - Goomba.GoombaHeight));
+            IEnemyFactory enemyFactory = new EnemyFactory(
+                () => GoombaSpriteFactory.Create(enemyTexture),
+                () => KoopaSpriteFactory.Create(enemyTexture),
+                () => PiranhaSpriteFactory.Create(enemyTexture));
+
+            Level level = new Level(LevelDefinition.CreateDefault(), enemyFactory);
 
             _gameSession = new GameSession(
                 player,

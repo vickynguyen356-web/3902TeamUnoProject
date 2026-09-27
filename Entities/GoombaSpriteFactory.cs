@@ -7,8 +7,8 @@ namespace Sprint0.Entities
 {
     public class GoombaSpriteFactory
     {
-        private const int FrameWidth = 23;
-        private const int FrameHeight = 24;
+        private const int FrameWidth = 64;
+        private const int FrameHeight = 64;
         public static ISprite Create(Texture2D spriteSheetTexture)
         {
             return new SpriteSheetSprite(spriteSheetTexture, 2f);
@@ -19,17 +19,10 @@ namespace Sprint0.Entities
             SpriteAnimation idle = new SpriteAnimation(0.80f, CreateFrame(0, 0, 0, 0));
 
             SpriteAnimation run = new SpriteAnimation(0.28f,
-                CreateFrame(0, 1, 0, 1),
-                CreateFrame(1, 1, 1, 1),
-                CreateFrame(2, 1, 2, 1));
-            /*
-            SpriteFrame[] walkingFrames = new SpriteFrame[3];
-            walkingFrames[0] = CreateFrame(0, 1, 0, 1, frameWidth, frameHeight);
-            walkingFrames[1] = CreateFrame(1, 1, 1, 1, frameWidth, frameHeight);
-            walkingFrames[2] = CreateFrame(2, 1, 2, 1, frameWidth, frameHeight);
-            SpriteAnimation run = new SpriteAnimation(0.28f, walkingFrames); */
+                CreateFrame(0, 0, 0, 0),
+                CreateFrame(1, 0, 1, 0));
 
-            SpriteAnimation dead = new SpriteAnimation(0.80f, CreateFrame(1, 4, 1, 4));
+            SpriteAnimation dead = new SpriteAnimation(0.80f, CreateFrame(2, 0, 2, 0));
 
             return new Dictionary<EntityAnimationState, SpriteAnimation>
             {

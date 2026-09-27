@@ -22,14 +22,7 @@ namespace Sprint0.Entities
             if (IsDead)
             {
                 AnimationState = EntityAnimationState.Dead;
-            }
-            else if (Math.Abs(velocity.X) > MinimumRunningSpeed)
-            {
-                AnimationState = EntityAnimationState.Run;
-            }
-            else
-            {
-                AnimationState = EntityAnimationState.Idle;
+                return;
             }
 
             // flip sprite based on horizontal movement
@@ -40,6 +33,15 @@ namespace Sprint0.Entities
             else if (velocity.X > 0)
             {
                 IsFlipped = false;
+            }
+
+            if (Math.Abs(velocity.X) > MinimumRunningSpeed)
+            {
+                AnimationState = EntityAnimationState.Run;
+            }
+            else
+            {
+                AnimationState = EntityAnimationState.Idle;
             }
         }
 

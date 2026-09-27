@@ -25,6 +25,7 @@ namespace Sprint0.World
         {
             DrawLevel(spriteBatch, level);
             player.Draw(spriteBatch);
+
         }
 
         private void DrawLevel(SpriteBatch spriteBatch, Level level)
@@ -36,7 +37,7 @@ namespace Sprint0.World
                 coin.Draw(spriteBatch);
             }
 
-            foreach (Goomba enemy in level.Enemies)
+            foreach (Enemy enemy in level.Enemies)
             {
                 enemy.Draw(spriteBatch);
             }

@@ -74,5 +74,15 @@ namespace Sprint0.World
             Level.Reset();
             Player.Reset();
         }
+
+        public void PreviousEnemy()
+        {
+            Level.PreviousEnemy();
+        }
+
+        public void NextEnemy()
+        {
+            Level.NextEnemy();
+        }
     }
 }
