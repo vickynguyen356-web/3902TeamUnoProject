@@ -10,6 +10,8 @@ namespace Sprint0.Interfaces
         Fall,
         ThrowFireball,
         Swim,
-        Climb
+        Climb,
+        Open,
+        Closed
     }
 }

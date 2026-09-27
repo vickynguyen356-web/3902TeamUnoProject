@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using Sprint0.Commands;
 using Sprint0.Entities;
+using Sprint0.Interfaces;
 
 namespace Sprint0.World
 {
@@ -15,39 +16,45 @@ namespace Sprint0.World
         public const int GroundY = 11 * TileSize;
 
         private readonly LevelDefinition _levelDefinition;
+        /* Lists, enemy spawn position, and current enemy indexing fields */
         private readonly List<Rectangle> _solidTiles = new List<Rectangle>();
         private readonly List<Coin> _coins = new List<Coin>();
-        private readonly List<Goomba> _enemies = new List<Goomba>();
-        private readonly Texture2D _goombaTexture;
+        private readonly List<Enemy> _enemies = new List<Enemy>();
+        private readonly EnemyType[] _enemyTypes = 
+            { 
+            EnemyType.Goomba, EnemyType.Koopa, EnemyType.PiranhaPlant
+            };
+        private readonly IEnemyFactory _enemyFactory;
+        private int _currentEnemyIndex;
+
+        private Vector2 _enemySpawnPosition;
 
         public IReadOnlyList<Rectangle> SolidTiles { get; }
         public IReadOnlyList<Coin> Coins { get; }
-        public IReadOnlyList<Goomba> Enemies { get; }
+        public IReadOnlyList<Enemy> Enemies { get; }
         public Rectangle Goal { get; private set; }
 
-        //public Level() : this(LevelDefinition.CreateDefault())
-        //{
-        //}
 
-        public Level(LevelDefinition levelDefinition, Texture2D goombaTexture)
+        public Level(LevelDefinition levelDefinition, IEnemyFactory enemyFactory)
         {
             if (levelDefinition == null)
             {
                 throw new ArgumentNullException(nameof(levelDefinition));
             }
 
-            if (goombaTexture == null)
+            if (enemyFactory == null)
             {
-                throw new ArgumentNullException(nameof(goombaTexture));
+                throw new ArgumentNullException(nameof(enemyFactory));
             }
 
             _levelDefinition = levelDefinition;
-            _goombaTexture = goombaTexture;
+            _enemyFactory = enemyFactory;
 
             // Other classes can read these lists.
             SolidTiles = _solidTiles.AsReadOnly();
             Coins = _coins.AsReadOnly();
             Enemies = _enemies.AsReadOnly();
+
             Reset();
         }
 
@@ -57,6 +64,9 @@ namespace Sprint0.World
             _coins.Clear();
             _enemies.Clear();
             Goal = Rectangle.Empty;
+
+            // start with first enemy type
+            _currentEnemyIndex = 0;
 
             // Convert tile positions to pixel positions.
             foreach (PlatformDefinition platform in _levelDefinition.Platforms)
@@ -83,8 +93,16 @@ namespace Sprint0.World
 
             foreach (EnemySpawnDefinition enemySpawn in _levelDefinition.Enemies)
             {
-                Vector2 spawnPosition = new Vector2(enemySpawn.TileX * TileSize, GroundY - Goomba.GoombaHeight);
-                _enemies.Add(new Goomba(GoombaSpriteFactory.Create(_goombaTexture), spawnPosition));
+                if (_levelDefinition.Enemies.Count > 0)
+                {
+                    EnemySpawnDefinition enemySpawnPos = _levelDefinition.Enemies[0];
+
+                    _enemySpawnPosition = new Vector2(enemySpawn.TileX * TileSize,
+                        GroundY - Goomba.GoombaHeight);
+
+                    _enemies.Add(_enemyFactory.Create(GetCurrentEnemyType(), _enemySpawnPosition));
+
+                }
             }
 
             if (_levelDefinition.Goal.HeightInTiles > 0)
@@ -106,10 +124,54 @@ namespace Sprint0.World
                 coin.Update(gameTime);
             }
 
-            foreach (Goomba enemy in _enemies)
+            foreach (Enemy enemy in _enemies)
             {
                 enemy.Update(gameTime);
             }
+        }
+
+        public void PreviousEnemy()
+        {
+            _currentEnemyIndex--;
+
+            // if currently at first enemy, go to last enemy in cycle
+            if (_currentEnemyIndex < 0)
+            {
+                _currentEnemyIndex = _enemyTypes.Length - 1;
+            }
+
+            ReplaceEnemy();
+
+        }
+
+        public void NextEnemy()
+        {
+            _currentEnemyIndex++;
+
+            // if currently at last enemy, go to first enemy in cycle
+            if (_currentEnemyIndex >= _enemyTypes.Length )
+            {
+                _currentEnemyIndex = 0;
+            }
+
+            ReplaceEnemy();
+        }
+
+        private void ReplaceEnemy()
+        {
+            _enemies.Clear();
+
+            _enemies.Add(_enemyFactory.Create(GetCurrentEnemyType(), _enemySpawnPosition));
+        }
+
+        private EnemyType GetCurrentEnemyType()
+        {
+            return _enemyTypes[_currentEnemyIndex];
+        }
+
+        private Enemy CreateEnemy(EnemyType enemyType, Vector2 position) 
+        {
+            return _enemyFactory.Create(enemyType, position);
         }
     }
 }
