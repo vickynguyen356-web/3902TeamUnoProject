@@ -4,5 +4,8 @@ namespace Sprint0.Interfaces
     {
         void Quit();
         void Reset();
+        void PreviousEnemy();
+        void NextEnemy();
+        // void SpitFire();
     }
 }
