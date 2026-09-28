@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
     public class MarioPlayer : IPlayer
     {
@@ -23,13 +23,27 @@ namespace Sprint0.Entities
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _fireAnimations;
         private readonly PlayerStateMachine _stateMachine;
         private readonly Vector2 _startingPosition;
+        private Vector2 _position;
         private Vector2 _velocity;
+        private bool _isGrounded = true;
+        private SpriteEffects _facingDirection = SpriteEffects.None;
         private float _movementDirection;
         private bool _jumpRequested;
         private bool _fireballRequested;
         public event Action FireballRequested;
 
-        public Vector2 Position { get; private set; }
+        public Vector2 Position
+        {
+            get
+            {
+                return _position;
+            }
+            private set
+            {
+                _position = value;
+            }
+        }
+
         public Vector2 Velocity
         {
             get
@@ -37,7 +51,19 @@ namespace Sprint0.Entities
                 return _velocity;
             }
         }
-        public bool IsGrounded { get; private set; } = true;
+
+        public bool IsGrounded
+        {
+            get
+            {
+                return _isGrounded;
+            }
+            private set
+            {
+                _isGrounded = value;
+            }
+        }
+
         public bool IsSmall
         {
             get
@@ -45,6 +71,7 @@ namespace Sprint0.Entities
                 return _stateMachine.IsSmall;
             }
         }
+
         public PlayerForm Form
         {
             get
@@ -52,6 +79,7 @@ namespace Sprint0.Entities
                 return _stateMachine.Form;
             }
         }
+
         public bool IsCrouching
         {
             get
@@ -59,6 +87,7 @@ namespace Sprint0.Entities
                 return _stateMachine.IsCrouching;
             }
         }
+
         public bool IsDead
         {
             get
@@ -66,6 +95,7 @@ namespace Sprint0.Entities
                 return _stateMachine.IsDead;
             }
         }
+
         public EntityAnimationState AnimationState
         {
             get
@@ -73,7 +103,19 @@ namespace Sprint0.Entities
                 return _stateMachine.AnimationState;
             }
         }
-        public SpriteEffects FacingDirection { get; private set; } = SpriteEffects.None;
+
+        public SpriteEffects FacingDirection
+        {
+            get
+            {
+                return _facingDirection;
+            }
+            private set
+            {
+                _facingDirection = value;
+            }
+        }
+
         public Rectangle Bounds
         {
             get
@@ -101,11 +143,10 @@ namespace Sprint0.Entities
             _fireAnimations = MarioSpriteFactory.CreateFireAnimations();
             _stateMachine = new PlayerStateMachine(startingForm);
             _startingPosition = position;
-            Position = position;
+            _position = position;
             UpdateAnimation(new GameTime());
         }
 
-        
         public void Move(float movementDirection)
         {
             _movementDirection = MathHelper.Clamp(movementDirection, -1, 1);
@@ -135,7 +176,6 @@ namespace Sprint0.Entities
                 }
             }
 
-            // Set the facing direction before starting a throw
             if (_fireballRequested && _stateMachine.TryThrowFireball())
             {
                 if (FireballRequested != null)
@@ -144,9 +184,8 @@ namespace Sprint0.Entities
                 }
             }
 
-            _velocity.Y += Gravity * elapsedSeconds;
+            _velocity.Y = _velocity.Y + Gravity * elapsedSeconds;
 
-            // Clear the input 
             _movementDirection = 0;
             _jumpRequested = false;
             _fireballRequested = false;
@@ -156,7 +195,7 @@ namespace Sprint0.Entities
         {
             if (_movementDirection != 0)
             {
-                // FlipHorizontally selects the right-facing picture from the sheet.
+                // FlipHorizontally selects the right-facing picture from the sheet
                 if (_movementDirection > 0)
                 {
                     FacingDirection = SpriteEffects.FlipHorizontally;
@@ -176,11 +215,10 @@ namespace Sprint0.Entities
                 return;
             }
 
-            // Slow down when movement is released or Mario crouches
             float speedReduction = HorizontalFriction * elapsedSeconds;
             if (_velocity.X > 0)
             {
-                _velocity.X -= speedReduction;
+                _velocity.X = _velocity.X - speedReduction;
                 if (_velocity.X < 0)
                 {
                     _velocity.X = 0;
@@ -188,7 +226,7 @@ namespace Sprint0.Entities
             }
             else if (_velocity.X < 0)
             {
-                _velocity.X += speedReduction;
+                _velocity.X = _velocity.X + speedReduction;
                 if (_velocity.X > 0)
                 {
                     _velocity.X = 0;
@@ -225,7 +263,8 @@ namespace Sprint0.Entities
                     break;
             }
 
-            if (formAnimations.TryGetValue(AnimationState, out SpriteAnimation animation))
+            SpriteAnimation animation;
+            if (formAnimations.TryGetValue(AnimationState, out animation))
             {
                 return animation;
             }
@@ -249,18 +288,33 @@ namespace Sprint0.Entities
 
         public void TakeDamage()
         {
+            int previousHeight = Bounds.Height;
             _stateMachine.TakeDamage();
+            PreserveFeetPosition(previousHeight);
+            _fireballRequested = false;
+
+            if (IsDead)
+            {
+                _velocity.X = 0;
+                _movementDirection = 0;
+                _jumpRequested = false;
+            }
         }
 
         public void SetCrouching(bool crouching)
         {
-            bool wasCrouching = IsCrouching;
-            float feetPositionY = Position.Y + Bounds.Height;
+            int previousHeight = Bounds.Height;
             _stateMachine.SetCrouching(crouching);
-            if (wasCrouching != IsCrouching)
+            PreserveFeetPosition(previousHeight);
+        }
+
+        private void PreserveFeetPosition(int previousHeight)
+        {
+            int heightChange = Bounds.Height - previousHeight;
+            if (heightChange != 0)
             {
                 // Move the top of the body so the feet stay in place
-                Position = new Vector2(Position.X, feetPositionY - Bounds.Height);
+                Position = new Vector2(Position.X, Position.Y - heightChange);
             }
         }
 

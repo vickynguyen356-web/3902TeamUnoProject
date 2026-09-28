@@ -1,8 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Sprint0.Entities;
+using TeamUno.Mario.Entities;
 
-namespace Sprint0.Interfaces
+namespace TeamUno.Mario.Interfaces
 {
     public interface ISprite
     {

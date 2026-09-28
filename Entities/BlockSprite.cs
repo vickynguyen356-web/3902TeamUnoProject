@@ -1,16 +1,28 @@
 using Microsoft.Xna.Framework;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
-    public abstract class BlockSpriteSheetBlock : IBlock
+    public abstract class BlockSprite : IBlockSprite
     {
-        protected BlockSpriteSheetBlock(BlockType baseType)
+        private BlockType _type;
+
+        protected BlockSprite(BlockType baseType)
         {
             Type = baseType;
         }
 
-        public BlockType Type { get; protected set; }
+        public BlockType Type
+        {
+            get
+            {
+                return _type;
+            }
+            protected set
+            {
+                _type = value;
+            }
+        }
 
         public virtual Rectangle GetSourceRectangle()
         {
@@ -18,7 +30,7 @@ namespace Sprint0.Entities
         }
     }
 
-    public class BrickBlockSprite : BlockSpriteSheetBlock
+    public class BrickBlockSprite : BlockSprite
     {
         public BrickBlockSprite() : base(BlockType.Brick)
         {
@@ -30,7 +42,7 @@ namespace Sprint0.Entities
         }
     }
 
-    public class QuestionBlockSprite : BlockSpriteSheetBlock
+    public class QuestionBlockSprite : BlockSprite
     {
         public QuestionBlockSprite() : base(BlockType.Question)
         {
@@ -42,7 +54,7 @@ namespace Sprint0.Entities
         }
     }
 
-    public class UsedBlockSprite : BlockSpriteSheetBlock
+    public class UsedBlockSprite : BlockSprite
     {
         public UsedBlockSprite() : base(BlockType.Used)
         {
@@ -54,7 +66,7 @@ namespace Sprint0.Entities
         }
     }
 
-    public class CoinBlockSprite : BlockSpriteSheetBlock
+    public class CoinBlockSprite : BlockSprite
     {
         public CoinBlockSprite() : base(BlockType.Coin)
         {
@@ -66,7 +78,7 @@ namespace Sprint0.Entities
         }
     }
 
-    public class SolidBlockSprite : BlockSpriteSheetBlock
+    public class SolidBlockSprite : BlockSprite
     {
         public SolidBlockSprite() : base(BlockType.Solid)
         {
@@ -78,7 +90,7 @@ namespace Sprint0.Entities
         }
     }
 
-    public class GroundBlockSprite : BlockSpriteSheetBlock
+    public class GroundBlockSprite : BlockSprite
     {
         public GroundBlockSprite() : base(BlockType.Ground)
         {
@@ -90,7 +102,7 @@ namespace Sprint0.Entities
         }
     }
 
-    public class PipeBlockSprite : BlockSpriteSheetBlock
+    public class PipeBlockSprite : BlockSprite
     {
         public PipeBlockSprite() : base(BlockType.Pipe)
         {
@@ -102,7 +114,7 @@ namespace Sprint0.Entities
         }
     }
 
-    public class TallPipeBlockSprite : BlockSpriteSheetBlock
+    public class TallPipeBlockSprite : BlockSprite
     {
         public TallPipeBlockSprite() : base(BlockType.Pipe)
         {
@@ -114,7 +126,7 @@ namespace Sprint0.Entities
         }
     }
 
-    public class HorizontalPipeBlockSprite : BlockSpriteSheetBlock
+    public class HorizontalPipeBlockSprite : BlockSprite
     {
         public HorizontalPipeBlockSprite() : base(BlockType.Pipe)
         {
@@ -126,7 +138,7 @@ namespace Sprint0.Entities
         }
     }
 
-    public class TallPipeBlockSpriteTwo : BlockSpriteSheetBlock
+    public class TallPipeBlockSpriteTwo : BlockSprite
     {
         public TallPipeBlockSpriteTwo() : base(BlockType.Pipe)
         {
@@ -140,7 +152,7 @@ namespace Sprint0.Entities
 
     public static class BlockSpriteFactory
     {
-        public static IBlock Create(BlockType type)
+        public static IBlockSprite Create(BlockType type)
         {
             switch (type)
             {

@@ -1,10 +1,10 @@
-namespace Sprint0.Items
+namespace TeamUno.Mario.Items
 {
     public enum ItemType
     {
         Mushroom,
         FireFlower,
-        Coin,
+        FloatingCoin,
         Star,
         OneUpMushroom,
         BlockCoin

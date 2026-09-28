@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
     public class PiranhaSpriteFactory
     {
@@ -13,6 +13,7 @@ namespace Sprint0.Entities
         {
             return new SpriteSheetSprite(spriteSheetTexture, 2f);
         }
+
         internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreatePiranhaAnimations()
         {
             SpriteAnimation closed = new SpriteAnimation(1.0f, CreateFrame(1, 7, 1, 7));
@@ -26,7 +27,6 @@ namespace Sprint0.Entities
             };
         }
 
-        /* For evenly spaced spritesheets */
         private static SpriteFrame CreateFrame(int leftCol, int leftRow, int rightCol, int rightRow)
         {
             Rectangle leftFrame = new Rectangle(

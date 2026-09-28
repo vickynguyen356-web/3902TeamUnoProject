@@ -1,73 +1,66 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Entities;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Items
+namespace TeamUno.Mario.Items
 {
-    public class ItemSpriteFactory
+    public static class ItemSpriteFactory
     {
-        private static ItemSpriteFactory instance = new ItemSpriteFactory();
-        private Texture2D itemSheet;
+        public const float SpriteScale = 2f;
         private const float FrameDuration = 0.15f;
 
-        public static ItemSpriteFactory Instance
+        public static ISprite Create(Texture2D itemSheet)
         {
-            get { return instance; }
+            return new SpriteSheetSprite(itemSheet, SpriteScale);
         }
 
-        private ItemSpriteFactory()
+        internal static SpriteAnimation CreateMushroomAnimation()
         {
+            return new SpriteAnimation(FrameDuration, CreateFrame(0, 8, 16));
         }
 
-        public void LoadAllTextures(ContentManager content)
+        internal static SpriteAnimation CreateOneUpMushroomAnimation()
         {
-            itemSheet = content.Load<Texture2D>("items");
+            return new SpriteAnimation(FrameDuration, CreateFrame(0, 26, 16));
         }
 
-        public IItemSprite CreateMushroomSprite()
+        internal static SpriteAnimation CreateFireFlowerAnimation()
         {
-            return new ItemSprite(itemSheet,
-                new Rectangle[] { new Rectangle(0, 8, 16, 16) }, FrameDuration);
+            return CreateAnimation(32, 8, 16, 18);
         }
 
-        public IItemSprite CreateOneUpMushroomSprite()
+        internal static SpriteAnimation CreateStarAnimation()
         {
-            return new ItemSprite(itemSheet,
-                new Rectangle[] { new Rectangle(0, 26, 16, 16) }, FrameDuration);
+            return CreateAnimation(106, 8, 16, 18);
         }
 
-        public IItemSprite CreateFireFlowerSprite()
+        internal static SpriteAnimation CreateFloatingCoinAnimation()
         {
-            return CreateAnimatedSprite(32, 8, 16, 18);
+            return CreateAnimation(180, 36, 8, 10);
         }
 
-        public IItemSprite CreateStarSprite()
+        internal static SpriteAnimation CreateBlockCoinAnimation()
         {
-            return CreateAnimatedSprite(106, 8, 16, 18);
+            return CreateFloatingCoinAnimation();
         }
 
-        public IItemSprite CreateCoinSprite()
-        {
-            return CreateAnimatedSprite(180, 36, 8, 10);
-        }
-
-        public IItemSprite CreateBlockCoinSprite()
-        {
-            return CreateAnimatedSprite(180, 36, 8, 10);
-        }
-
-        private IItemSprite CreateAnimatedSprite(int x, int y, int width, int spacing)
+        private static SpriteAnimation CreateAnimation(int x, int y, int width, int spacing)
         {
             const int frameCount = 4;
-            const int height = 16;
-            Rectangle[] frames = new Rectangle[frameCount];
-            for (int index = 0; index < frames.Length; index++)
+            SpriteFrame[] frames = new SpriteFrame[frameCount];
+            for (int index = 0; index < frames.Length; index = index + 1)
             {
-                frames[index] = new Rectangle(x + index * spacing, y, width, height);
+                frames[index] = CreateFrame(x + index * spacing, y, width);
             }
 
-            return new ItemSprite(itemSheet, frames, FrameDuration);
+            return new SpriteAnimation(FrameDuration, frames);
+        }
+
+        private static SpriteFrame CreateFrame(int x, int y, int width)
+        {
+            Rectangle sourceRectangle = new Rectangle(x, y, width, 16);
+            return new SpriteFrame(sourceRectangle, sourceRectangle);
         }
     }
 }

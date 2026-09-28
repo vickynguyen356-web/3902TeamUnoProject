@@ -1,22 +1,22 @@
-using Sprint0.Interfaces;
-using Sprint0.Items;
+using TeamUno.Mario.Interfaces;
+using TeamUno.Mario.Items;
 
-namespace Sprint0.Commands
+namespace TeamUno.Mario.Commands
 {
     public class SelectItemCommand : ICommand
     {
-        private IItemSelection selection;
-        private ItemType itemType;
+        private readonly IItemSelection _selection;
+        private readonly ItemType _itemType;
 
         public SelectItemCommand(IItemSelection selection, ItemType itemType)
         {
-            this.selection = selection;
-            this.itemType = itemType;
+            _selection = selection;
+            _itemType = itemType;
         }
 
         public void Execute()
         {
-            selection.Select(itemType);
+            _selection.Select(_itemType);
         }
     }
 }

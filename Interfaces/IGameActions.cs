@@ -1,12 +1,9 @@
-namespace Sprint0.Interfaces
+namespace TeamUno.Mario.Interfaces
 {
     public interface IGameActions
     {
         void Quit();
         void Reset();
-        void PreviousEnemy();
-        void NextEnemy();
-        // void SpitFire();
         void TriggerDamage();
     }
 }

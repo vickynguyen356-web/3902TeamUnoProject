@@ -1,48 +1,31 @@
 using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Items
+namespace TeamUno.Mario.Items
 {
-    public class OneUpMushroom : IItem
+    public class OneUpMushroom : Item
     {
-        private IItemSprite itemSprite;
-        private Vector2 startingPosition;
-        public ItemType Type
-        {
-            get { return ItemType.OneUpMushroom; }
-        }
-        private Vector2 position;
-
-        public Vector2 Position
-        {
-            get { return position; }
-        }
-
         private const float MoveSpeed = 60f;
 
-        public OneUpMushroom(Vector2 position, IItemSprite sprite)
+        public override ItemType Type
         {
-            this.position = position;
-            startingPosition = position;
-            itemSprite = sprite;
+            get
+            {
+                return ItemType.OneUpMushroom;
+            }
         }
 
-        public void Update(GameTime gameTime)
+        public OneUpMushroom(Vector2 position, ISprite sprite)
+            : base(position, sprite, ItemSpriteFactory.CreateOneUpMushroomAnimation())
+        {
+        }
+
+        public override void Update(GameTime gameTime)
         {
             float seconds = Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, 1f / 30f);
-            position += new Vector2(MoveSpeed * seconds, 0);
-            itemSprite.Update(gameTime);
-        }
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            itemSprite.Draw(spriteBatch, position);
-        }
-        public void Reset()
-        {
-            position = startingPosition;
-            itemSprite.Reset();
+            Position = Position + new Vector2(MoveSpeed * seconds, 0);
+            base.Update(gameTime);
         }
     }
 }

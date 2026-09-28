@@ -1,85 +1,145 @@
+using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
-namespace Sprint0.World
+namespace TeamUno.Mario.World
 {
     public class LevelDefinition
     {
-        public IReadOnlyList<PlatformDefinition> Platforms { get; }
-        public IReadOnlyList<CoinLineDefinition> CoinLines { get; }
-        public IReadOnlyList<EnemySpawnDefinition> Enemies { get; }
-        public GoalDefinition Goal { get; }
+        private readonly int _width;
+        private readonly int _height;
+        private readonly int _floorY;
+        private readonly Vector2 _playerSpawnPosition;
+        private readonly IReadOnlyList<BlockSpawnDefinition> _blocks;
+        private readonly IReadOnlyList<ItemSpawnDefinition> _items;
+        private readonly IReadOnlyList<EnemySpawnDefinition> _enemies;
+
+        public int Width
+        {
+            get
+            {
+                return _width;
+            }
+        }
+
+        public int Height
+        {
+            get
+            {
+                return _height;
+            }
+        }
+
+        public int FloorY
+        {
+            get
+            {
+                return _floorY;
+            }
+        }
+
+        public Vector2 PlayerSpawnPosition
+        {
+            get
+            {
+                return _playerSpawnPosition;
+            }
+        }
+
+        public IReadOnlyList<BlockSpawnDefinition> Blocks
+        {
+            get
+            {
+                return _blocks;
+            }
+        }
+
+        public IReadOnlyList<ItemSpawnDefinition> Items
+        {
+            get
+            {
+                return _items;
+            }
+        }
+
+        public IReadOnlyList<EnemySpawnDefinition> Enemies
+        {
+            get
+            {
+                return _enemies;
+            }
+        }
 
         public LevelDefinition(
-            IReadOnlyList<PlatformDefinition> platforms,
-            IReadOnlyList<CoinLineDefinition> coinLines,
-            IReadOnlyList<EnemySpawnDefinition> enemies,
-            GoalDefinition goal)
+            int width,
+            int height,
+            int floorY,
+            Vector2 playerSpawnPosition,
+            IReadOnlyList<BlockSpawnDefinition> blocks,
+            IReadOnlyList<ItemSpawnDefinition> items,
+            IReadOnlyList<EnemySpawnDefinition> enemies)
         {
-            Platforms = new List<PlatformDefinition>(platforms).AsReadOnly();
-            CoinLines = new List<CoinLineDefinition>(coinLines).AsReadOnly();
-            Enemies = new List<EnemySpawnDefinition>(enemies).AsReadOnly();
-            Goal = goal;
-        }
+            if (width <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(width));
+            }
 
-        public static LevelDefinition CreateDefault()
-        {
-            return new LevelDefinition(
-                new List<PlatformDefinition>(),
-                new List<CoinLineDefinition>(),
-                new List<EnemySpawnDefinition>{
-                    new EnemySpawnDefinition(10)
-                },
-                new GoalDefinition(0, 0));
-        }
-    }
+            if (height <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(height));
+            }
 
-    public struct PlatformDefinition
-    {
-        public int TileX { get; private set; }
-        public int TileY { get; private set; }
-        public int Length { get; private set; }
+            if (floorY < 0 || floorY > height)
+            {
+                throw new ArgumentOutOfRangeException(nameof(floorY));
+            }
 
-        public PlatformDefinition(int tileX, int tileY, int length)
-        {
-            TileX = tileX;
-            TileY = tileY;
-            Length = length;
-        }
-    }
+            if (blocks == null)
+            {
+                throw new ArgumentNullException(nameof(blocks));
+            }
 
-    public struct CoinLineDefinition
-    {
-        public int TileX { get; private set; }
-        public int TileY { get; private set; }
-        public int Count { get; private set; }
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
-        public CoinLineDefinition(int tileX, int tileY, int count)
-        {
-            TileX = tileX;
-            TileY = tileY;
-            Count = count;
-        }
-    }
+            if (enemies == null)
+            {
+                throw new ArgumentNullException(nameof(enemies));
+            }
 
-    public struct EnemySpawnDefinition
-    {
-        public int TileX { get; private set; }
+            _width = width;
+            _height = height;
+            _floorY = floorY;
+            _playerSpawnPosition = playerSpawnPosition;
+            _blocks = new List<BlockSpawnDefinition>(blocks).AsReadOnly();
+            _items = new List<ItemSpawnDefinition>(items).AsReadOnly();
+            _enemies = new List<EnemySpawnDefinition>(enemies).AsReadOnly();
 
-        public EnemySpawnDefinition(int tileX)
-        {
-            TileX = tileX;
-        }
-    }
+            foreach (BlockSpawnDefinition block in _blocks)
+            {
+                if (block == null)
+                {
+                    throw new ArgumentException("Block definitions cannot contain null entries", nameof(blocks));
+                }
+            }
 
-    public struct GoalDefinition
-    {
-        public int TileX { get; private set; }
-        public int HeightInTiles { get; private set; }
+            foreach (ItemSpawnDefinition item in _items)
+            {
+                if (item == null)
+                {
+                    throw new ArgumentException("Item definitions cannot contain null entries", nameof(items));
+                }
+            }
 
-        public GoalDefinition(int tileX, int heightInTiles)
-        {
-            TileX = tileX;
-            HeightInTiles = heightInTiles;
+            foreach (EnemySpawnDefinition enemy in _enemies)
+            {
+                if (enemy == null)
+                {
+                    throw new ArgumentException("Enemy definitions cannot contain null entries", nameof(enemies));
+                }
+            }
         }
     }
 }

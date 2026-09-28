@@ -1,4 +1,4 @@
-namespace Sprint0.Interfaces
+namespace TeamUno.Mario.Interfaces
 {
     public interface ICommand
     {

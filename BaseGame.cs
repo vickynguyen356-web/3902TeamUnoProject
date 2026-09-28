@@ -1,15 +1,26 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Sprint0
+namespace TeamUno.Mario
 {
-    public abstract class Core : Game
+    public abstract class BaseGame : Game
     {
         private readonly GraphicsDeviceManager _graphicsDeviceManager;
+        private SpriteBatch _spriteBatch;
 
-        protected SpriteBatch SpriteBatch { get; private set; }
+        protected SpriteBatch SpriteBatch
+        {
+            get
+            {
+                return _spriteBatch;
+            }
+            private set
+            {
+                _spriteBatch = value;
+            }
+        }
 
-        protected Core(string title, int windowWidth, int windowHeight, bool isFullScreen)
+        protected BaseGame(string title, int windowWidth, int windowHeight, bool isFullScreen)
         {
             _graphicsDeviceManager = new GraphicsDeviceManager(this);
             _graphicsDeviceManager.PreferredBackBufferWidth = windowWidth;

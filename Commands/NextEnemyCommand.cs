@@ -1,20 +1,19 @@
-﻿using System;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Commands
+namespace TeamUno.Mario.Commands
 {
     public class NextEnemyCommand : ICommand
     {
-        private readonly IGameActions _gameActions;
+        private readonly IDemoControls _demoControls;
 
-        public NextEnemyCommand(IGameActions gameActions)
+        public NextEnemyCommand(IDemoControls demoControls)
         {
-            _gameActions = gameActions;
+            _demoControls = demoControls;
         }
 
         public void Execute()
         {
-            _gameActions.NextEnemy();
+            _demoControls.NextEnemy();
         }
     }
 }

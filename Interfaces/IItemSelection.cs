@@ -1,10 +1,14 @@
-using Sprint0.Items;
+using TeamUno.Mario.Items;
 
-namespace Sprint0.Interfaces
+namespace TeamUno.Mario.Interfaces
 {
     public interface IItemSelection
     {
-        ItemType SelectedItem { get; }
+        ItemType SelectedItem
+        {
+            get;
+        }
+
         void Select(ItemType itemType);
     }
 }

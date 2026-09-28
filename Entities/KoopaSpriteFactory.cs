@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
     public class KoopaSpriteFactory
-{
+    {
         private const int FrameWidth = 64;
         private const int FrameHeight = 64;
         public static ISprite Create(Texture2D spriteSheetTexture)
@@ -32,7 +32,6 @@ namespace Sprint0.Entities
             };
         }
 
-        /* For evenly spaced spritesheets */
         private static SpriteFrame CreateFrame(int leftCol, int leftRow, int rightCol, int rightRow)
         {
             Rectangle leftFrame = new Rectangle(

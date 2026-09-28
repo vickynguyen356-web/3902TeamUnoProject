@@ -1,6 +1,6 @@
-using Sprint0.Entities;
+using TeamUno.Mario.Entities;
 
-namespace Sprint0.Interfaces
+namespace TeamUno.Mario.Interfaces
 {
     public interface IPlayerMovement
     {

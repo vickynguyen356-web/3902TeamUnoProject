@@ -1,16 +1,28 @@
-﻿using Microsoft.Xna.Framework;
-using Sprint0.Interfaces;
 using System.Collections.Generic;
-using System;
+using Microsoft.Xna.Framework;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
     public class PiranhaPlant : Enemy
     {
         public const int PiranhaWidth = 64;
         public const int PiranhaHeight = 64;
-        public override int Width => PiranhaWidth;
-        public override int Height => PiranhaHeight;
+        public override int Width
+        {
+            get
+            {
+                return PiranhaWidth;
+            }
+        }
+
+        public override int Height
+        {
+            get
+            {
+                return PiranhaHeight;
+            }
+        }
 
         private const float StateDuration = 1.0f;
         private float _stateTimer;
@@ -24,7 +36,7 @@ namespace Sprint0.Entities
             Open
         }
 
-        public PiranhaPlant(ISprite sprite, Vector2 position) 
+        public PiranhaPlant(ISprite sprite, Vector2 position)
             : base(sprite, position)
         {
             _piranhaAnimations = PiranhaSpriteFactory.CreatePiranhaAnimations();
@@ -41,8 +53,7 @@ namespace Sprint0.Entities
 
             if (!IsDead)
             {
-
-                _stateTimer += elapsedSeconds;
+                _stateTimer = _stateTimer + elapsedSeconds;
 
                 if (_stateTimer >= StateDuration)
                 {
