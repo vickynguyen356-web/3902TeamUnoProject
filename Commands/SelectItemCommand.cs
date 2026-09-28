@@ -5,8 +5,8 @@ namespace Sprint0.Commands
 {
     public class SelectItemCommand : ICommand
     {
-        private readonly IItemSelection selection;
-        private readonly ItemType itemType;
+        private IItemSelection selection;
+        private ItemType itemType;
 
         public SelectItemCommand(IItemSelection selection, ItemType itemType)
         {

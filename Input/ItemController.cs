@@ -7,15 +7,15 @@ namespace Sprint0.Input
 {
     public class ItemController : IController
     {
-        private readonly ICommand resetItemsCommand;
-        private readonly ICommand previousItemCommand;
-        private readonly ICommand nextItemCommand;
-        private readonly ICommand selectMushroomCommand;
-        private readonly ICommand selectFireFlowerCommand;
-        private readonly ICommand selectCoinCommand;
-        private readonly ICommand selectStarCommand;
-        private readonly ICommand selectOneUpCommand;
-        private readonly ICommand selectBlockCoinCommand;
+        private ICommand resetItemsCommand;
+        private ICommand previousItemCommand;
+        private ICommand nextItemCommand;
+        private ICommand selectMushroomCommand;
+        private ICommand selectFireFlowerCommand;
+        private ICommand selectCoinCommand;
+        private ICommand selectStarCommand;
+        private ICommand selectOneUpCommand;
+        private ICommand selectBlockCoinCommand;
         private KeyboardState previousKeyState;
         private KeyboardState currentKeyState;
 
@@ -40,11 +40,11 @@ namespace Sprint0.Input
 
         public void HandleInput(KeyboardState keyboardState)
         {
+            previousKeyState = currentKeyState;
             currentKeyState = keyboardState;
             HandleCyclingKeys();
             HandleSelectionKeys();
             HandleCoinKeys();
-            previousKeyState = currentKeyState;
         }
 
         private void HandleCyclingKeys()
@@ -53,12 +53,10 @@ namespace Sprint0.Input
             {
                 resetItemsCommand.Execute();
             }
-
             if (WasPressed(Keys.U))
             {
                 previousItemCommand.Execute();
             }
-
             if (WasPressed(Keys.I))
             {
                 nextItemCommand.Execute();
@@ -99,7 +97,7 @@ namespace Sprint0.Input
 
         private bool WasPressed(Keys key)
         {
-            return currentKeyState.IsKeyDown(key) && previousKeyState.IsKeyUp(key);
+            return currentKeyState.IsKeyDown(key) && !previousKeyState.IsKeyDown(key);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Sprint0.Items
 {
     public class ItemSpriteFactory
     {
-        private static readonly ItemSpriteFactory instance = new ItemSpriteFactory();
+        private static ItemSpriteFactory instance = new ItemSpriteFactory();
         private Texture2D itemSheet;
         private const float FrameDuration = 0.15f;
 
