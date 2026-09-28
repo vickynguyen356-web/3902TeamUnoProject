@@ -5,7 +5,7 @@ namespace Sprint0.Commands
 {
     public class ResetItemsCommand : ICommand
     {
-        private readonly ItemDemo items;
+        private ItemDemo items;
 
         public ResetItemsCommand(ItemDemo items)
         {

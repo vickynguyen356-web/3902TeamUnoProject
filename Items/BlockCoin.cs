@@ -1,58 +1,83 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Sprint0.Interfaces;
 
 namespace Sprint0.Items
 {
-    public class BlockCoin : Item
+    public class BlockCoin : IItem
     {
-        private const float PopSpeed = -300f;
-        private const float Gravity = 1000f;
-        private const float DisplayTime = 0.6f;
-        private float verticalSpeed = PopSpeed;
-        private float elapsedTime;
+        private IItemSprite itemSprite;
+        private Vector2 startingPosition;
+        public ItemType Type
+        {
+            get { return ItemType.BlockCoin; }
+        }
+        private Vector2 position;
 
-        public bool IsVisible { get; private set; } = true;
+        public Vector2 Position
+        {
+            get { return position; }
+        }
+
+        private const float MoveSpeed = 180f;
+        private const float DisplayTime = 0.6f;
+        private float timer = DisplayTime;
+
+        private bool visible = true;
+
+        public bool IsVisible
+        {
+            get { return visible; }
+        }
 
         public BlockCoin(Vector2 position, IItemSprite sprite)
-            : base(ItemType.BlockCoin, position, sprite)
         {
+            this.position = position;
+            startingPosition = position;
+            itemSprite = sprite;
         }
 
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
-            if (!IsVisible)
+            if (!visible)
             {
                 return;
             }
 
-            float seconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            elapsedTime += seconds;
-            if (elapsedTime >= DisplayTime)
+            float seconds = Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, 1f / 30f);
+            timer -= seconds;
+            if (timer <= 0)
             {
-                IsVisible = false;
+                visible = false;
                 return;
             }
 
-            Position += new Vector2(0, verticalSpeed * seconds);
-            verticalSpeed += Gravity * seconds;
-            base.Update(gameTime);
+            if (timer >= DisplayTime / 2)
+            {
+                position.Y -= MoveSpeed * seconds;
+            }
+            else
+            {
+                position.Y += MoveSpeed * seconds;
+            }
+            itemSprite.Update(gameTime);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch)
         {
-            if (IsVisible)
+            if (visible)
             {
-                base.Draw(spriteBatch);
+                itemSprite.Draw(spriteBatch, position);
             }
         }
 
-        public override void Reset()
+        public void Reset()
         {
-            base.Reset();
-            verticalSpeed = PopSpeed;
-            elapsedTime = 0;
-            IsVisible = true;
+            position = startingPosition;
+            itemSprite.Reset();
+            timer = DisplayTime;
+            visible = true;
         }
     }
 }

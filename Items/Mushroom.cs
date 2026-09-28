@@ -1,27 +1,48 @@
+using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Sprint0.Interfaces;
 
 namespace Sprint0.Items
 {
-    public class Mushroom : Item
+    public class Mushroom : IItem
     {
+        private IItemSprite itemSprite;
+        private Vector2 startingPosition;
+        public ItemType Type
+        {
+            get { return ItemType.Mushroom; }
+        }
+        private Vector2 position;
+
+        public Vector2 Position
+        {
+            get { return position; }
+        }
+
         private const float MoveSpeed = 60f;
 
         public Mushroom(Vector2 position, IItemSprite sprite)
-            : this(ItemType.Mushroom, position, sprite)
         {
+            this.position = position;
+            startingPosition = position;
+            itemSprite = sprite;
         }
 
-        protected Mushroom(ItemType type, Vector2 position, IItemSprite sprite)
-            : base(type, position, sprite)
+        public void Update(GameTime gameTime)
         {
+            float seconds = Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, 1f / 30f);
+            position += new Vector2(MoveSpeed * seconds, 0);
+            itemSprite.Update(gameTime);
         }
-
-        public override void Update(GameTime gameTime)
+        public void Draw(SpriteBatch spriteBatch)
         {
-            float seconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Position += new Vector2(MoveSpeed * seconds, 0);
-            base.Update(gameTime);
+            itemSprite.Draw(spriteBatch, position);
+        }
+        public void Reset()
+        {
+            position = startingPosition;
+            itemSprite.Reset();
         }
     }
 }

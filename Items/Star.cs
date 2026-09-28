@@ -1,36 +1,75 @@
+using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Sprint0.Interfaces;
 
 namespace Sprint0.Items
 {
-    public class Star : Item
+    public class Star : IItem
     {
+        private IItemSprite itemSprite;
+        private Vector2 startingPosition;
+        public ItemType Type
+        {
+            get { return ItemType.Star; }
+        }
+        private Vector2 position;
+
+        public Vector2 Position
+        {
+            get { return position; }
+        }
+
         private const float MoveSpeed = 90f;
         private const float BounceHeight = 64f;
-        private const float BounceDuration = 0.8f;
-        private readonly float groundY;
-        private float bounceTimer;
+        private const float BounceSpeed = 160f;
+        private float groundY;
+        private bool movingUp = true;
 
         public Star(Vector2 position, IItemSprite sprite)
-            : base(ItemType.Star, position, sprite)
         {
+            this.position = position;
+            startingPosition = position;
+            itemSprite = sprite;
             groundY = position.Y;
         }
 
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
-            float seconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            bounceTimer = (bounceTimer + seconds) % BounceDuration;
-            float progress = bounceTimer / BounceDuration;
-            float height = 4f * BounceHeight * progress * (1f - progress);
-            Position = new Vector2(Position.X + MoveSpeed * seconds, groundY - height);
-            base.Update(gameTime);
+            float seconds = Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, 1f / 30f);
+            float x = position.X + MoveSpeed * seconds;
+            float y = position.Y;
+            if (movingUp)
+            {
+                y -= BounceSpeed * seconds;
+                if (y <= groundY - BounceHeight)
+                {
+                    y = groundY - BounceHeight;
+                    movingUp = false;
+                }
+            }
+            else
+            {
+                y += BounceSpeed * seconds;
+                if (y >= groundY)
+                {
+                    y = groundY;
+                    movingUp = true;
+                }
+            }
+            position = new Vector2(x, y);
+            itemSprite.Update(gameTime);
         }
 
-        public override void Reset()
+        public void Reset()
         {
-            base.Reset();
-            bounceTimer = 0;
+            position = startingPosition;
+            itemSprite.Reset();
+            movingUp = true;
+        }
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            itemSprite.Draw(spriteBatch, position);
         }
     }
 }

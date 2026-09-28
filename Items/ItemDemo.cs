@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Sprint0.Entities;
@@ -10,16 +9,21 @@ namespace Sprint0.Items
     public class ItemDemo
     {
         private const float StartingX = 32f;
-        private readonly IItem[] items;
-        private readonly float rightEdge;
+        private IItem[] items;
+        private float rightEdge;
         private int currentIndex;
         private SpriteFont controlsFont;
-        private readonly string[] itemNames =
+        private string[] itemNames =
         {
             "Mushroom", "Fire Flower", "Floating Coin", "Star", "1-Up Mushroom", "Block Coin"
         };
 
-        public ItemSelection Selection { get; } = new ItemSelection();
+        private ItemSelection selection = new ItemSelection();
+
+        public ItemSelection Selection
+        {
+            get { return selection; }
+        }
 
         public IItem CurrentItem
         {
@@ -27,20 +31,10 @@ namespace Sprint0.Items
         }
 
         public ItemDemo(ContentManager content, SpriteFont controlsFont, int floorY, int windowWidth)
-            : this(CreateItems(content, new Vector2(StartingX, floorY)), windowWidth + 16)
         {
+            items = CreateItems(content, new Vector2(StartingX, floorY));
+            rightEdge = windowWidth + 16;
             this.controlsFont = controlsFont;
-        }
-
-        public ItemDemo(IItem[] items, float rightEdge)
-        {
-            if (items == null || items.Length == 0)
-            {
-                throw new ArgumentException("The item demo needs at least one item.", nameof(items));
-            }
-
-            this.items = items;
-            this.rightEdge = rightEdge;
         }
 
         private static IItem[] CreateItems(ContentManager content, Vector2 position)
@@ -97,7 +91,7 @@ namespace Sprint0.Items
         {
             DrawControlText(spriteBatch, "U/I: previous/next demo item   Showing: " + itemNames[(int)CurrentItem.Type], 120);
             DrawControlText(spriteBatch, "Select: 1 Mushroom  2 Flower  3 Floating Coin  4 Star  5 1-Up  6 Block Coin", 152);
-            DrawControlText(spriteBatch, "Selected item: " + itemNames[(int)Selection.SelectedItem], 184);
+            DrawControlText(spriteBatch, "Selected item: " + itemNames[(int)selection.SelectedItem], 184);
         }
 
         private void DrawControlText(SpriteBatch spriteBatch, string text, float y)
@@ -108,7 +102,7 @@ namespace Sprint0.Items
         public void Reset()
         {
             currentIndex = 0;
-            Selection.Reset();
+            selection.Reset();
             foreach (IItem item in items)
             {
                 item.Reset();

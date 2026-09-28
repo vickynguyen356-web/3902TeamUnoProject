@@ -5,8 +5,8 @@ namespace Sprint0.Commands
 {
     public class CycleItemCommand : ICommand
     {
-        private readonly ItemDemo items;
-        private readonly int direction;
+        private ItemDemo items;
+        private int direction;
 
         public CycleItemCommand(ItemDemo items, int direction)
         {

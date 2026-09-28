@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Sprint0.Interfaces;
@@ -7,9 +8,9 @@ namespace Sprint0.Items
     public class ItemSprite : IItemSprite
     {
         private const float Scale = 2f;
-        private readonly Texture2D texture;
-        private readonly Rectangle[] frames;
-        private readonly float frameDuration;
+        private Texture2D texture;
+        private Rectangle[] frames;
+        private float frameDuration;
         private float frameTimer;
         private int frameIndex;
 
@@ -22,7 +23,8 @@ namespace Sprint0.Items
 
         public void Update(GameTime gameTime)
         {
-            frameTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float seconds = Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, 1f / 30f);
+            frameTimer += seconds;
             while (frameTimer >= frameDuration)
             {
                 frameTimer -= frameDuration;
@@ -38,9 +40,11 @@ namespace Sprint0.Items
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
             Rectangle frame = frames[frameIndex];
-            Vector2 origin = new Vector2(frame.Width / 2f, frame.Height);
-            spriteBatch.Draw(texture, position, frame, Color.White,
-                0f, origin, Scale, SpriteEffects.None, 0f);
+            int width = (int)(frame.Width * Scale);
+            int height = (int)(frame.Height * Scale);
+            Rectangle destination = new Rectangle(
+                (int)position.X - width / 2, (int)position.Y - height, width, height);
+            spriteBatch.Draw(texture, destination, frame, Color.White);
         }
 
         public void Reset()
