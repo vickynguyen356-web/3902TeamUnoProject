@@ -89,5 +89,10 @@ namespace Sprint0.World
         //{
         //    Level.SpitFire();
         //}
+
+        public void TriggerDamage()
+        {
+            Player.TakeDamage();
+        }
     }
 }

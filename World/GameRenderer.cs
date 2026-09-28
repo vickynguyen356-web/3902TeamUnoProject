@@ -7,11 +7,13 @@ namespace Sprint0.World
     public class GameRenderer
     {
         private readonly Texture2D _whitePixelTexture;
+        private readonly Texture2D _blockTexture;
         private readonly SpriteFont _controlsFont;
 
-        public GameRenderer(Texture2D whitePixelTexture, SpriteFont controlsFont)
+        public GameRenderer(Texture2D whitePixelTexture, Texture2D blockTexture, SpriteFont controlsFont)
         {
             _whitePixelTexture = whitePixelTexture;
+            _blockTexture = blockTexture;
             _controlsFont = controlsFont;
         }
 
@@ -30,7 +32,10 @@ namespace Sprint0.World
 
         private void DrawLevel(SpriteBatch spriteBatch, Level level)
         {
-            // Block drawing goes here.
+            foreach (Block block in level.Blocks)
+            {
+                block.Draw(spriteBatch, _blockTexture);
+            }
 
             foreach (Coin coin in level.Coins)
             {
@@ -46,7 +51,7 @@ namespace Sprint0.World
         public void DrawControls(SpriteBatch spriteBatch)
         {
             spriteBatch.DrawString(_controlsFont, "A/D or Left/Right: move   W/Up/Space: jump", new Vector2(32, 24), Color.White);
-            spriteBatch.DrawString(_controlsFont, "S/Down: crouch   Z/N: throw fireball", new Vector2(32, 56), Color.White);
+            spriteBatch.DrawString(_controlsFont, "S/Down: crouch   Z/N: throw fireball   E: damage", new Vector2(32, 56), Color.White);
             spriteBatch.DrawString(_controlsFont, "R: reset   Q/Escape: quit", new Vector2(32, 88), Color.White);
             spriteBatch.DrawString(_controlsFont, "O/P: cycle to previous and next enemy", new Vector2(32, 120), Color.White);
         }

@@ -17,6 +17,7 @@ namespace Sprint0.Input
         private readonly ICommand _resetCommand;
         private readonly ICommand _previousEnemyCommand;
         private readonly ICommand _nextEnemyCommand;
+        private readonly ICommand _damageCommand;
         private KeyboardState _previousKeyState;
         private KeyboardState _currentKeyState;
 
@@ -42,7 +43,8 @@ namespace Sprint0.Input
             _resetCommand = new ResetCommand(gameActions);
             _previousEnemyCommand = new PreviousEnemyCommand(gameActions);
             _nextEnemyCommand = new NextEnemyCommand(gameActions);
-        }   
+            _damageCommand = new DamageCommand(gameActions);
+        }
 
         public void Update()
         {
@@ -100,6 +102,11 @@ namespace Sprint0.Input
             if (WasPressed(Keys.P))
             {
                 _nextEnemyCommand.Execute();
+            }
+
+            if (WasPressed(Keys.E))
+            {
+                _damageCommand.Execute();
             }
         }
 

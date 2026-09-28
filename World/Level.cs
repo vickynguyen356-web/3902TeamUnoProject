@@ -20,6 +20,7 @@ namespace Sprint0.World
         private readonly List<Rectangle> _solidTiles = new List<Rectangle>();
         private readonly List<Coin> _coins = new List<Coin>();
         private readonly List<Enemy> _enemies = new List<Enemy>();
+        private readonly List<Block> _blocks = new List<Block>();
         private readonly EnemyType[] _enemyTypes = 
             { 
             EnemyType.Goomba, EnemyType.Koopa, EnemyType.PiranhaPlant, EnemyType.HammerBro, EnemyType.Bowser
@@ -32,6 +33,7 @@ namespace Sprint0.World
         public IReadOnlyList<Rectangle> SolidTiles { get; }
         public IReadOnlyList<Coin> Coins { get; }
         public IReadOnlyList<Enemy> Enemies { get; }
+        public IReadOnlyList<Block> Blocks { get; }
         public Rectangle Goal { get; private set; }
 
 
@@ -54,7 +56,7 @@ namespace Sprint0.World
             SolidTiles = _solidTiles.AsReadOnly();
             Coins = _coins.AsReadOnly();
             Enemies = _enemies.AsReadOnly();
-
+            Blocks = _blocks.AsReadOnly();
             Reset();
         }
 
@@ -63,6 +65,7 @@ namespace Sprint0.World
             _solidTiles.Clear();
             _coins.Clear();
             _enemies.Clear();
+            _blocks.Clear();
             Goal = Rectangle.Empty;
 
             // start with first enemy type
@@ -80,6 +83,15 @@ namespace Sprint0.World
                 }
             }
 
+            // Demo block selection for Sprint 2. These are meant to cycle with T/Y and to render as decorative obstacles.
+            _blocks.Add(new Block(new Vector2(256, 420), BlockType.Brick, 48, 48));
+            _blocks.Add(new Block(new Vector2(304, 420), BlockType.Question, 48, 48));
+            _blocks.Add(new Block(new Vector2(352, 420), BlockType.Used, 48, 48));
+            _blocks.Add(new Block(new Vector2(400, 420), BlockType.Ground, 48, 48));
+            _blocks.Add(new Block(new Vector2(448, 420), BlockType.Solid, 48, 48));
+            _blocks.Add(new Block(new Vector2(496, 420), BlockType.Coin, 48, 48));
+            _blocks.Add(new Block(new Vector2(544, 420), BlockType.Pipe, 64, 64));
+
             foreach (CoinLineDefinition coinLine in _levelDefinition.CoinLines)
             {
                 for (int coinIndex = 0; coinIndex < coinLine.Count; coinIndex++)
@@ -91,18 +103,13 @@ namespace Sprint0.World
                 }
             }
 
-            foreach (EnemySpawnDefinition enemySpawn in _levelDefinition.Enemies)
+            if (_levelDefinition.Enemies.Count > 0)
             {
-                if (_levelDefinition.Enemies.Count > 0)
-                {
-                    EnemySpawnDefinition enemySpawnPos = _levelDefinition.Enemies[0];
+                EnemySpawnDefinition enemySpawn = _levelDefinition.Enemies[0];
+                _enemySpawnPosition = new Vector2(enemySpawn.TileX * TileSize,
+                    GroundY - Goomba.GoombaHeight);
 
-                    _enemySpawnPosition = new Vector2(enemySpawn.TileX * TileSize,
-                        GroundY - Goomba.GoombaHeight);
-
-                    _enemies.Add(_enemyFactory.Create(GetCurrentEnemyType(), _enemySpawnPosition));
-
-                }
+                _enemies.Add(_enemyFactory.Create(GetCurrentEnemyType(), _enemySpawnPosition));
             }
 
             if (_levelDefinition.Goal.HeightInTiles > 0)
@@ -114,6 +121,7 @@ namespace Sprint0.World
                     TileSize,
                     goalHeight);
             }
+
         }
 
         public void Update(GameTime gameTime)
