@@ -1,17 +1,17 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Sprint0.Interfaces;
-using Sprint0.Items;
 
-namespace Sprint0.Entities
+namespace Sprint0.Items
 {
-    public class Coin : IItem
+    public class OneUpMushroom : IItem
     {
         private IItemSprite itemSprite;
         private Vector2 startingPosition;
         public ItemType Type
         {
-            get { return ItemType.Coin; }
+            get { return ItemType.OneUpMushroom; }
         }
         private Vector2 position;
 
@@ -20,21 +20,19 @@ namespace Sprint0.Entities
             get { return position; }
         }
 
-        public Coin(Vector2 position)
-        {
-            this.position = position;
-            startingPosition = position;
-            itemSprite = ItemSpriteFactory.Instance.CreateCoinSprite();
-        }
+        private const float MoveSpeed = 60f;
 
-        public Coin(Vector2 position, IItemSprite sprite)
+        public OneUpMushroom(Vector2 position, IItemSprite sprite)
         {
             this.position = position;
             startingPosition = position;
             itemSprite = sprite;
         }
+
         public void Update(GameTime gameTime)
         {
+            float seconds = Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, 1f / 30f);
+            position += new Vector2(MoveSpeed * seconds, 0);
             itemSprite.Update(gameTime);
         }
         public void Draw(SpriteBatch spriteBatch)

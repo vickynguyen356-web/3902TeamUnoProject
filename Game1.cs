@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Sprint0.Entities;
 using Sprint0.Input;
 using Sprint0.Interfaces;
+using Sprint0.Items;
 using Sprint0.World;
 
 namespace Sprint0
@@ -19,6 +20,7 @@ namespace Sprint0
         private GameSession _gameSession;
         private GameRenderer _gameRenderer;
         private IController _keyboardController;
+        private ItemDemo itemDemo;
 
         public Game1() : base("Sprint 2 Player Demo", WindowWidth, WindowHeight, false)
         {
@@ -43,6 +45,7 @@ namespace Sprint0
                 MarioSpriteFactory.Create(marioTexture),
                 new Vector2(96, DemoFloorY - MarioPlayer.StandingHeight),
                 PlayerForm.Fire);
+            itemDemo = new ItemDemo(Content, controlsFont, DemoFloorY, WindowWidth);
 
             IEnemyFactory enemyFactory = new EnemyFactory(
                 () => GoombaSpriteFactory.Create(enemyTexture),
@@ -58,7 +61,9 @@ namespace Sprint0
                 level,
                 new DemoMovement(WindowWidth, DemoFloorY),
                 new CollisionSystem(level));
-            _keyboardController = new KeyboardController(player, _gameSession);
+            _keyboardController = new CombinedController(
+                new KeyboardController(player, _gameSession),
+                new ItemController(itemDemo));
             _gameRenderer = new GameRenderer(_whitePixelTexture, _blockTexture, controlsFont);
         }
 
@@ -72,6 +77,7 @@ namespace Sprint0
             }
 
             _gameSession.Update(gameTime);
+            itemDemo.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -85,6 +91,7 @@ namespace Sprint0
             _gameRenderer.DrawDemoFloor(SpriteBatch, GraphicsDevice.Viewport.Bounds, DemoFloorY);
             _gameRenderer.DrawWorld(SpriteBatch, _gameSession.Level, _gameSession.Player);
             _gameRenderer.DrawControls(SpriteBatch);
+            itemDemo.Draw(SpriteBatch);
             SpriteBatch.End();
 
             base.Draw(gameTime);

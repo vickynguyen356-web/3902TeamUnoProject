@@ -1,17 +1,16 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Sprint0.Interfaces;
-using Sprint0.Items;
 
-namespace Sprint0.Entities
+namespace Sprint0.Items
 {
-    public class Coin : IItem
+    public class FireFlower : IItem
     {
         private IItemSprite itemSprite;
         private Vector2 startingPosition;
         public ItemType Type
         {
-            get { return ItemType.Coin; }
+            get { return ItemType.FireFlower; }
         }
         private Vector2 position;
 
@@ -20,14 +19,7 @@ namespace Sprint0.Entities
             get { return position; }
         }
 
-        public Coin(Vector2 position)
-        {
-            this.position = position;
-            startingPosition = position;
-            itemSprite = ItemSpriteFactory.Instance.CreateCoinSprite();
-        }
-
-        public Coin(Vector2 position, IItemSprite sprite)
+        public FireFlower(Vector2 position, IItemSprite sprite)
         {
             this.position = position;
             startingPosition = position;
