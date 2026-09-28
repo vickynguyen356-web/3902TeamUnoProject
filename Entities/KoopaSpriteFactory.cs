@@ -5,8 +5,8 @@ using Sprint0.Interfaces;
 
 namespace Sprint0.Entities
 {
-    public class GoombaSpriteFactory
-    {
+    public class KoopaSpriteFactory
+{
         private const int FrameWidth = 64;
         private const int FrameHeight = 64;
         public static ISprite Create(Texture2D spriteSheetTexture)
@@ -14,15 +14,15 @@ namespace Sprint0.Entities
             return new SpriteSheetSprite(spriteSheetTexture, 2f);
         }
 
-        internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreateGoombaAnimations()
+        internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreateKoopaAnimations()
         {
-            SpriteAnimation idle = new SpriteAnimation(0.80f, CreateFrame(0, 0, 0, 0));
+            SpriteAnimation idle = new SpriteAnimation(0.80f, CreateFrame(6, 1, 6, 1));
 
             SpriteAnimation run = new SpriteAnimation(0.28f,
-                CreateFrame(0, 0, 0, 0),
-                CreateFrame(1, 0, 1, 0));
+                CreateFrame(6, 1, 6, 1),
+                CreateFrame(0, 2, 0, 2));
 
-            SpriteAnimation dead = new SpriteAnimation(0.80f, CreateFrame(2, 0, 2, 0));
+            SpriteAnimation dead = new SpriteAnimation(0.80f, CreateFrame(3, 2, 3, 2));
 
             return new Dictionary<EntityAnimationState, SpriteAnimation>
             {
@@ -42,7 +42,7 @@ namespace Sprint0.Entities
                 FrameHeight);
 
             Rectangle rightFrame = new Rectangle(
-                rightCol *FrameWidth,
+                rightCol * FrameWidth,
                 rightRow * FrameHeight,
                 FrameWidth,
                 FrameHeight);

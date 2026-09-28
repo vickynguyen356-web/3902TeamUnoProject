@@ -27,7 +27,9 @@ namespace Sprint0.World
             return new LevelDefinition(
                 new List<PlatformDefinition>(),
                 new List<CoinLineDefinition>(),
-                new List<EnemySpawnDefinition>(),
+                new List<EnemySpawnDefinition>{
+                    new EnemySpawnDefinition(10)
+                },
                 new GoalDefinition(0, 0));
         }
     }

@@ -5,7 +5,7 @@ using Sprint0.Interfaces;
 
 namespace Sprint0.Entities
 {
-    public class GoombaSpriteFactory
+    public class PiranhaSpriteFactory
     {
         private const int FrameWidth = 64;
         private const int FrameHeight = 64;
@@ -13,22 +13,16 @@ namespace Sprint0.Entities
         {
             return new SpriteSheetSprite(spriteSheetTexture, 2f);
         }
-
-        internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreateGoombaAnimations()
+        internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreatePiranhaAnimations()
         {
-            SpriteAnimation idle = new SpriteAnimation(0.80f, CreateFrame(0, 0, 0, 0));
+            SpriteAnimation closed = new SpriteAnimation(1.0f, CreateFrame(1, 7, 1, 7));
 
-            SpriteAnimation run = new SpriteAnimation(0.28f,
-                CreateFrame(0, 0, 0, 0),
-                CreateFrame(1, 0, 1, 0));
-
-            SpriteAnimation dead = new SpriteAnimation(0.80f, CreateFrame(2, 0, 2, 0));
+            SpriteAnimation open = new SpriteAnimation(1.0f, CreateFrame(0, 7, 0, 7));
 
             return new Dictionary<EntityAnimationState, SpriteAnimation>
             {
-                { EntityAnimationState.Idle, idle },
-                { EntityAnimationState.Run, run },
-                { EntityAnimationState.Dead, dead }
+                { EntityAnimationState.Closed, closed },
+                { EntityAnimationState.Open, open }
             };
         }
 
@@ -42,7 +36,7 @@ namespace Sprint0.Entities
                 FrameHeight);
 
             Rectangle rightFrame = new Rectangle(
-                rightCol *FrameWidth,
+                rightCol * FrameWidth,
                 rightRow * FrameHeight,
                 FrameWidth,
                 FrameHeight);

@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Sprint0.Interfaces;
 using System.Collections.Generic;
 
@@ -8,25 +7,30 @@ namespace Sprint0.Entities
     public class Goomba : Enemy
     {
         /* goomba fields */
-        public const int GoombaWidth = 23;
-        public const int GoombaHeight = 24;
+        public const int GoombaWidth = 64;
+        public const int GoombaHeight = 64;
 
         // references available after creating Goomba
         public override int Width => GoombaWidth;
         public override int Height => GoombaHeight;
-        private const float RunSpeed = 13f;
+        private const float RunSpeed = 45f;
+        private const float PatrolDistance = 100f;
         /* animation related fields */
-        private readonly Texture2D _texture;
-        private readonly ISprite _sprite;
-        private readonly EnemyStateMachine _stateMachine;
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _goombaAnimations;
         private readonly Vector2 _startingPos;
+        private readonly float _leftBound;
+        private readonly float _rightBound;
 
         public Goomba(ISprite sprite, Vector2 position) 
             : base(sprite, position)
         {
             _goombaAnimations = GoombaSpriteFactory.CreateGoombaAnimations();
+            // moving left 100 pixels, then turning right and moving 100 pixels back
             _startingPos = position;
+            _leftBound = position.X - PatrolDistance;
+            _rightBound = position.X + PatrolDistance;
+            Velocity.X = -RunSpeed;
+
             UpdateAnimation(new GameTime());
         }
 
@@ -36,8 +40,15 @@ namespace Sprint0.Entities
 
             if (!IsDead)
             {
-                Velocity.X = RunSpeed;
                 Position += Velocity * elapsedSeconds;
+
+                if (Position.X <= _leftBound)
+                {
+                    Velocity.X = RunSpeed;
+                } else if (Position.X >= _rightBound)
+                {
+                    Velocity.X = -RunSpeed;
+                }
             }
 
             UpdateAnimation(gameTime);
@@ -63,30 +74,12 @@ namespace Sprint0.Entities
         public void Reset()
         {
             Position = _startingPos;
-            Velocity = Vector2.Zero;
+            Velocity.X = -RunSpeed;
 
             StateMachine.Reset();
             Sprite.Reset();
 
             UpdateAnimation(new GameTime());
         }
-
-        //public override void Draw(SpriteBatch spriteBatch)
-        //{
-        //    SpriteEffects spriteEffects = _stateMachine.IsFlipped
-        //        ? SpriteEffects.FlipHorizontally
-        //        : SpriteEffects.None;
-
-        //    spriteBatch.Draw(
-        //        _texture,
-        //        Position,
-        //        null,
-        //        Color.White,
-        //        0f,
-        //        Vector2.Zero,
-        //        1f,
-        //        spriteEffects,
-        //        0f);
-        //}
     }
 }
