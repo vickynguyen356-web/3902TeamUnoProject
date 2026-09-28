@@ -1,10 +1,9 @@
 using Microsoft.Xna.Framework.Input;
-using Sprint0.Commands;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Commands;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Input
+namespace TeamUno.Mario.Input
 {
-    // Optional adapter; the current demo wires only the keyboard controller.
     public class MouseController : IController
     {
         private readonly ICommand _jumpCommand;
@@ -26,7 +25,6 @@ namespace Sprint0.Input
             _previousMouseState = _currentMouseState;
             _currentMouseState = mouseState;
 
-            // Trigger once per right-click, not every frame the button is held.
             if (_currentMouseState.RightButton == ButtonState.Pressed && _previousMouseState.RightButton == ButtonState.Released)
             {
                 _jumpCommand.Execute();

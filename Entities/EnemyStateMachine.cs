@@ -1,15 +1,51 @@
-﻿using System;
+using System;
 using Microsoft.Xna.Framework;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
     public class EnemyStateMachine
     {
         private const float MinimumRunningSpeed = 13f;
-        public EntityAnimationState AnimationState { get; private set; } = EntityAnimationState.Idle;
-        public bool IsDead { get; private set; }
-        public bool IsFlipped { get; set; }
+        private EntityAnimationState _animationState = EntityAnimationState.Idle;
+        private bool _isDead;
+        private bool _isFlipped;
+
+        public EntityAnimationState AnimationState
+        {
+            get
+            {
+                return _animationState;
+            }
+            private set
+            {
+                _animationState = value;
+            }
+        }
+
+        public bool IsDead
+        {
+            get
+            {
+                return _isDead;
+            }
+            private set
+            {
+                _isDead = value;
+            }
+        }
+
+        public bool IsFlipped
+        {
+            get
+            {
+                return _isFlipped;
+            }
+            set
+            {
+                _isFlipped = value;
+            }
+        }
 
         public EnemyStateMachine()
         {
@@ -18,7 +54,6 @@ namespace Sprint0.Entities
 
         public void Update(Vector2 velocity)
         {
-            // checking if enemy is dead
             if (IsDead)
             {
                 AnimationState = EntityAnimationState.Dead;
@@ -28,7 +63,7 @@ namespace Sprint0.Entities
             if (velocity.X < 0)
             {
                 IsFlipped = true;
-            } 
+            }
             else if (velocity.X > 0)
             {
                 IsFlipped = false;
@@ -42,23 +77,6 @@ namespace Sprint0.Entities
             {
                 AnimationState = EntityAnimationState.Idle;
             }
-        }
-
-        public void SetFacingDirection(float horizontalVelocity)
-        {
-            if (horizontalVelocity < 0)
-            {
-                IsFlipped = true;
-            }
-            else if (horizontalVelocity > 0)
-            {
-                IsFlipped = false;
-            }
-        }
-
-        public void SetFacingDirection(int direction)
-        {
-            IsFlipped = direction < 0;
         }
 
         public void Reset()

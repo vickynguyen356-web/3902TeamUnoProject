@@ -1,17 +1,37 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
-    public abstract class Enemy
+    public abstract class Enemy : IEnemy
     {
         protected readonly EnemyStateMachine StateMachine;
         protected readonly ISprite Sprite;
         protected Vector2 Velocity;
-        protected Vector2 Position { get; set; }
-        public abstract int Width { get; }
-        public abstract int Height { get; }
+        private Vector2 _position;
+
+        public Vector2 Position
+        {
+            get
+            {
+                return _position;
+            }
+            protected set
+            {
+                _position = value;
+            }
+        }
+
+        public abstract int Width
+        {
+            get;
+        }
+
+        public abstract int Height
+        {
+            get;
+        }
 
         protected Enemy(ISprite sprite, Vector2 position)
         {
@@ -19,7 +39,6 @@ namespace Sprint0.Entities
             Position = position;
 
             StateMachine = new EnemyStateMachine();
-
         }
 
         public Rectangle Bounds
@@ -34,23 +53,34 @@ namespace Sprint0.Entities
             }
         }
 
-        public bool IsDead => StateMachine.IsDead;
+        public bool IsDead
+        {
+            get
+            {
+                return StateMachine.IsDead;
+            }
+        }
 
         public abstract void Update(GameTime gameTime);
-        // any enemy classes can override this method to implement specific sprite drawing behavior
+
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            SpriteEffects facingDirection =
-                StateMachine.IsFlipped
-                ? SpriteEffects.FlipHorizontally
-                : SpriteEffects.None;
+            SpriteEffects facingDirection;
+            if (StateMachine.IsFlipped)
+            {
+                facingDirection = SpriteEffects.FlipHorizontally;
+            }
+            else
+            {
+                facingDirection = SpriteEffects.None;
+            }
 
             Sprite.Draw(
                 spriteBatch,
                 Bounds,
                 facingDirection);
         }
-        // any enemy classes can override this method to implement damage taking behavior
+
         public virtual void TakeDamage()
         {
             StateMachine.TakeDamage();

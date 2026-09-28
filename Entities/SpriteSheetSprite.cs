@@ -1,9 +1,9 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
     public class SpriteSheetSprite : ISprite
     {
@@ -42,20 +42,19 @@ namespace Sprint0.Entities
 
             if (_currentAnimation != animation)
             {
-                // Start a new animation at frame zero
                 _currentAnimation = animation;
                 _frameIndex = 0;
                 _frameTimer = 0;
             }
 
-            // Use the same time limit as movement
+            // Limit animation catch-up after a slow frame
             float elapsedSeconds = Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, 1f / 30f);
-            _frameTimer += elapsedSeconds;
+            _frameTimer = _frameTimer + elapsedSeconds;
             while (_frameTimer >= animation.FrameDuration)
             {
                 // Keep any leftover time for the next frame
-                _frameTimer -= animation.FrameDuration;
-                _frameIndex++;
+                _frameTimer = _frameTimer - animation.FrameDuration;
+                _frameIndex = _frameIndex + 1;
                 if (_frameIndex >= animation.Frames.Count)
                 {
                     _frameIndex = 0;
@@ -65,20 +64,18 @@ namespace Sprint0.Entities
 
         public void Draw(SpriteBatch spriteBatch, Rectangle bounds, SpriteEffects facingDirection)
         {
-            // Update supplies the animation before the sprite can be drawn
             if (_currentAnimation == null)
             {
                 return;
             }
 
             SpriteFrame selectedFrame = _currentAnimation.Frames[_frameIndex];
-            //Rectangle sourceRectangle = selectedFrame.GetSourceRectangle(facingDirection);
             Rectangle sourceRectangle;
             SpriteEffects spriteEffects;
 
             if (_useSpriteEffects)
             {
-                // one direction spritesheet
+                // Mirror a sheet that contains only one facing direction
                 sourceRectangle = selectedFrame.LeftSource;
                 spriteEffects = facingDirection;
             }
@@ -88,7 +85,7 @@ namespace Sprint0.Entities
                 spriteEffects = SpriteEffects.None;
             }
 
-            // Line up the bottom of the picture with the entity's feet
+            // Anchor frames at the feet, even when their heights differ
             Vector2 drawingOrigin = new Vector2(sourceRectangle.Width / 2f, sourceRectangle.Height);
             Vector2 feetPosition = new Vector2(bounds.Center.X, bounds.Bottom);
             Vector2 frameOffset = new Vector2(selectedFrame.OffsetX, selectedFrame.OffsetY) * _spriteScale;

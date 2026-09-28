@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Sprint0.Entities;
+using Microsoft.Xna.Framework;
+using TeamUno.Mario.Entities;
 
-namespace Sprint0.Interfaces
+namespace TeamUno.Mario.Interfaces
 {
     public interface IEnemyFactory
     {
-        Enemy Create(EnemyType type, Vector2 position);
+        IEnemy Create(EnemyType type, Vector2 position);
     }
 }

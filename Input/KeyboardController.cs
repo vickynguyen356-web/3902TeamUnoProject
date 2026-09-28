@@ -1,27 +1,22 @@
-﻿using System;
+using System;
 using Microsoft.Xna.Framework.Input;
-using Sprint0.Commands;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Commands;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Input
+namespace TeamUno.Mario.Input
 {
     public class KeyboardController : IController
     {
+        private readonly KeyboardInput _input;
         private readonly ICommand _moveLeftCommand;
         private readonly ICommand _moveRightCommand;
         private readonly ICommand _jumpCommand;
         private readonly ICommand _crouchCommand;
         private readonly ICommand _standCommand;
         private readonly ICommand _throwFireballCommand;
-        private readonly ICommand _quitCommand;
-        private readonly ICommand _resetCommand;
-        private readonly ICommand _previousEnemyCommand;
-        private readonly ICommand _nextEnemyCommand;
         private readonly ICommand _damageCommand;
-        private KeyboardState _previousKeyState;
-        private KeyboardState _currentKeyState;
 
-        public KeyboardController(IPlayer player, IGameActions gameActions)
+        public KeyboardController(IPlayer player, IGameActions gameActions, KeyboardInput input)
         {
             if (player == null)
             {
@@ -33,27 +28,33 @@ namespace Sprint0.Input
                 throw new ArgumentNullException(nameof(gameActions));
             }
 
+            if (input == null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
+
+            _input = input;
             _moveLeftCommand = new MoveCommand(player, -1);
             _moveRightCommand = new MoveCommand(player, 1);
             _jumpCommand = new JumpCommand(player);
             _crouchCommand = new CrouchCommand(player, true);
             _standCommand = new CrouchCommand(player, false);
             _throwFireballCommand = new ThrowFireballCommand(player);
-            _quitCommand = new QuitCommand(gameActions);
-            _resetCommand = new ResetCommand(gameActions);
-            _previousEnemyCommand = new PreviousEnemyCommand(gameActions);
-            _nextEnemyCommand = new NextEnemyCommand(gameActions);
             _damageCommand = new DamageCommand(gameActions);
         }
 
         public void Update()
         {
-            _previousKeyState = _currentKeyState;
-            _currentKeyState = Keyboard.GetState();
+            HandleMovementKeys();
+            HandlePlayerActionKeys();
+            HandleDamageKey();
+        }
 
-            bool moveLeft = _currentKeyState.IsKeyDown(Keys.A) || _currentKeyState.IsKeyDown(Keys.Left);
-            bool moveRight = _currentKeyState.IsKeyDown(Keys.D) || _currentKeyState.IsKeyDown(Keys.Right);
-            bool crouch = _currentKeyState.IsKeyDown(Keys.S) || _currentKeyState.IsKeyDown(Keys.Down);
+        private void HandleMovementKeys()
+        {
+            bool moveLeft = _input.IsDown(Keys.A) || _input.IsDown(Keys.Left);
+            bool moveRight = _input.IsDown(Keys.D) || _input.IsDown(Keys.Right);
+            bool crouch = _input.IsDown(Keys.S) || _input.IsDown(Keys.Down);
 
             if (moveLeft && !moveRight)
             {
@@ -73,46 +74,27 @@ namespace Sprint0.Input
             {
                 _standCommand.Execute();
             }
+        }
 
-            if (WasPressed(Keys.W) || WasPressed(Keys.Up) || WasPressed(Keys.Space))
+        private void HandlePlayerActionKeys()
+        {
+            if (_input.WasPressed(Keys.W) || _input.WasPressed(Keys.Up) || _input.WasPressed(Keys.Space))
             {
                 _jumpCommand.Execute();
             }
 
-            if (WasPressed(Keys.Z) || WasPressed(Keys.N))
+            if (_input.WasPressed(Keys.Z) || _input.WasPressed(Keys.N))
             {
                 _throwFireballCommand.Execute();
             }
+        }
 
-            if (WasPressed(Keys.Q) || WasPressed(Keys.Escape))
-            {
-                _quitCommand.Execute();
-            }
-
-            if (WasPressed(Keys.R))
-            {
-                _resetCommand.Execute();
-            }
-
-            if (WasPressed(Keys.O))
-            {
-                _previousEnemyCommand.Execute();
-            }
-
-            if (WasPressed(Keys.P))
-            {
-                _nextEnemyCommand.Execute();
-            }
-
-            if (WasPressed(Keys.E))
+        private void HandleDamageKey()
+        {
+            if (_input.WasPressed(Keys.E))
             {
                 _damageCommand.Execute();
             }
-        }
-
-        private bool WasPressed(Keys key)
-        {
-            return _currentKeyState.IsKeyDown(key) && !_previousKeyState.IsKeyDown(key);
         }
     }
 }

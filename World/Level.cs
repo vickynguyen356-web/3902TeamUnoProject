@@ -1,47 +1,60 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Sprint0.Commands;
-using Sprint0.Entities;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Entities;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.World
+namespace TeamUno.Mario.World
 {
-    // The demo starts with an empty level.
     public class Level
     {
-        public const int TileSize = 48;
-        public const int WorldWidth = 96 * TileSize;
-        public const int WorldHeight = 15 * TileSize;
-        public const int GroundY = 11 * TileSize;
-
-        private readonly LevelDefinition _levelDefinition;
-        /* Lists, enemy spawn position, and current enemy indexing fields */
-        private readonly List<Rectangle> _solidTiles = new List<Rectangle>();
-        private readonly List<Coin> _coins = new List<Coin>();
-        private readonly List<Enemy> _enemies = new List<Enemy>();
-        private readonly List<Block> _blocks = new List<Block>();
-        private readonly EnemyType[] _enemyTypes = 
-            { 
-            EnemyType.Goomba, EnemyType.Koopa, EnemyType.PiranhaPlant, EnemyType.HammerBro, EnemyType.Bowser
-            };
+        private readonly LevelDefinition _definition;
         private readonly IEnemyFactory _enemyFactory;
-        private int _currentEnemyIndex;
+        private readonly IItemFactory _itemFactory;
+        private readonly List<Block> _blocks = new List<Block>();
+        private readonly List<IItem> _items = new List<IItem>();
+        private readonly List<IEnemy> _enemies = new List<IEnemy>();
+        private readonly IReadOnlyList<Block> _readOnlyBlocks;
+        private readonly IReadOnlyList<IItem> _readOnlyItems;
+        private readonly IReadOnlyList<IEnemy> _readOnlyEnemies;
 
-        private Vector2 _enemySpawnPosition;
-
-        public IReadOnlyList<Rectangle> SolidTiles { get; }
-        public IReadOnlyList<Coin> Coins { get; }
-        public IReadOnlyList<Enemy> Enemies { get; }
-        public IReadOnlyList<Block> Blocks { get; }
-        public Rectangle Goal { get; private set; }
-
-
-        public Level(LevelDefinition levelDefinition, IEnemyFactory enemyFactory)
+        public LevelDefinition Definition
         {
-            if (levelDefinition == null)
+            get
             {
-                throw new ArgumentNullException(nameof(levelDefinition));
+                return _definition;
+            }
+        }
+
+        public IReadOnlyList<Block> Blocks
+        {
+            get
+            {
+                return _readOnlyBlocks;
+            }
+        }
+
+        public IReadOnlyList<IItem> Items
+        {
+            get
+            {
+                return _readOnlyItems;
+            }
+        }
+
+        public IReadOnlyList<IEnemy> Enemies
+        {
+            get
+            {
+                return _readOnlyEnemies;
+            }
+        }
+
+        public Level(LevelDefinition definition, IEnemyFactory enemyFactory, IItemFactory itemFactory)
+        {
+            if (definition == null)
+            {
+                throw new ArgumentNullException(nameof(definition));
             }
 
             if (enemyFactory == null)
@@ -49,137 +62,93 @@ namespace Sprint0.World
                 throw new ArgumentNullException(nameof(enemyFactory));
             }
 
-            _levelDefinition = levelDefinition;
+            if (itemFactory == null)
+            {
+                throw new ArgumentNullException(nameof(itemFactory));
+            }
+
+            _definition = definition;
             _enemyFactory = enemyFactory;
-
-            // Other classes can read these lists.
-            SolidTiles = _solidTiles.AsReadOnly();
-            Coins = _coins.AsReadOnly();
-            Enemies = _enemies.AsReadOnly();
-            Blocks = _blocks.AsReadOnly();
-            Reset();
+            _itemFactory = itemFactory;
+            _readOnlyBlocks = _blocks.AsReadOnly();
+            _readOnlyItems = _items.AsReadOnly();
+            _readOnlyEnemies = _enemies.AsReadOnly();
+            LoadDefinition();
         }
 
-        public void Reset()
+        public virtual void Update(GameTime gameTime)
         {
-            _solidTiles.Clear();
-            _coins.Clear();
-            _enemies.Clear();
-            _blocks.Clear();
-            Goal = Rectangle.Empty;
-
-            // start with first enemy type
-            _currentEnemyIndex = 0;
-
-            // Convert tile positions to pixel positions.
-            foreach (PlatformDefinition platform in _levelDefinition.Platforms)
+            foreach (IItem item in _items)
             {
-                for (int tileOffset = 0; tileOffset < platform.Length; tileOffset++)
-                {
-                    int tilePositionX = (platform.TileX + tileOffset) * TileSize;
-                    int tilePositionY = platform.TileY * TileSize;
-                    Rectangle tileBounds = new Rectangle(tilePositionX, tilePositionY, TileSize, TileSize);
-                    _solidTiles.Add(tileBounds);
-                }
+                item.Update(gameTime);
             }
 
-            // Demo block selection for Sprint 2. These are meant to cycle with T/Y and to render as decorative obstacles.
-            _blocks.Add(new Block(new Vector2(256, 420), BlockType.Brick, 48, 48));
-            _blocks.Add(new Block(new Vector2(304, 420), BlockType.Question, 48, 48));
-            _blocks.Add(new Block(new Vector2(352, 420), BlockType.Used, 48, 48));
-            _blocks.Add(new Block(new Vector2(400, 420), BlockType.Ground, 48, 48));
-            _blocks.Add(new Block(new Vector2(448, 420), BlockType.Solid, 48, 48));
-            _blocks.Add(new Block(new Vector2(496, 420), BlockType.Coin, 48, 48));
-            _blocks.Add(new Block(new Vector2(544, 420), BlockType.Pipe, 64, 64));
-
-            foreach (CoinLineDefinition coinLine in _levelDefinition.CoinLines)
-            {
-                for (int coinIndex = 0; coinIndex < coinLine.Count; coinIndex++)
-                {
-                    float coinCenterX = (coinLine.TileX + coinIndex) * TileSize + TileSize / 2f;
-                    float coinCenterY = coinLine.TileY * TileSize + TileSize / 2f;
-                    Vector2 coinPosition = new Vector2(coinCenterX, coinCenterY);
-                    _coins.Add(new Coin(coinPosition));
-                }
-            }
-
-            if (_levelDefinition.Enemies.Count > 0)
-            {
-                EnemySpawnDefinition enemySpawn = _levelDefinition.Enemies[0];
-                _enemySpawnPosition = new Vector2(enemySpawn.TileX * TileSize,
-                    GroundY - Goomba.GoombaHeight);
-
-                _enemies.Add(_enemyFactory.Create(GetCurrentEnemyType(), _enemySpawnPosition));
-            }
-
-            if (_levelDefinition.Goal.HeightInTiles > 0)
-            {
-                int goalHeight = _levelDefinition.Goal.HeightInTiles * TileSize;
-                Goal = new Rectangle(
-                    _levelDefinition.Goal.TileX * TileSize,
-                    GroundY - goalHeight,
-                    TileSize,
-                    goalHeight);
-            }
-
-        }
-
-        public void Update(GameTime gameTime)
-        {
-            // Example of how to update the enemies/items/etc. 
-            foreach (Coin coin in _coins)
-            {
-                coin.Update(gameTime);
-            }
-
-            foreach (Enemy enemy in _enemies)
+            foreach (IEnemy enemy in _enemies)
             {
                 enemy.Update(gameTime);
             }
         }
 
-        public void PreviousEnemy()
+        public virtual void Reset()
         {
-            _currentEnemyIndex--;
-
-            // if currently at first enemy, go to last enemy in cycle
-            if (_currentEnemyIndex < 0)
-            {
-                _currentEnemyIndex = _enemyTypes.Length - 1;
-            }
-
-            ReplaceEnemy();
-
+            LoadDefinition();
         }
 
-        public void NextEnemy()
+        protected void ReplaceBlock(int index, BlockSpawnDefinition definition)
         {
-            _currentEnemyIndex++;
-
-            // if currently at last enemy, go to first enemy in cycle
-            if (_currentEnemyIndex >= _enemyTypes.Length )
+            if (definition == null)
             {
-                _currentEnemyIndex = 0;
+                throw new ArgumentNullException(nameof(definition));
             }
 
-            ReplaceEnemy();
+            _blocks[index] = CreateBlock(definition);
         }
 
-        private void ReplaceEnemy()
+        protected void ReplaceItem(int index, ItemSpawnDefinition definition)
         {
+            if (definition == null)
+            {
+                throw new ArgumentNullException(nameof(definition));
+            }
+
+            _items[index] = _itemFactory.Create(definition.Type, definition.Position);
+        }
+
+        protected void ReplaceEnemy(int index, EnemySpawnDefinition definition)
+        {
+            if (definition == null)
+            {
+                throw new ArgumentNullException(nameof(definition));
+            }
+
+            _enemies[index] = _enemyFactory.Create(definition.Type, definition.Position);
+        }
+
+        private void LoadDefinition()
+        {
+            _blocks.Clear();
+            _items.Clear();
             _enemies.Clear();
 
-            _enemies.Add(_enemyFactory.Create(GetCurrentEnemyType(), _enemySpawnPosition));
+            foreach (BlockSpawnDefinition block in Definition.Blocks)
+            {
+                _blocks.Add(CreateBlock(block));
+            }
+
+            foreach (ItemSpawnDefinition item in Definition.Items)
+            {
+                _items.Add(_itemFactory.Create(item.Type, item.Position));
+            }
+
+            foreach (EnemySpawnDefinition enemy in Definition.Enemies)
+            {
+                _enemies.Add(_enemyFactory.Create(enemy.Type, enemy.Position));
+            }
         }
 
-        private EnemyType GetCurrentEnemyType()
+        private static Block CreateBlock(BlockSpawnDefinition definition)
         {
-            return _enemyTypes[_currentEnemyIndex];
+            return new Block(definition.Position, definition.Type, definition.Width, definition.Height);
         }
-
-        //private void SpitFire()
-        //{
-            
-        //}
     }
 }

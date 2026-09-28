@@ -1,32 +1,40 @@
-﻿using Microsoft.Xna.Framework;
-using Sprint0.Interfaces;
 using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
     public class Bowser : Enemy
     {
-        /* bowser fields */
         public const int BowserWidth = 64;
         public const int BowserHeight = 64;
+        public override int Width
+        {
+            get
+            {
+                return BowserWidth;
+            }
+        }
 
-        // references available after creating hammer bro
-        public override int Width => BowserWidth;
-        public override int Height => BowserWidth;
+        public override int Height
+        {
+            get
+            {
+                return BowserWidth;
+            }
+        }
+
         private const float WalkSpeed = 45f;
         private const float WalkDistance = 150f;
         private float _distanceTraveled;
         private bool _hasStopped;
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _bowserAnimations;
-        private readonly Vector2 _startingPos;
 
         public Bowser(ISprite sprite, Vector2 position)
             : base(sprite, position)
         {
             _bowserAnimations = BowserSpriteFactory.CreateBowserAnimations();
-            // moving left 150 pixels & stopping
-            _startingPos = position;
             _distanceTraveled = 0f;
             Velocity.X = -WalkSpeed;
 
@@ -41,8 +49,8 @@ namespace Sprint0.Entities
             {
                 float movement = Velocity.X * elapsedSeconds;
 
-                Position += new Vector2(movement, 0f);
-                _distanceTraveled += Math.Abs(movement);
+                Position = Position + new Vector2(movement, 0f);
+                _distanceTraveled = _distanceTraveled + Math.Abs(movement);
 
                 if (_distanceTraveled >= WalkDistance)
                 {
@@ -64,7 +72,9 @@ namespace Sprint0.Entities
 
         private SpriteAnimation GetCurrentAnimation()
         {
-            if (_bowserAnimations.TryGetValue(StateMachine.AnimationState, out SpriteAnimation animation))
+            SpriteAnimation animation;
+
+            if (_bowserAnimations.TryGetValue(StateMachine.AnimationState, out animation))
             {
                 return animation;
             }
@@ -73,5 +83,3 @@ namespace Sprint0.Entities
         }
     }
 }
-
-

@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
     public class BowserSpriteFactory
     {
@@ -21,10 +21,6 @@ namespace Sprint0.Entities
             SpriteAnimation walk = new SpriteAnimation(0.28f, CreateFrame(5, 4, 5, 4),
                 CreateFrame(6, 4, 6, 4));
 
-            //SpriteAnimation spitFire = new SpriteAnimation(0.28f,
-            //    CreateFrame(5, 4, 5, 4),
-            //    CreateFrame(0, 5, 0, 5));
-
             return new Dictionary<EntityAnimationState, SpriteAnimation>
             {
                 { EntityAnimationState.Idle, idle },
@@ -32,7 +28,6 @@ namespace Sprint0.Entities
             };
         }
 
-        /* For evenly spaced spritesheets */
         private static SpriteFrame CreateFrame(int leftCol, int leftRow, int rightCol, int rightRow)
         {
             Rectangle leftFrame = new Rectangle(

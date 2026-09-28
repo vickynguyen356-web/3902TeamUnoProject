@@ -1,83 +1,84 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Items
+namespace TeamUno.Mario.Items
 {
-    public class BlockCoin : IItem
+    public class BlockCoin : Item
     {
-        private IItemSprite itemSprite;
-        private Vector2 startingPosition;
-        public ItemType Type
-        {
-            get { return ItemType.BlockCoin; }
-        }
-        private Vector2 position;
-
-        public Vector2 Position
-        {
-            get { return position; }
-        }
-
         private const float MoveSpeed = 180f;
         private const float DisplayTime = 0.6f;
-        private float timer = DisplayTime;
 
-        private bool visible = true;
+        private float _timer = DisplayTime;
+        private bool _isVisible = true;
+
+        public override ItemType Type
+        {
+            get
+            {
+                return ItemType.BlockCoin;
+            }
+        }
 
         public bool IsVisible
         {
-            get { return visible; }
+            get
+            {
+                return _isVisible;
+            }
+            private set
+            {
+                _isVisible = value;
+            }
         }
 
-        public BlockCoin(Vector2 position, IItemSprite sprite)
+        public BlockCoin(Vector2 position, ISprite sprite)
+            : base(position, sprite, ItemSpriteFactory.CreateBlockCoinAnimation())
         {
-            this.position = position;
-            startingPosition = position;
-            itemSprite = sprite;
         }
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
-            if (!visible)
+            if (!IsVisible)
             {
                 return;
             }
 
             float seconds = Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, 1f / 30f);
-            timer -= seconds;
-            if (timer <= 0)
+            _timer = _timer - seconds;
+            if (_timer <= 0)
             {
-                visible = false;
+                IsVisible = false;
                 return;
             }
 
-            if (timer >= DisplayTime / 2)
+            float y = Position.Y;
+            if (_timer >= DisplayTime / 2)
             {
-                position.Y -= MoveSpeed * seconds;
+                y = y - MoveSpeed * seconds;
             }
             else
             {
-                position.Y += MoveSpeed * seconds;
+                y = y + MoveSpeed * seconds;
             }
-            itemSprite.Update(gameTime);
+            Position = new Vector2(Position.X, y);
+            base.Update(gameTime);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
-            if (visible)
+            if (IsVisible)
             {
-                itemSprite.Draw(spriteBatch, position);
+                base.Draw(spriteBatch);
             }
         }
 
-        public void Reset()
+        public override void Reset()
         {
-            position = startingPosition;
-            itemSprite.Reset();
-            timer = DisplayTime;
-            visible = true;
+            base.Reset();
+            _timer = DisplayTime;
+            IsVisible = true;
         }
     }
 }

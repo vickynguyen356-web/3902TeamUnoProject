@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
     public class MarioSpriteFactory
     {
@@ -130,7 +130,7 @@ namespace Sprint0.Entities
             };
         }
 
-        // The sheet has separate left and right frames, with uneven spacing between poses so things get weird
+        // The sheet stores separate left and right frames with uneven pose spacing
         private static SpriteFrame CreateFrame(
             int leftFrameX, int leftFrameY, int width, int height, int rightFrameX, int rightFrameY)
         {

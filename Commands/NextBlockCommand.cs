@@ -2,18 +2,18 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Commands
 {
-    public class PreviousEnemyCommand : ICommand
+    public class NextBlockCommand : ICommand
     {
         private readonly IDemoControls _demoControls;
 
-        public PreviousEnemyCommand(IDemoControls demoControls)
+        public NextBlockCommand(IDemoControls demoControls)
         {
             _demoControls = demoControls;
         }
 
         public void Execute()
         {
-            _demoControls.PreviousEnemy();
+            _demoControls.NextBlock();
         }
     }
 }

@@ -1,25 +1,34 @@
-﻿using Microsoft.Xna.Framework;
-using Sprint0.Interfaces;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
     public class Koopa : Enemy
     {
-        /* koopa fields */
         public const int KoopaWidth = 64;
         public const int KoopaHeight = 64;
+        public override int Width
+        {
+            get
+            {
+                return KoopaWidth;
+            }
+        }
 
-        // references available after creating koopa
-        public override int Width => KoopaWidth;
-        public override int Height => KoopaHeight;
+        public override int Height
+        {
+            get
+            {
+                return KoopaHeight;
+            }
+        }
+
         private const float WalkSpeed = 45f;
         private const float WalkDistance = 150f;
         private float _distanceTraveled;
         private bool _hasStopped;
-
-        /* animation related fields */
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _koopaAnimations;
         private readonly Vector2 _startingPos;
 
@@ -27,7 +36,6 @@ namespace Sprint0.Entities
             : base(sprite, position)
         {
             _koopaAnimations = KoopaSpriteFactory.CreateKoopaAnimations();
-            // moving left 150 pixels & stopping
             _startingPos = position;
             _distanceTraveled = 0f;
             Velocity.X = -WalkSpeed;
@@ -43,8 +51,8 @@ namespace Sprint0.Entities
             {
                 float movement = Velocity.X * elapsedSeconds;
 
-                Position += new Vector2(movement, 0f);
-                _distanceTraveled += Math.Abs(movement);
+                Position = Position + new Vector2(movement, 0f);
+                _distanceTraveled = _distanceTraveled + Math.Abs(movement);
 
                 if (_distanceTraveled >= WalkDistance)
                 {
@@ -66,7 +74,9 @@ namespace Sprint0.Entities
 
         private SpriteAnimation GetCurrentAnimation()
         {
-            if (_koopaAnimations.TryGetValue(StateMachine.AnimationState, out SpriteAnimation animation))
+            SpriteAnimation animation;
+
+            if (_koopaAnimations.TryGetValue(StateMachine.AnimationState, out animation))
             {
                 return animation;
             }
@@ -90,4 +100,3 @@ namespace Sprint0.Entities
         }
     }
 }
-

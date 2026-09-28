@@ -1,31 +1,40 @@
-using Microsoft.Xna.Framework;
-using Sprint0.Interfaces;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
     public class Goomba : Enemy
     {
-        /* goomba fields */
         public const int GoombaWidth = 64;
         public const int GoombaHeight = 64;
+        public override int Width
+        {
+            get
+            {
+                return GoombaWidth;
+            }
+        }
 
-        // references available after creating Goomba
-        public override int Width => GoombaWidth;
-        public override int Height => GoombaHeight;
+        public override int Height
+        {
+            get
+            {
+                return GoombaHeight;
+            }
+        }
+
         private const float RunSpeed = 45f;
         private const float PatrolDistance = 100f;
-        /* animation related fields */
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _goombaAnimations;
         private readonly Vector2 _startingPos;
         private readonly float _leftBound;
         private readonly float _rightBound;
 
-        public Goomba(ISprite sprite, Vector2 position) 
+        public Goomba(ISprite sprite, Vector2 position)
             : base(sprite, position)
         {
             _goombaAnimations = GoombaSpriteFactory.CreateGoombaAnimations();
-            // moving left 100 pixels, then turning right and moving 100 pixels back
             _startingPos = position;
             _leftBound = position.X - PatrolDistance;
             _rightBound = position.X + PatrolDistance;
@@ -40,12 +49,13 @@ namespace Sprint0.Entities
 
             if (!IsDead)
             {
-                Position += Velocity * elapsedSeconds;
+                Position = Position + Velocity * elapsedSeconds;
 
                 if (Position.X <= _leftBound)
                 {
                     Velocity.X = RunSpeed;
-                } else if (Position.X >= _rightBound)
+                }
+                else if (Position.X >= _rightBound)
                 {
                     Velocity.X = -RunSpeed;
                 }
@@ -63,7 +73,9 @@ namespace Sprint0.Entities
 
         private SpriteAnimation GetCurrentAnimation()
         {
-            if (_goombaAnimations.TryGetValue(StateMachine.AnimationState, out SpriteAnimation animation))
+            SpriteAnimation animation;
+
+            if (_goombaAnimations.TryGetValue(StateMachine.AnimationState, out animation))
             {
                 return animation;
             }

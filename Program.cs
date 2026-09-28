@@ -1,10 +1,10 @@
-namespace Sprint0
+namespace TeamUno.Mario
 {
     public class Program
     {
         public static void Main()
         {
-            using (Game1 marioGame = new Game1())
+            using (MarioGame marioGame = new MarioGame())
             {
                 marioGame.Run();
             }

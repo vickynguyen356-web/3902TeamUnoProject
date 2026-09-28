@@ -1,6 +1,7 @@
-# sprint0
-For CSE 3902 Sprint0 project in animating a 2D game character movement.
-By: Vy Nguyen
+# Team Uno Mario
 
-Keyboard inputs A, D, move the cat character left and right, respectively. Right click/button on 
-the mouse makes the cat character jump. 
+A Super Mario Bros. demo for CSE 3902 with player controls and selectable blocks, items, and enemies.
+
+Root namespace: `TeamUno.Mario`
+
+By: Vy Nguyen

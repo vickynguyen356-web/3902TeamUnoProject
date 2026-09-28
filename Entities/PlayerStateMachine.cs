@@ -1,8 +1,8 @@
 using System;
 using Microsoft.Xna.Framework;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
     public class PlayerStateMachine
     {
@@ -11,9 +11,35 @@ namespace Sprint0.Entities
 
         private readonly PlayerForm _startingForm;
         private float _throwTimeRemaining;
+        private EntityAnimationState _animationState = EntityAnimationState.Idle;
+        private PlayerForm _form;
+        private bool _isCrouching;
+        private bool _isDead;
 
-        public EntityAnimationState AnimationState { get; private set; } = EntityAnimationState.Idle;
-        public PlayerForm Form { get; private set; }
+        public EntityAnimationState AnimationState
+        {
+            get
+            {
+                return _animationState;
+            }
+            private set
+            {
+                _animationState = value;
+            }
+        }
+
+        public PlayerForm Form
+        {
+            get
+            {
+                return _form;
+            }
+            private set
+            {
+                _form = value;
+            }
+        }
+
         public bool IsSmall
         {
             get
@@ -21,8 +47,31 @@ namespace Sprint0.Entities
                 return Form == PlayerForm.Small;
             }
         }
-        public bool IsCrouching { get; private set; }
-        public bool IsDead { get; private set; }
+
+        public bool IsCrouching
+        {
+            get
+            {
+                return _isCrouching;
+            }
+            private set
+            {
+                _isCrouching = value;
+            }
+        }
+
+        public bool IsDead
+        {
+            get
+            {
+                return _isDead;
+            }
+            private set
+            {
+                _isDead = value;
+            }
+        }
+
         public bool IsThrowing
         {
             get
@@ -34,7 +83,7 @@ namespace Sprint0.Entities
         public PlayerStateMachine(PlayerForm startingForm = PlayerForm.Super)
         {
             _startingForm = startingForm;
-            Form = startingForm;
+            _form = startingForm;
         }
 
         public void UpdateThrowTimer(float elapsedSeconds)
@@ -44,7 +93,6 @@ namespace Sprint0.Entities
 
         public bool TryThrowFireball()
         {
-            // Only Fire Mario can start a throw
             if (Form != PlayerForm.Fire || IsDead || IsCrouching || IsThrowing)
             {
                 return false;
@@ -56,7 +104,6 @@ namespace Sprint0.Entities
 
         public void Update(bool isGrounded, Vector2 velocity)
         {
-            // Check special poses before movements
             if (IsDead)
             {
                 AnimationState = EntityAnimationState.Dead;
@@ -71,7 +118,6 @@ namespace Sprint0.Entities
             }
             else if (!isGrounded)
             {
-                // A negative Y velocity means Mario is going up 
                 if (velocity.Y < 0)
                 {
                     AnimationState = EntityAnimationState.Jump;
@@ -102,11 +148,12 @@ namespace Sprint0.Entities
 
         public void TakeDamage()
         {
-            // Damage and power-up changes go here.
             if (IsDead)
             {
                 return;
             }
+
+            _throwTimeRemaining = 0;
 
             if (Form == PlayerForm.Small)
             {
@@ -124,7 +171,6 @@ namespace Sprint0.Entities
                 Form = PlayerForm.Small;
             }
 
-            AnimationState = EntityAnimationState.Dead;
             IsCrouching = false;
         }
 
@@ -133,7 +179,6 @@ namespace Sprint0.Entities
             IsCrouching = crouching && !IsSmall && !IsDead;
             if (IsCrouching)
             {
-                // Crouching ends the throw pose.
                 _throwTimeRemaining = 0;
             }
         }

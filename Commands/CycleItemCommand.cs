@@ -1,22 +1,21 @@
-using Sprint0.Interfaces;
-using Sprint0.Items;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Commands
+namespace TeamUno.Mario.Commands
 {
     public class CycleItemCommand : ICommand
     {
-        private ItemDemo items;
-        private int direction;
+        private readonly IDemoControls _demoControls;
+        private readonly int _direction;
 
-        public CycleItemCommand(ItemDemo items, int direction)
+        public CycleItemCommand(IDemoControls demoControls, int direction)
         {
-            this.items = items;
-            this.direction = direction;
+            _demoControls = demoControls;
+            _direction = direction;
         }
 
         public void Execute()
         {
-            items.Cycle(direction);
+            _demoControls.CycleItem(_direction);
         }
     }
 }

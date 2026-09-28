@@ -1,8 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
     public enum BlockType
     {
@@ -21,20 +21,63 @@ namespace Sprint0.Entities
         private const int DefaultWidth = 48;
         private const int DefaultHeight = 48;
 
-        private readonly IBlock _spriteBlock;
+        private readonly IBlockSprite _spriteBlock;
 
-        public BlockType Type { get; private set; }
-        public Vector2 Position { get; }
-        public int Width { get; }
-        public int Height { get; }
-        public Rectangle Bounds => new Rectangle((int)Position.X, (int)Position.Y, Width, Height);
+        private BlockType _type;
+        private readonly Vector2 _position;
+        private readonly int _width;
+        private readonly int _height;
+
+        public BlockType Type
+        {
+            get
+            {
+                return _type;
+            }
+            private set
+            {
+                _type = value;
+            }
+        }
+
+        public Vector2 Position
+        {
+            get
+            {
+                return _position;
+            }
+        }
+
+        public int Width
+        {
+            get
+            {
+                return _width;
+            }
+        }
+
+        public int Height
+        {
+            get
+            {
+                return _height;
+            }
+        }
+
+        public Rectangle Bounds
+        {
+            get
+            {
+                return new Rectangle((int)Position.X, (int)Position.Y, Width, Height);
+            }
+        }
 
         public Block(Vector2 position, BlockType type, int width = DefaultWidth, int height = DefaultHeight)
         {
-            Position = position;
+            _position = position;
             Type = type;
-            Width = width;
-            Height = height;
+            _width = width;
+            _height = height;
             _spriteBlock = BlockSpriteFactory.Create(type);
         }
 

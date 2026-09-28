@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using Microsoft.Xna.Framework;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Entities
+namespace TeamUno.Mario.Entities
 {
     public class EnemyFactory : IEnemyFactory
     {
@@ -25,7 +25,7 @@ namespace Sprint0.Entities
             _createBowserSprite = createBowserSprite;
         }
 
-        public Enemy Create(EnemyType type, Vector2 position)
+        public IEnemy Create(EnemyType type, Vector2 position)
         {
             switch (type)
             {

@@ -1,7 +1,7 @@
 using System;
-using Sprint0.Interfaces;
+using TeamUno.Mario.Interfaces;
 
-namespace Sprint0.Commands
+namespace TeamUno.Mario.Commands
 {
     public class MoveCommand : ICommand
     {
