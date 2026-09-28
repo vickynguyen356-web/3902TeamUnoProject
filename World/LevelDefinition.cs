@@ -23,7 +23,6 @@ namespace Sprint0.World
 
         public static LevelDefinition CreateDefault()
         {
-            // Add the level layout here.
             return new LevelDefinition(
                 new List<PlatformDefinition>(),
                 new List<CoinLineDefinition>(),
