@@ -74,13 +74,15 @@ namespace Sprint0.World
             }
 
             // Demo block selection for Sprint 2. These are meant to cycle with T/Y and to render as decorative obstacles.
-            _blocks.Add(new Block(new Vector2(256, 420), BlockType.Brick, 48, 48));
-            _blocks.Add(new Block(new Vector2(304, 420), BlockType.Question, 48, 48));
-            _blocks.Add(new Block(new Vector2(352, 420), BlockType.Used, 48, 48));
-            _blocks.Add(new Block(new Vector2(400, 420), BlockType.Ground, 48, 48));
-            _blocks.Add(new Block(new Vector2(448, 420), BlockType.Solid, 48, 48));
-            _blocks.Add(new Block(new Vector2(496, 420), BlockType.Coin, 48, 48));
-            _blocks.Add(new Block(new Vector2(544, 420), BlockType.Pipe, 64, 64));
+            _blocks.Add(new Block(new Vector2(256, 384), BlockType.Brick));
+            _blocks.Add(new Block(new Vector2(304, 384), BlockType.Question));
+            _blocks.Add(new Block(new Vector2(352, 384), BlockType.Question));
+            _blocks.Add(new Block(new Vector2(400, 384), BlockType.Question));
+            _blocks.Add(new Block(new Vector2(448, 384), BlockType.Used));
+            _blocks.Add(new Block(new Vector2(496, 384), BlockType.Ground));
+            _blocks.Add(new Block(new Vector2(544, 384), BlockType.Solid));
+            _blocks.Add(new Block(new Vector2(592, 384), BlockType.Pipe, 64, 64));
+            _blocks.Add(new Block(new Vector2(645, 30), BlockType.FlagPole, 48, 498));
 
             foreach (CoinLineDefinition coinLine in _levelDefinition.CoinLines)
             {
@@ -125,6 +127,11 @@ namespace Sprint0.World
             foreach (Goomba enemy in _enemies)
             {
                 enemy.Update(gameTime);
+            }
+
+            foreach (Block block in _blocks)
+            {
+                block.Update(gameTime);
             }
         }
     }

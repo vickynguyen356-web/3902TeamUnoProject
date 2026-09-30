@@ -33,7 +33,7 @@ namespace Sprint0
             Texture2D goombaTexture = Content.Load<Texture2D>("goombaSpritesheet");
             SpriteFont controlsFont = Content.Load<SpriteFont>("MyFont");
             _backgroundTexture = Content.Load<Texture2D>("background");
-            _blockTexture = Content.Load<Texture2D>("bricksobstacles");
+            _blockTexture = Content.Load<Texture2D>("blocksspritesheetbg");
 
             _whitePixelTexture = new Texture2D(GraphicsDevice, 1, 1);
             // Stretch this pixel to draw the demo floor 

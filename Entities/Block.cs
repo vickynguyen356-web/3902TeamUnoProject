@@ -12,7 +12,7 @@ namespace Sprint0.Entities
         Ground,
         Pipe,
         Solid,
-        Coin,
+        FlagPole,
         Empty
     }
 
@@ -21,7 +21,7 @@ namespace Sprint0.Entities
         private const int DefaultWidth = 48;
         private const int DefaultHeight = 48;
 
-        private readonly IBlock _spriteBlock;
+        private IBlock _spriteBlock;
 
         public BlockType Type { get; private set; }
         public Vector2 Position { get; }
@@ -36,6 +36,22 @@ namespace Sprint0.Entities
             Width = width;
             Height = height;
             _spriteBlock = BlockSpriteFactory.Create(type);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            _spriteBlock.Update(gameTime);
+        }
+
+        internal void HitFromBelow()
+        {
+            if (Type != BlockType.Question)
+            {
+                return;
+            }
+
+            Type = BlockType.Solid;
+            _spriteBlock = BlockSpriteFactory.Create(Type);
         }
 
         public void Draw(SpriteBatch spriteBatch, Texture2D blockTexture)
