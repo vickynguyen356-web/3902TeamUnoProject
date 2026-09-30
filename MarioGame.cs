@@ -1,3 +1,5 @@
+// connects game components and runs them together
+// loads texture and fonts, creates player, factories, level, controllers and renderer
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TeamUno.Mario.Entities;
@@ -72,7 +74,7 @@ namespace TeamUno.Mario
                     return ItemSpriteFactory.Create(itemTexture);
                 });
             DemoLevel level = new DemoLevel(_levelDefinition, enemyFactory, itemFactory);
-
+            // the session updates and resets the level, including its items
             _gameSession = new GameSession(
                 player,
                 level,
@@ -83,6 +85,7 @@ namespace TeamUno.Mario
                 input,
                 _gameSession,
                 new KeyboardController(player, _gameSession, input),
+                // Handles item cycling, number-key selection, and block and enemy demo controls
                 new DemoController(level, input));
             _gameRenderer = new GameRenderer(backgroundTexture, _whitePixelTexture, blockTexture, controlsFont);
         }
