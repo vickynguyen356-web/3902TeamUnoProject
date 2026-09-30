@@ -7,10 +7,12 @@ namespace TeamUno.Mario.Items
 {
     public class ItemFactory : IItemFactory
     {
+        // stores a function that creates a sprite when called
         private readonly Func<ISprite> _createSprite;
 
         public ItemFactory(Func<ISprite> createSprite)
         {
+            // sprite-creation function is required to create items
             if (createSprite == null)
             {
                 throw new ArgumentNullException(nameof(createSprite));
@@ -21,6 +23,7 @@ namespace TeamUno.Mario.Items
 
         public IItem Create(ItemType type, Vector2 position)
         {
+            // create requested item at the given position. each item gets a new sprite so its animation runs seperately
             switch (type)
             {
                 case ItemType.Mushroom:
@@ -36,6 +39,7 @@ namespace TeamUno.Mario.Items
                 case ItemType.BlockCoin:
                     return new BlockCoin(position, _createSprite());
                 default:
+                    // Reject any type that this factory does not support.
                     throw new ArgumentOutOfRangeException(nameof(type));
             }
         }
