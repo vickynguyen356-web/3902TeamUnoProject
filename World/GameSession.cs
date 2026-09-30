@@ -91,5 +91,10 @@ namespace TeamUno.Mario.World
         {
             Player.TakeDamage();
         }
+
+        public void SpitFire()
+        {
+            Level.SpitFire();
+        }
     }
 }

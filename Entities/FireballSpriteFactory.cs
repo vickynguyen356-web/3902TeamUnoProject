@@ -1,35 +1,34 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class HammerBroSpriteFactory
+    public class FireballSpriteFactory
     {
         private const int FrameWidth = 64;
         private const int FrameHeight = 64;
-        public static ISprite Create(Texture2D spriteSheetTexture)
+
+        private readonly Texture2D _enemiesTexture;
+        public FireballSpriteFactory(Texture2D enemyTexture)
         {
-            return new SpriteSheetSprite(spriteSheetTexture, 2f, true);
+            _enemiesTexture = enemyTexture;
         }
 
-        internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreateHammerBroAnimations()
+        public ISprite Create()
         {
-            SpriteAnimation idle = new SpriteAnimation(1.0f, CreateFrame(2, 4, 2, 4));
+            return new SpriteSheetSprite(_enemiesTexture, 2f);
+        }
 
-            SpriteAnimation run = new SpriteAnimation(0.28f,
-                CreateFrame(1, 4, 1, 4),
-                CreateFrame(2, 4, 2, 4));
-
-            SpriteAnimation throwHammer = new SpriteAnimation(0.28f, CreateFrame(4, 3, 4, 3),
-                CreateFrame(1, 4, 1, 4));
+        internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreateFireballAnimations()
+        {
+            SpriteAnimation fireball = new SpriteAnimation(0.28f, CreateFrame(4, 5, 4, 5),
+                CreateFrame(5, 5, 5, 5));
 
             return new Dictionary<EntityAnimationState, SpriteAnimation>
             {
-                { EntityAnimationState.Idle, idle },
-                { EntityAnimationState.Run, run },
-                { EntityAnimationState.ThrowHammer, throwHammer }
+                { EntityAnimationState.Fireball, fireball }
             };
         }
 

@@ -47,8 +47,8 @@ namespace TeamUno.Mario.World
             }
         }
 
-        public DemoLevel(LevelDefinition definition, IEnemyFactory enemyFactory, IItemFactory itemFactory)
-            : base(ValidateDefinition(definition), enemyFactory, itemFactory)
+        public DemoLevel(LevelDefinition definition, IEnemyFactory enemyFactory, IItemFactory itemFactory, FireballSpriteFactory fireballSpriteFactory)
+            : base(ValidateDefinition(definition), enemyFactory, itemFactory, fireballSpriteFactory)
         {
             ResetSelectionIndices();
         }

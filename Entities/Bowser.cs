@@ -27,6 +27,7 @@ namespace TeamUno.Mario.Entities
 
         private const float WalkSpeed = 45f;
         private const float WalkDistance = 150f;
+        private const float FireballSpeed = 150f;
         private float _distanceTraveled;
         private bool _hasStopped;
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _bowserAnimations;
@@ -63,6 +64,21 @@ namespace TeamUno.Mario.Entities
             UpdateAnimation(gameTime);
         }
 
+        public Fireball SpitFire(ISprite fireballSprite)
+        {
+            // spawns fireball left of bowser, at height where its mouth is
+            float direction = StateMachine.IsFlipped ? -1f : 1f;
+
+            Vector2 fireballPosition = new Vector2(direction < 0
+              ? Position.X - Fireball.FireballWidth
+              : Position.X + Width,
+          Position.Y + (Height / 2) - Fireball.FireballHeight);
+
+            Vector2 fireballVelocity = new Vector2(direction * FireballSpeed, 0f);
+
+            return new Fireball(fireballSprite, fireballPosition, fireballVelocity);
+
+        }
         private void UpdateAnimation(GameTime gameTime)
         {
             StateMachine.Update(Velocity);

@@ -11,9 +11,14 @@ namespace TeamUno.Mario.World
         private readonly LevelDefinition _definition;
         private readonly IEnemyFactory _enemyFactory;
         private readonly IItemFactory _itemFactory;
+        private readonly FireballSpriteFactory _fireballSpriteFactory;
+
+        private readonly List<Fireball> _fireballs = new List<Fireball>();
         private readonly List<Block> _blocks = new List<Block>();
         private readonly List<IItem> _items = new List<IItem>();
         private readonly List<IEnemy> _enemies = new List<IEnemy>();
+
+        private readonly IReadOnlyList<Fireball> _readOnlyFireballs;
         private readonly IReadOnlyList<Block> _readOnlyBlocks;
         private readonly IReadOnlyList<IItem> _readOnlyItems;
         private readonly IReadOnlyList<IEnemy> _readOnlyEnemies;
@@ -49,8 +54,16 @@ namespace TeamUno.Mario.World
                 return _readOnlyEnemies;
             }
         }
+        
+        public IReadOnlyList<Fireball> Fireballs
+        {
+            get 
+            {
+                return _readOnlyFireballs;
+            }
+        }
 
-        public Level(LevelDefinition definition, IEnemyFactory enemyFactory, IItemFactory itemFactory)
+        public Level(LevelDefinition definition, IEnemyFactory enemyFactory, IItemFactory itemFactory, FireballSpriteFactory fireballSpriteFactory)
         {
             if (definition == null)
             {
@@ -66,6 +79,11 @@ namespace TeamUno.Mario.World
             {
                 throw new ArgumentNullException(nameof(itemFactory));
             }
+            
+            if (fireballSpriteFactory == null)
+            {
+                throw new ArgumentNullException(nameof(fireballSpriteFactory));
+            }
 
             _definition = definition;
             _enemyFactory = enemyFactory;
@@ -73,6 +91,9 @@ namespace TeamUno.Mario.World
             _readOnlyBlocks = _blocks.AsReadOnly();
             _readOnlyItems = _items.AsReadOnly();
             _readOnlyEnemies = _enemies.AsReadOnly();
+            _readOnlyFireballs = _fireballs.AsReadOnly();
+            _fireballSpriteFactory = fireballSpriteFactory;
+
             LoadDefinition();
         }
 
@@ -87,11 +108,55 @@ namespace TeamUno.Mario.World
             {
                 enemy.Update(gameTime);
             }
+
+            foreach (Fireball fireball in _fireballs)
+            {
+                fireball.Update(gameTime);
+            }
+
+            _fireballs.RemoveAll(Fireball => Fireball.IsDead);
         }
 
         public virtual void Reset()
         {
             LoadDefinition();
+        }
+
+        public void AddFireball(Fireball fireball)
+        {
+            if (fireball == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            _fireballs.Add(fireball);
+        }
+
+        public void SpitFire()
+        {
+            Bowser bowser = null;
+
+            foreach (IEnemy enemy in _enemies)
+            {
+                bowser = enemy as Bowser;
+
+                if (bowser != null)
+                {
+                    break;
+                }
+            }
+
+            if (bowser == null)
+            {
+                return;
+            }
+
+            ISprite fireballSprite = _fireballSpriteFactory.Create();
+
+            Fireball fireball = bowser.SpitFire(fireballSprite);
+
+            AddFireball(fireball);
+
         }
 
         protected void ReplaceBlock(int index, BlockSpawnDefinition definition)
@@ -129,6 +194,7 @@ namespace TeamUno.Mario.World
             _blocks.Clear();
             _items.Clear();
             _enemies.Clear();
+            _fireballs.Clear();
 
             foreach (BlockSpawnDefinition block in Definition.Blocks)
             {

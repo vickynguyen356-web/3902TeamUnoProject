@@ -85,5 +85,10 @@ namespace TeamUno.Mario.Entities
         {
             StateMachine.TakeDamage();
         }
+
+        public virtual void Kill()
+        {
+            StateMachine.Kill();
+        }
     }
 }
