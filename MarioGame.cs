@@ -45,6 +45,8 @@ namespace TeamUno.Mario
                 _levelDefinition.PlayerSpawnPosition,
                 PlayerForm.Fire);
 
+            FireballSpriteFactory fireballSpriteFactory = new FireballSpriteFactory(enemyTexture);
+
             IEnemyFactory enemyFactory = new EnemyFactory(
                 delegate()
                 {
@@ -71,7 +73,7 @@ namespace TeamUno.Mario
                 {
                     return ItemSpriteFactory.Create(itemTexture);
                 });
-            DemoLevel level = new DemoLevel(_levelDefinition, enemyFactory, itemFactory);
+            DemoLevel level = new DemoLevel(_levelDefinition, enemyFactory, itemFactory, fireballSpriteFactory);
 
             _gameSession = new GameSession(
                 player,

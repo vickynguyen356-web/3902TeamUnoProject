@@ -25,7 +25,8 @@ namespace TeamUno.Mario.World
 
         public void Draw(SpriteBatch spriteBatch, Rectangle viewport, GameSession session)
         {
-            spriteBatch.Draw(_backgroundTexture, viewport, Color.White * 0.45f);
+            // don't draw background for now
+            // spriteBatch.Draw(_backgroundTexture, viewport, Color.White * 0.45f);
             DrawFloor(spriteBatch, viewport, session.Level.Definition.FloorY);
             DrawLevel(spriteBatch, session.Level);
             session.Player.Draw(spriteBatch);
@@ -58,6 +59,11 @@ namespace TeamUno.Mario.World
             foreach (IEnemy enemy in level.Enemies)
             {
                 enemy.Draw(spriteBatch);
+            }
+
+            foreach (Fireball fireball in level.Fireballs)
+            {
+                fireball.Draw(spriteBatch);
             }
         }
 
