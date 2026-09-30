@@ -4,6 +4,7 @@ using TeamUno.Mario.Interfaces;
 namespace TeamUno.Mario.Items
 {
     public class FireFlower : Item
+    // inherits from Item class
     {
         public override ItemType Type
         {
@@ -12,7 +13,7 @@ namespace TeamUno.Mario.Items
                 return ItemType.FireFlower;
             }
         }
-
+        // passes the position, sprite, and fire flower animation to Item constructor to set up the item
         public FireFlower(Vector2 position, ISprite sprite)
             : base(position, sprite, ItemSpriteFactory.CreateFireFlowerAnimation())
         {
