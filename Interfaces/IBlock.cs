@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Sprint0.Entities;
 
 namespace Sprint0.Interfaces
@@ -7,5 +8,6 @@ namespace Sprint0.Interfaces
     {
         BlockType Type { get; }
         Rectangle GetSourceRectangle();
+        void Update(GameTime gameTime);
     }
 }
