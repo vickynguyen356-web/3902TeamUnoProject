@@ -1,36 +1,29 @@
 using Microsoft.Xna.Framework;
-using TeamUno.Mario.Interfaces;
+using Microsoft.Xna.Framework.Graphics;
+using Sprint0.Interfaces;
 
-namespace TeamUno.Mario.Entities
+namespace Sprint0.Entities
 {
-    public abstract class BlockSprite : IBlockSprite
+    public abstract class BlockSpriteSheetBlock : IBlock
     {
-        private BlockType _type;
-
-        protected BlockSprite(BlockType baseType)
+        protected BlockSpriteSheetBlock(BlockType baseType)
         {
             Type = baseType;
         }
 
-        public BlockType Type
-        {
-            get
-            {
-                return _type;
-            }
-            protected set
-            {
-                _type = value;
-            }
-        }
+        public BlockType Type { get; protected set; }
 
         public virtual Rectangle GetSourceRectangle()
         {
             return new Rectangle(0, 0, 16, 16);
         }
+
+        public virtual void Update(GameTime gameTime)
+        {
+        }
     }
 
-    public class BrickBlockSprite : BlockSprite
+    public class BrickBlockSprite : BlockSpriteSheetBlock
     {
         public BrickBlockSprite() : base(BlockType.Brick)
         {
@@ -38,23 +31,43 @@ namespace TeamUno.Mario.Entities
 
         public override Rectangle GetSourceRectangle()
         {
-            return new Rectangle(315, 78, 16, 16);
+            return new Rectangle(17, 0, 16, 16);
         }
     }
 
-    public class QuestionBlockSprite : BlockSprite
+    public class QuestionBlockSprite : BlockSpriteSheetBlock
     {
+        private const float FrameDurationSeconds = 0.16f;
+        private readonly Rectangle[] _frames =
+        {
+            new Rectangle(0, 78, 16, 16),
+            new Rectangle(17, 78, 16, 16),
+            new Rectangle(34, 78, 16, 16)
+        };
+        private float _elapsedSeconds;
+        private int _frameIndex;
+
         public QuestionBlockSprite() : base(BlockType.Question)
         {
         }
 
         public override Rectangle GetSourceRectangle()
         {
-            return new Rectangle(298, 78, 16, 16);
+            return _frames[_frameIndex];
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            _elapsedSeconds += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            while (_elapsedSeconds >= FrameDurationSeconds)
+            {
+                _elapsedSeconds -= FrameDurationSeconds;
+                _frameIndex = (_frameIndex + 1) % _frames.Length;
+            }
         }
     }
 
-    public class UsedBlockSprite : BlockSprite
+    public class UsedBlockSprite : BlockSpriteSheetBlock
     {
         public UsedBlockSprite() : base(BlockType.Used)
         {
@@ -62,23 +75,11 @@ namespace TeamUno.Mario.Entities
 
         public override Rectangle GetSourceRectangle()
         {
-            return new Rectangle(332, 78, 16, 16);
+            return new Rectangle(51, 78, 16, 16);
         }
     }
 
-    public class CoinBlockSprite : BlockSprite
-    {
-        public CoinBlockSprite() : base(BlockType.Coin)
-        {
-        }
-
-        public override Rectangle GetSourceRectangle()
-        {
-            return new Rectangle(298, 95, 16, 16);
-        }
-    }
-
-    public class SolidBlockSprite : BlockSprite
+    public class SolidBlockSprite : BlockSpriteSheetBlock
     {
         public SolidBlockSprite() : base(BlockType.Solid)
         {
@@ -86,11 +87,23 @@ namespace TeamUno.Mario.Entities
 
         public override Rectangle GetSourceRectangle()
         {
-            return new Rectangle(349, 78, 16, 16);
+            return new Rectangle(51, 0, 16, 16);
         }
     }
 
-    public class GroundBlockSprite : BlockSprite
+    public class FlagPoleBlockSprite : BlockSpriteSheetBlock
+    {
+        public FlagPoleBlockSprite() : base(BlockType.FlagPole)
+        {
+        }
+
+        public override Rectangle GetSourceRectangle()
+        {
+            return new Rectangle(139, 0, 16, 166);
+        }
+    }
+
+    public class GroundBlockSprite : BlockSpriteSheetBlock
     {
         public GroundBlockSprite() : base(BlockType.Ground)
         {
@@ -98,11 +111,11 @@ namespace TeamUno.Mario.Entities
 
         public override Rectangle GetSourceRectangle()
         {
-            return new Rectangle(0, 48, 16, 16);
+            return new Rectangle(17, 17, 16, 16);
         }
     }
 
-    public class PipeBlockSprite : BlockSprite
+    public class PipeBlockSprite : BlockSpriteSheetBlock
     {
         public PipeBlockSprite() : base(BlockType.Pipe)
         {
@@ -110,11 +123,11 @@ namespace TeamUno.Mario.Entities
 
         public override Rectangle GetSourceRectangle()
         {
-            return new Rectangle(112, 623, 32, 65);
+            return new Rectangle(0, 94, 32, 65);
         }
     }
 
-    public class TallPipeBlockSprite : BlockSprite
+    public class TallPipeBlockSprite : BlockSpriteSheetBlock
     {
         public TallPipeBlockSprite() : base(BlockType.Pipe)
         {
@@ -122,11 +135,11 @@ namespace TeamUno.Mario.Entities
 
         public override Rectangle GetSourceRectangle()
         {
-            return new Rectangle(152, 623, 32, 65);
+            return new Rectangle(40, 94, 32, 65);
         }
     }
 
-    public class HorizontalPipeBlockSprite : BlockSprite
+    public class HorizontalPipeBlockSprite : BlockSpriteSheetBlock
     {
         public HorizontalPipeBlockSprite() : base(BlockType.Pipe)
         {
@@ -134,11 +147,11 @@ namespace TeamUno.Mario.Entities
 
         public override Rectangle GetSourceRectangle()
         {
-            return new Rectangle(192, 655, 48, 33);
+            return new Rectangle(91, 109, 45, 49);
         }
     }
 
-    public class TallPipeBlockSpriteTwo : BlockSprite
+    public class TallPipeBlockSpriteTwo : BlockSpriteSheetBlock
     {
         public TallPipeBlockSpriteTwo() : base(BlockType.Pipe)
         {
@@ -146,13 +159,25 @@ namespace TeamUno.Mario.Entities
 
         public override Rectangle GetSourceRectangle()
         {
-            return new Rectangle(224, 623, 32, 65);
+            return new Rectangle(108, 94, 32, 65);
+        }
+    }
+
+    public class SmallPipeBlockSprite : BlockSpriteSheetBlock
+    {
+        public SmallPipeBlockSprite() : base(BlockType.Pipe)
+        {
+        }
+
+        public override Rectangle GetSourceRectangle()
+        {
+            return new Rectangle(76, 126, 16, 33);
         }
     }
 
     public static class BlockSpriteFactory
     {
-        public static IBlockSprite Create(BlockType type)
+        public static IBlock Create(BlockType type)
         {
             switch (type)
             {
@@ -162,10 +187,10 @@ namespace TeamUno.Mario.Entities
                     return new QuestionBlockSprite();
                 case BlockType.Used:
                     return new UsedBlockSprite();
-                case BlockType.Coin:
-                    return new CoinBlockSprite();
                 case BlockType.Solid:
                     return new SolidBlockSprite();
+                case BlockType.FlagPole:
+                    return new FlagPoleBlockSprite();
                 case BlockType.Ground:
                     return new GroundBlockSprite();
                 case BlockType.Pipe:
