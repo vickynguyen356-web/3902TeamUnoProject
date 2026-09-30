@@ -1,8 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TeamUno.Mario.Interfaces;
+using Sprint0.Interfaces;
 
-namespace TeamUno.Mario.Entities
+namespace Sprint0.Entities
 {
     public enum BlockType
     {
@@ -12,7 +12,7 @@ namespace TeamUno.Mario.Entities
         Ground,
         Pipe,
         Solid,
-        Coin,
+        FlagPole,
         Empty
     }
 
@@ -21,64 +21,37 @@ namespace TeamUno.Mario.Entities
         private const int DefaultWidth = 48;
         private const int DefaultHeight = 48;
 
-        private readonly IBlockSprite _spriteBlock;
+        private IBlock _spriteBlock;
 
-        private BlockType _type;
-        private readonly Vector2 _position;
-        private readonly int _width;
-        private readonly int _height;
-
-        public BlockType Type
-        {
-            get
-            {
-                return _type;
-            }
-            private set
-            {
-                _type = value;
-            }
-        }
-
-        public Vector2 Position
-        {
-            get
-            {
-                return _position;
-            }
-        }
-
-        public int Width
-        {
-            get
-            {
-                return _width;
-            }
-        }
-
-        public int Height
-        {
-            get
-            {
-                return _height;
-            }
-        }
-
-        public Rectangle Bounds
-        {
-            get
-            {
-                return new Rectangle((int)Position.X, (int)Position.Y, Width, Height);
-            }
-        }
+        public BlockType Type { get; private set; }
+        public Vector2 Position { get; }
+        public int Width { get; }
+        public int Height { get; }
+        public Rectangle Bounds => new Rectangle((int)Position.X, (int)Position.Y, Width, Height);
 
         public Block(Vector2 position, BlockType type, int width = DefaultWidth, int height = DefaultHeight)
         {
-            _position = position;
+            Position = position;
             Type = type;
-            _width = width;
-            _height = height;
+            Width = width;
+            Height = height;
             _spriteBlock = BlockSpriteFactory.Create(type);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            _spriteBlock.Update(gameTime);
+        }
+
+        internal void HitFromBelow()
+        {
+            if (Type != BlockType.Question)
+            {
+                return;
+            }
+
+            Type = BlockType.Solid;
+            _spriteBlock = BlockSpriteFactory.Create(Type);
         }
 
         public void Draw(SpriteBatch spriteBatch, Texture2D blockTexture)
