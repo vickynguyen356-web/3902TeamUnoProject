@@ -11,5 +11,6 @@ namespace TeamUno.Mario.Interfaces
         }
 
         Rectangle GetSourceRectangle();
+        void Update(GameTime gameTime);
     }
 }

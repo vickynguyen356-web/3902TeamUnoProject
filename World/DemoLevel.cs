@@ -15,8 +15,8 @@ namespace TeamUno.Mario.World
             BlockType.Used,
             BlockType.Ground,
             BlockType.Solid,
-            BlockType.Coin,
-            BlockType.Pipe
+            BlockType.Pipe,
+            BlockType.FlagPole
         };
         private static readonly ItemType[] _itemTypes =
         {
@@ -156,13 +156,19 @@ namespace TeamUno.Mario.World
             BlockType type = _blockTypes[_currentBlockIndex];
             int width = 48;
             int height = 48;
+            Vector2 position = Definition.Blocks[0].Position;
             if (type == BlockType.Pipe)
             {
                 width = 64;
                 height = 64;
             }
+            else if (type == BlockType.FlagPole)
+            {
+                height = 498;
+                position = new Vector2(position.X, Definition.FloorY - height);
+            }
 
-            ReplaceBlock(0, new BlockSpawnDefinition(Definition.Blocks[0].Position, type, width, height));
+            ReplaceBlock(0, new BlockSpawnDefinition(position, type, width, height));
         }
 
         private void ReplaceSelectedItem()
