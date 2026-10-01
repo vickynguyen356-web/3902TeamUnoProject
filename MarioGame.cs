@@ -36,7 +36,7 @@ namespace TeamUno.Mario
             Texture2D enemyTexture = Content.Load<Texture2D>("enemiesSprites");
             Texture2D itemTexture = Content.Load<Texture2D>("items");
             Texture2D backgroundTexture = Content.Load<Texture2D>("background");
-            Texture2D blockTexture = Content.Load<Texture2D>("bricksobstacles");
+            Texture2D blockTexture = Content.Load<Texture2D>("blocksspritesheetbg");
             SpriteFont controlsFont = Content.Load<SpriteFont>("MyFont");
 
             _whitePixelTexture = new Texture2D(GraphicsDevice, 1, 1);

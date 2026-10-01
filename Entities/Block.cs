@@ -12,7 +12,7 @@ namespace TeamUno.Mario.Entities
         Ground,
         Pipe,
         Solid,
-        Coin,
+        FlagPole,
         Empty
     }
 
@@ -21,8 +21,7 @@ namespace TeamUno.Mario.Entities
         private const int DefaultWidth = 48;
         private const int DefaultHeight = 48;
 
-        private readonly IBlockSprite _spriteBlock;
-
+        private IBlockSprite _spriteBlock;
         private BlockType _type;
         private readonly Vector2 _position;
         private readonly int _width;
@@ -79,6 +78,22 @@ namespace TeamUno.Mario.Entities
             _width = width;
             _height = height;
             _spriteBlock = BlockSpriteFactory.Create(type);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            _spriteBlock.Update(gameTime);
+        }
+
+        internal void HitFromBelow()
+        {
+            if (Type != BlockType.Question)
+            {
+                return;
+            }
+
+            Type = BlockType.Solid;
+            _spriteBlock = BlockSpriteFactory.Create(Type);
         }
 
         public void Draw(SpriteBatch spriteBatch, Texture2D blockTexture)

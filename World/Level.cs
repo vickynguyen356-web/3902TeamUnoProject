@@ -87,6 +87,11 @@ namespace TeamUno.Mario.World
             {
                 enemy.Update(gameTime);
             }
+
+            foreach (Block block in _blocks)
+            {
+                block.Update(gameTime);
+            }
         }
 
         public virtual void Reset()
