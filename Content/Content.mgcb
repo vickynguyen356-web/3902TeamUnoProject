@@ -26,7 +26,7 @@
 /processorParam:Version=3.8.5.1
 /build:background.png
 
-#begin bricksobstacles.png
+#begin blocksspritesheetbg.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -37,7 +37,7 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /processorParam:Version=3.8.5.1
-/build:bricksobstacles.png
+/build:blocksspritesheetbg.png
 
 #begin enemiesSprites.png
 /importer:TextureImporter
@@ -51,6 +51,19 @@
 /processorParam:TextureFormat=Color
 /processorParam:Version=3.8.5.1
 /build:enemiesSprites.png
+
+#begin items.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=146,144,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
+/build:items.png
 
 #begin mario.png
 /importer:TextureImporter
@@ -72,16 +85,6 @@
 /processorParam:TextureFormat=Color
 /processorParam:Version=3.8.5.1
 /build:MyFont.spritefont
-
-#begin items.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyEnabled=True
-/processorParam:ColorKeyColor=146,144,255,255
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Color
-/build:items.png
 
 #begin spritesheet.png
 /importer:TextureImporter
