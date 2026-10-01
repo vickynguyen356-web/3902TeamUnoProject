@@ -9,6 +9,7 @@ namespace TeamUno.Mario.World
     {
         private readonly int _stageWidth;
         private readonly int _floorY;
+
         public int FloorY
         {
             get
