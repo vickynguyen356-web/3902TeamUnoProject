@@ -4,7 +4,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class Fireball : Enemy
+    public class BowserFireball : Enemy
     {
         public const int FireballWidth = 64;
         public const int FireballHeight = 64;
@@ -22,13 +22,13 @@ namespace TeamUno.Mario.Entities
                 return FireballHeight;
             }
         }
-        private readonly ISprite _sprite;
+        // private readonly ISprite _sprite;
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _fireballAnimations;
 
-        public Fireball(ISprite sprite, Vector2 position, Vector2 velocity)
+        public BowserFireball(ISprite sprite, Vector2 position, Vector2 velocity)
             : base(sprite, position)
         {
-            _fireballAnimations = FireballSpriteFactory.CreateFireballAnimations();
+            _fireballAnimations = BowserFireballSpriteFactory.CreateFireballAnimations();
             Velocity = velocity;
 
             UpdateAnimation(new GameTime());

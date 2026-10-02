@@ -30,6 +30,9 @@ namespace TeamUno.Mario.Entities
         private const float FireballSpeed = 150f;
         private float _distanceTraveled;
         private bool _hasStopped;
+        private bool _isSpittingFire;
+        private float _spitFireTimer;
+        private const float SpitFireDuration = 0.6f;
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _bowserAnimations;
 
         public Bowser(ISprite sprite, Vector2 position)
@@ -38,6 +41,7 @@ namespace TeamUno.Mario.Entities
             _bowserAnimations = BowserSpriteFactory.CreateBowserAnimations();
             _distanceTraveled = 0f;
             Velocity.X = -WalkSpeed;
+            _isSpittingFire = false;
 
             UpdateAnimation(new GameTime());
         }
@@ -61,22 +65,36 @@ namespace TeamUno.Mario.Entities
                 }
             }
 
+            if (_isSpittingFire)
+            {
+                _spitFireTimer += elapsedSeconds;
+                if (_spitFireTimer >= SpitFireDuration)
+                {
+                    _isSpittingFire = false;
+                    _spitFireTimer = 0f;
+                }
+            }
+
             UpdateAnimation(gameTime);
         }
 
-        public Fireball SpitFire(ISprite fireballSprite)
+        public BowserFireball SpitFire(ISprite fireballSprite)
         {
-            // spawns fireball left of bowser, at height where its mouth is
+            _isSpittingFire = true;
+            _spitFireTimer = 0f;
+
+            // spawns fireball to left if -1 and right if 1 
             float direction = StateMachine.IsFlipped ? -1f : 1f;
 
             Vector2 fireballPosition = new Vector2(direction < 0
-              ? Position.X - Fireball.FireballWidth
+              ? Position.X - BowserFireball.FireballWidth
               : Position.X + Width,
-          Position.Y + (Height / 2) - Fireball.FireballHeight);
+              // fireball y coordinate goes halfway down bowser's height and subtracts fireball height to align with the mouth
+          Position.Y + (Height / 2) - BowserFireball.FireballHeight);
 
             Vector2 fireballVelocity = new Vector2(direction * FireballSpeed, 0f);
 
-            return new Fireball(fireballSprite, fireballPosition, fireballVelocity);
+            return new BowserFireball(fireballSprite, fireballPosition, fireballVelocity);
 
         }
         private void UpdateAnimation(GameTime gameTime)
@@ -88,9 +106,13 @@ namespace TeamUno.Mario.Entities
 
         private SpriteAnimation GetCurrentAnimation()
         {
-            SpriteAnimation animation;
+            if (_isSpittingFire && _bowserAnimations.TryGetValue(EntityAnimationState.SpitFire, 
+                out SpriteAnimation spitFireanimation))
+            {
+                return spitFireanimation;
+            }
 
-            if (_bowserAnimations.TryGetValue(StateMachine.AnimationState, out animation))
+            if (_bowserAnimations.TryGetValue(StateMachine.AnimationState, out SpriteAnimation animation))
             {
                 return animation;
             }

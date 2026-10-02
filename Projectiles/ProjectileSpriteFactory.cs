@@ -1,11 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TeamUno.Mario.Interfaces;
-
-namespace TeamUno.Mario.Entities
+using TeamUno.Mario.Entities;
+namespace TeamUno.Mario.Projectiles
 {
-    public class BowserSpriteFactory
+    public class ProjectileSpriteFactory
     {
         private const int FrameWidth = 64;
         private const int FrameHeight = 64;
@@ -13,25 +13,18 @@ namespace TeamUno.Mario.Entities
         {
             return new SpriteSheetSprite(spriteSheetTexture, 2f);
         }
-
-        internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreateBowserAnimations()
+        internal static IReadOnlyDictionary<ProjectileType, SpriteAnimation> CreateProjectileAnimations()
         {
-            SpriteAnimation idle = new SpriteAnimation(0.28f, CreateFrame(1, 5, 1, 5));
+            SpriteAnimation fireball = new SpriteAnimation(0.28f, CreateFrame(1, 8, 1, 8));
 
-            SpriteAnimation walk = new SpriteAnimation(0.28f, CreateFrame(0, 5, 0, 5),
-                CreateFrame(1, 5, 1, 5));
+            SpriteAnimation hammer = new SpriteAnimation(0.28f, CreateFrame(6, 20, 6, 20));
 
-            SpriteAnimation spitFire = new SpriteAnimation(0.28f, CreateFrame(6, 4, 6, 4),
-                CreateFrame(5, 4, 5, 4));
-
-            return new Dictionary<EntityAnimationState, SpriteAnimation>
+            return new Dictionary<ProjectileType, SpriteAnimation>
             {
-                { EntityAnimationState.Idle, idle },
-                { EntityAnimationState.Run, walk },
-                { EntityAnimationState.SpitFire, spitFire }
+                { ProjectileType.Fireball, fireball },
+                { ProjectileType.Hammer, hammer }
             };
         }
-
         private static SpriteFrame CreateFrame(int leftCol, int leftRow, int rightCol, int rightRow)
         {
             Rectangle leftFrame = new Rectangle(
@@ -39,13 +32,11 @@ namespace TeamUno.Mario.Entities
                 leftRow * FrameHeight,
                 FrameWidth,
                 FrameHeight);
-
             Rectangle rightFrame = new Rectangle(
                 rightCol * FrameWidth,
                 rightRow * FrameHeight,
                 FrameWidth,
                 FrameHeight);
-
             return new SpriteFrame(leftFrame, rightFrame);
         }
     }

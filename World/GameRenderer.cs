@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using TeamUno.Mario.Items;
 using TeamUno.Mario.Entities;
 using TeamUno.Mario.Interfaces;
+using TeamUno.Mario.Projectiles;
 
 namespace TeamUno.Mario.World
 {
@@ -61,9 +62,14 @@ namespace TeamUno.Mario.World
                 enemy.Draw(spriteBatch);
             }
 
-            foreach (Fireball fireball in level.Fireballs)
+            foreach (BowserFireball fireball in level.Fireballs)
             {
                 fireball.Draw(spriteBatch);
+            }
+
+            foreach (IProjectile projectile in level.Projectiles)
+            {
+                projectile.Draw(spriteBatch);
             }
         }
 
