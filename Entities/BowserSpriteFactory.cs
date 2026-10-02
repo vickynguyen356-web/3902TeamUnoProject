@@ -18,13 +18,17 @@ namespace TeamUno.Mario.Entities
         {
             SpriteAnimation idle = new SpriteAnimation(0.28f, CreateFrame(1, 5, 1, 5));
 
-            SpriteAnimation walk = new SpriteAnimation(0.28f, CreateFrame(5, 4, 5, 4),
-                CreateFrame(6, 4, 6, 4));
+            SpriteAnimation walk = new SpriteAnimation(0.28f, CreateFrame(0, 5, 0, 5),
+                CreateFrame(1, 5, 1, 5));
+
+            SpriteAnimation spitFire = new SpriteAnimation(0.28f, CreateFrame(6, 4, 6, 4),
+                CreateFrame(5, 4, 5, 4));
 
             return new Dictionary<EntityAnimationState, SpriteAnimation>
             {
                 { EntityAnimationState.Idle, idle },
-                { EntityAnimationState.Run, walk }
+                { EntityAnimationState.Run, walk },
+                { EntityAnimationState.SpitFire, spitFire }
             };
         }
 

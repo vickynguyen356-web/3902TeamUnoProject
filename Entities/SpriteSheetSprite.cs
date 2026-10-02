@@ -62,7 +62,7 @@ namespace TeamUno.Mario.Entities
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch, Rectangle bounds, SpriteEffects facingDirection)
+        public void Draw(SpriteBatch spriteBatch, Rectangle bounds, SpriteEffects facingDirection, float rotation = 0f, bool rotateAroundCenter = false)
         {
             if (_currentAnimation == null)
             {
@@ -86,16 +86,28 @@ namespace TeamUno.Mario.Entities
             }
 
             // Anchor frames at the feet, even when their heights differ
-            Vector2 drawingOrigin = new Vector2(sourceRectangle.Width / 2f, sourceRectangle.Height);
-            Vector2 feetPosition = new Vector2(bounds.Center.X, bounds.Bottom);
-            Vector2 frameOffset = new Vector2(selectedFrame.OffsetX, selectedFrame.OffsetY) * _spriteScale;
+            Vector2 drawingOrigin;
+            if (rotateAroundCenter)
+            {
+                drawingOrigin = new Vector2(sourceRectangle.Width / 2f,
+                    sourceRectangle.Height / 2f);
+            }
+            else
+            {
+                drawingOrigin = new Vector2(sourceRectangle.Width / 2f,
+                sourceRectangle.Height);
+            }
+            Vector2 feetPosition = new Vector2(bounds.Center.X, 
+                bounds.Bottom);
+            Vector2 frameOffset = new Vector2(selectedFrame.OffsetX, 
+                selectedFrame.OffsetY) * _spriteScale;
 
             spriteBatch.Draw(
                 _spriteSheetTexture,
                 feetPosition + frameOffset,
                 sourceRectangle,
                 Color.White,
-                0,
+                rotation,
                 drawingOrigin,
                 _spriteScale,
                 spriteEffects,

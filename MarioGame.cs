@@ -4,6 +4,7 @@ using TeamUno.Mario.Entities;
 using TeamUno.Mario.Input;
 using TeamUno.Mario.Interfaces;
 using TeamUno.Mario.Items;
+using TeamUno.Mario.Projectiles;
 using TeamUno.Mario.World;
 
 namespace TeamUno.Mario
@@ -45,7 +46,7 @@ namespace TeamUno.Mario
                 _levelDefinition.PlayerSpawnPosition,
                 PlayerForm.Fire);
 
-            FireballSpriteFactory fireballSpriteFactory = new FireballSpriteFactory(enemyTexture);
+            BowserFireballSpriteFactory fireballSpriteFactory = new BowserFireballSpriteFactory(enemyTexture);
 
             IEnemyFactory enemyFactory = new EnemyFactory(
                 delegate()
@@ -73,12 +74,17 @@ namespace TeamUno.Mario
                 {
                     return ItemSpriteFactory.Create(itemTexture);
                 });
-            DemoLevel level = new DemoLevel(_levelDefinition, enemyFactory, itemFactory, fireballSpriteFactory);
+
+            IProjectileFactory projectileFactory = new ProjectileFactory(
+                () => ProjectileSpriteFactory.Create(enemyTexture));
+
+            DemoLevel level = new DemoLevel(_levelDefinition, enemyFactory, itemFactory, fireballSpriteFactory, projectileFactory);
 
             _gameSession = new GameSession(
                 player,
                 level,
-                new DemoMovement(level.Definition.Width, level.Definition.FloorY));
+                new DemoMovement(level.Definition.Width, level.Definition.FloorY),
+                projectileFactory);
 
             KeyboardInput input = new KeyboardInput();
             _controller = new CombinedController(

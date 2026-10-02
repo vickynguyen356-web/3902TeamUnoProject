@@ -5,13 +5,13 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class FireballSpriteFactory
+    public class BowserFireballSpriteFactory
     {
         private const int FrameWidth = 64;
         private const int FrameHeight = 64;
 
         private readonly Texture2D _enemiesTexture;
-        public FireballSpriteFactory(Texture2D enemyTexture)
+        public BowserFireballSpriteFactory(Texture2D enemyTexture)
         {
             _enemiesTexture = enemyTexture;
         }
