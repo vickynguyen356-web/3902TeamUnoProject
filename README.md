@@ -19,6 +19,7 @@ Our project is a Mario demo built with C# and MonoGame. For Sprint 2, the demo i
 | T / Y | Previous / next block |
 | O / P | Previous / next enemy |
 | U / I | Previous / next item |
+| B | Bowser spits fireball |
 | 1 | Mushroom |
 | 2 | Fire Flower |
 | 3 | Floating Coin |
