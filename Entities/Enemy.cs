@@ -49,15 +49,9 @@ namespace TeamUno.Mario.Entities
 
         protected Enemy(ISprite sprite, Vector2 position, IProjectileFactory projectileFactory)
         {
-            if (sprite == null)
-            {
-                throw new ArgumentNullException(nameof(sprite));
-            }
+            ArgumentNullException.ThrowIfNull(sprite);
 
-            if (projectileFactory == null)
-            {
-                throw new ArgumentNullException(nameof(projectileFactory));
-            }
+            ArgumentNullException.ThrowIfNull(projectileFactory);
 
             Sprite = sprite;
             Position = position;
@@ -122,10 +116,7 @@ namespace TeamUno.Mario.Entities
 
         protected void AddProjectile(IProjectile projectile)
         {
-            if (projectile == null)
-            {
-                throw new ArgumentNullException(nameof(projectile));
-            }
+            ArgumentNullException.ThrowIfNull(projectile);
 
             _projectiles.Add(projectile);
         }

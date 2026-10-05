@@ -10,10 +10,7 @@ namespace TeamUno.Mario.Commands
 
         public MoveCommand(IPlayer player, float movementDirection)
         {
-            if (player == null)
-            {
-                throw new ArgumentNullException(nameof(player));
-            }
+            ArgumentNullException.ThrowIfNull(player);
 
             _player = player;
             _movementDirection = movementDirection;

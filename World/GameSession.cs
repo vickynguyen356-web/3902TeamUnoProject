@@ -45,25 +45,13 @@ namespace TeamUno.Mario.World
 
         public GameSession(MarioPlayer player, Level level, IPlayerMovement playerMovement, IProjectileFactory projectileFactory)
         {
-            if (player == null)
-            {
-                throw new ArgumentNullException(nameof(player));
-            }
+            ArgumentNullException.ThrowIfNull(player);
 
-            if (level == null)
-            {
-                throw new ArgumentNullException(nameof(level));
-            }
+            ArgumentNullException.ThrowIfNull(level);
 
-            if (playerMovement == null)
-            {
-                throw new ArgumentNullException(nameof(playerMovement));
-            }
+            ArgumentNullException.ThrowIfNull(playerMovement);
 
-            if (projectileFactory == null)
-            {
-                throw new ArgumentNullException(nameof(projectileFactory));
-            }
+            ArgumentNullException.ThrowIfNull(projectileFactory);
             _player = player;
             _level = level;
             _playerMovement = playerMovement;

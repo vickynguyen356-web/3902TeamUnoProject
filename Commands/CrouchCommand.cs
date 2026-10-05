@@ -10,10 +10,7 @@ namespace TeamUno.Mario.Commands
 
         public CrouchCommand(IPlayer player, bool shouldCrouch)
         {
-            if (player == null)
-            {
-                throw new ArgumentNullException(nameof(player));
-            }
+            ArgumentNullException.ThrowIfNull(player);
 
             _player = player;
             _shouldCrouch = shouldCrouch;

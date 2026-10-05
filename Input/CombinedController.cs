@@ -27,15 +27,9 @@ namespace TeamUno.Mario.Input
 
         public CombinedController(KeyboardInput input, IGameActions gameActions, params IController[] controllers)
         {
-            if (input == null)
-            {
-                throw new ArgumentNullException(nameof(input));
-            }
+            ArgumentNullException.ThrowIfNull(input);
 
-            if (gameActions == null)
-            {
-                throw new ArgumentNullException(nameof(gameActions));
-            }
+            ArgumentNullException.ThrowIfNull(gameActions);
 
             _input = input;
             _quitCommand = new QuitCommand(gameActions);

@@ -69,25 +69,13 @@ namespace TeamUno.Mario.World
             IItemFactory itemFactory,
             IProjectileFactory projectileFactory)
         {
-            if (definition == null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
+            ArgumentNullException.ThrowIfNull(definition);
 
-            if (enemyFactory == null)
-            {
-                throw new ArgumentNullException(nameof(enemyFactory));
-            }
+            ArgumentNullException.ThrowIfNull(enemyFactory);
 
-            if (itemFactory == null)
-            {
-                throw new ArgumentNullException(nameof(itemFactory));
-            }
+            ArgumentNullException.ThrowIfNull(itemFactory);
 
-            if (projectileFactory == null)
-            {
-                throw new ArgumentNullException(nameof(projectileFactory));
-            }
+            ArgumentNullException.ThrowIfNull(projectileFactory);
 
             _definition = definition;
             _enemyFactory = enemyFactory;
@@ -180,30 +168,21 @@ namespace TeamUno.Mario.World
 
         protected void ReplaceBlock(int index, BlockSpawnDefinition definition)
         {
-            if (definition == null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
+            ArgumentNullException.ThrowIfNull(definition);
 
             _blocks[index] = CreateBlock(definition);
         }
 
         protected void ReplaceItem(int index, ItemSpawnDefinition definition)
         {
-            if (definition == null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
+            ArgumentNullException.ThrowIfNull(definition);
 
             _items[index] = _itemFactory.Create(definition.Type, definition.Position);
         }
 
         protected void ReplaceEnemy(int index, EnemySpawnDefinition definition)
         {
-            if (definition == null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
+            ArgumentNullException.ThrowIfNull(definition);
 
             _enemies[index] = _enemyFactory.Create(definition.Type, definition.Position);
         }
@@ -238,10 +217,7 @@ namespace TeamUno.Mario.World
 
         public void AddProjectiles(IProjectile projectile)
         {
-            if (projectile == null)
-            {
-                throw new ArgumentNullException(nameof(projectile));
-            }
+            ArgumentNullException.ThrowIfNull(projectile);
 
             _projectiles.Add(projectile);
         }

@@ -12,10 +12,7 @@ namespace TeamUno.Mario.Projectiles
 
         public ProjectileFactory(Func<ISprite> sprite)
         {
-            if (sprite == null)
-            {
-                throw new ArgumentNullException(nameof(sprite));
-            }
+            ArgumentNullException.ThrowIfNull(sprite);
 
             _sprite = sprite;
         }

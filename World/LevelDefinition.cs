@@ -94,20 +94,11 @@ namespace TeamUno.Mario.World
                 throw new ArgumentOutOfRangeException(nameof(floorY));
             }
 
-            if (blocks == null)
-            {
-                throw new ArgumentNullException(nameof(blocks));
-            }
+            ArgumentNullException.ThrowIfNull(blocks);
 
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
+            ArgumentNullException.ThrowIfNull(items);
 
-            if (enemies == null)
-            {
-                throw new ArgumentNullException(nameof(enemies));
-            }
+            ArgumentNullException.ThrowIfNull(enemies);
 
             _width = width;
             _height = height;

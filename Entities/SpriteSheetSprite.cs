@@ -16,10 +16,7 @@ namespace TeamUno.Mario.Entities
 
         public SpriteSheetSprite(Texture2D spriteSheetTexture, float spriteScale, bool useSpriteEffects = false)
         {
-            if (spriteSheetTexture == null)
-            {
-                throw new ArgumentNullException(nameof(spriteSheetTexture));
-            }
+            ArgumentNullException.ThrowIfNull(spriteSheetTexture);
 
             _spriteSheetTexture = spriteSheetTexture;
             _spriteScale = spriteScale;
@@ -35,10 +32,7 @@ namespace TeamUno.Mario.Entities
 
         public void Update(GameTime gameTime, SpriteAnimation animation)
         {
-            if (animation == null)
-            {
-                throw new ArgumentNullException(nameof(animation));
-            }
+            ArgumentNullException.ThrowIfNull(animation);
 
             if (_currentAnimation != animation)
             {
