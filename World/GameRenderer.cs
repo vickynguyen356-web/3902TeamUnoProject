@@ -8,7 +8,7 @@ using TeamUno.Mario.Projectiles;
 
 namespace TeamUno.Mario.World
 {
-    public class GameRenderer
+    internal class GameRenderer
     {
         private readonly Texture2D _backgroundTexture;
         private readonly Texture2D _whitePixelTexture;

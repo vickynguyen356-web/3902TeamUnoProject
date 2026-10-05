@@ -7,7 +7,7 @@ using TeamUno.Mario.Projectiles;
 
 namespace TeamUno.Mario.Entities
 {
-    public abstract class Enemy : IEnemy, IProjectileEmitter
+    internal abstract class Enemy : IEnemy, IProjectileEmitter
     {
         protected readonly EnemyStateMachine StateMachine;
         protected readonly ISprite Sprite;

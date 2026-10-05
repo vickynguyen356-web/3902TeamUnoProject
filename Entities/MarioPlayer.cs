@@ -6,7 +6,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class MarioPlayer : IPlayer
+    internal class MarioPlayer : IPlayer
     {
         public const int StandingHeight = 72;
         private const int BodyWidth = 42;

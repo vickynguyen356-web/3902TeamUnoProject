@@ -1,6 +1,6 @@
 namespace TeamUno.Mario.Interfaces
 {
-    public interface IDemoControls : IItemSelection
+    internal interface IDemoControls : IItemSelection
     {
         void PreviousBlock();
         void NextBlock();

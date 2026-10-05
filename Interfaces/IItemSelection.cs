@@ -2,7 +2,7 @@ using TeamUno.Mario.Items;
 
 namespace TeamUno.Mario.Interfaces
 {
-    public interface IItemSelection
+    internal interface IItemSelection
     {
         ItemType SelectedItem
         {

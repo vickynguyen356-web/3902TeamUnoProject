@@ -5,7 +5,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.World
 {
-    public class DemoMovement : IPlayerMovement
+    internal class DemoMovement : IPlayerMovement
     {
         private readonly int _stageWidth;
         private readonly int _floorY;

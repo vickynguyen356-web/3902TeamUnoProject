@@ -6,7 +6,7 @@ using TeamUno.Mario.Items;
 
 namespace TeamUno.Mario.Input
 {
-    public class DemoController : IController
+    internal class DemoController : IController
     {
         private readonly KeyboardInput _input;
         private readonly ICommand _previousBlockCommand;

@@ -3,7 +3,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Commands
 {
-    public class JumpCommand : ICommand
+    internal class JumpCommand : ICommand
     {
         private readonly IPlayer _player;
 

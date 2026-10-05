@@ -5,7 +5,7 @@ using TeamUno.Mario.Projectiles;
 
 namespace TeamUno.Mario.Entities
 {
-    public class HammerBro : Enemy
+    internal class HammerBro : Enemy
     {
         public const int HammerBroWidth = 64;
         public const int HammerBroHeight = 64;

@@ -5,7 +5,7 @@ using TeamUno.Mario.Interfaces;
 using TeamUno.Mario.Entities;
 namespace TeamUno.Mario.Projectiles
 {
-    public class ProjectileSpriteFactory
+    internal class ProjectileSpriteFactory
     {
         private const int FrameWidth = 64;
         private const int FrameHeight = 64;

@@ -5,7 +5,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Input
 {
-    public class CombinedController : IController
+    internal class CombinedController : IController
     {
         private readonly KeyboardInput _input;
         private readonly ICommand _quitCommand;

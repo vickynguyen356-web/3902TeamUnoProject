@@ -5,7 +5,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class GoombaSpriteFactory
+    internal class GoombaSpriteFactory
     {
         private const int FrameWidth = 64;
         private const int FrameHeight = 64;

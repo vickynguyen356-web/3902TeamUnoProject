@@ -4,7 +4,7 @@ using TeamUno.Mario.Projectiles;
 
 namespace TeamUno.Mario.Interfaces
 {
-    public interface IProjectile
+    internal interface IProjectile
     {   
         Vector2 Position
         {

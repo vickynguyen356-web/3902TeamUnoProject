@@ -6,7 +6,7 @@ using TeamUno.Mario.Entities;
 
 namespace TeamUno.Mario.Projectiles
 {
-    public class ProjectileFactory : IProjectileFactory
+    internal class ProjectileFactory : IProjectileFactory
     {
         private readonly Func<ISprite> _sprite;
 

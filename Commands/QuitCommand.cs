@@ -3,7 +3,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Commands
 {
-    public class QuitCommand : ICommand
+    internal class QuitCommand : ICommand
     {
         private readonly IGameActions _gameActions;
 

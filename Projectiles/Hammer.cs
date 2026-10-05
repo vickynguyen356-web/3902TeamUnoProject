@@ -5,7 +5,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Projectiles
 {
-    public class Hammer : Projectile
+    internal class Hammer : Projectile
     {
         public const int HammerWidth = 64;
         public const int HammerHeight = 64;

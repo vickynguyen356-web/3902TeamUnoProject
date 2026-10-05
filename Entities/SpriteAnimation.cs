@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TeamUno.Mario.Entities
 {
-    public class SpriteAnimation
+    internal class SpriteAnimation
     {
         private readonly float _frameDuration;
         private readonly IReadOnlyList<SpriteFrame> _frames;

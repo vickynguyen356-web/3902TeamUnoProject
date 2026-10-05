@@ -1,6 +1,6 @@
 namespace TeamUno.Mario.Items
 {
-    public enum ItemType
+    internal enum ItemType
     {
         Mushroom,
         FireFlower,

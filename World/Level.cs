@@ -7,7 +7,7 @@ using TeamUno.Mario.Projectiles;
 
 namespace TeamUno.Mario.World
 {
-    public class Level
+    internal class Level
     {
         private readonly LevelDefinition _definition;
         private readonly IEnemyFactory _enemyFactory;

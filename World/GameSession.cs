@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TeamUno.Mario.World
 {
-    public class GameSession : IGameActions
+    internal class GameSession : IGameActions
     {
         private readonly IPlayerMovement _playerMovement;
         private readonly MarioPlayer _player;

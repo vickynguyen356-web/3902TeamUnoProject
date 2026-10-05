@@ -3,7 +3,7 @@ using TeamUno.Mario.Entities;
 
 namespace TeamUno.Mario.Interfaces
 {
-    public interface IEnemyFactory
+    internal interface IEnemyFactory
     {
         IEnemy Create(EnemyType type, Vector2 position);
     }

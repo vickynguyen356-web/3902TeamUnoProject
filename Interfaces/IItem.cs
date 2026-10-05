@@ -4,7 +4,7 @@ using TeamUno.Mario.Items;
 
 namespace TeamUno.Mario.Interfaces
 {
-    public interface IItem
+    internal interface IItem
     {
         ItemType Type
         {

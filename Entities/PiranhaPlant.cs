@@ -4,7 +4,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class PiranhaPlant : Enemy
+    internal class PiranhaPlant : Enemy
     {
         public const int PiranhaWidth = 64;
         public const int PiranhaHeight = 64;
@@ -30,7 +30,7 @@ namespace TeamUno.Mario.Entities
 
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _piranhaAnimations;
 
-        public enum PiranhaState
+        internal enum PiranhaState
         {
             Closed,
             Open

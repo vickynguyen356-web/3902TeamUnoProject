@@ -5,7 +5,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class KoopaSpriteFactory
+    internal class KoopaSpriteFactory
     {
         private const int FrameWidth = 64;
         private const int FrameHeight = 64;

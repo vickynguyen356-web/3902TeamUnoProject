@@ -1,6 +1,6 @@
 namespace TeamUno.Mario.Interfaces
 {
-    public interface ICommand
+    internal interface ICommand
     {
         void Execute();
     }

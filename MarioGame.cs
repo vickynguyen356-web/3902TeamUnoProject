@@ -11,7 +11,7 @@ using TeamUno.Mario.World;
 
 namespace TeamUno.Mario
 {
-    public class MarioGame : BaseGame
+    internal class MarioGame : BaseGame
     {
         private readonly LevelDefinition _levelDefinition;
         private Texture2D _whitePixelTexture;

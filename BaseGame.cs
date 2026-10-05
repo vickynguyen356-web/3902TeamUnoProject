@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TeamUno.Mario
 {
-    public abstract class BaseGame : Game
+    internal abstract class BaseGame : Game
     {
         private readonly GraphicsDeviceManager _graphicsDeviceManager;
         private SpriteBatch _spriteBatch;

@@ -4,7 +4,7 @@ using TeamUno.Mario.Entities;
 
 namespace TeamUno.Mario.World
 {
-    public class BlockSpawnDefinition
+    internal class BlockSpawnDefinition
     {
         private readonly Vector2 _position;
         private readonly BlockType _type;

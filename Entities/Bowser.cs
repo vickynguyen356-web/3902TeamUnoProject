@@ -6,7 +6,7 @@ using TeamUno.Mario.Projectiles;
 
 namespace TeamUno.Mario.Entities
 {
-    public class Bowser : Enemy
+    internal class Bowser : Enemy
     {
         public const int BowserWidth = 64;
         public const int BowserHeight = 64;

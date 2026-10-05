@@ -4,7 +4,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class EnemyFactory : IEnemyFactory
+    internal class EnemyFactory : IEnemyFactory
     {
         private readonly Func<ISprite> _createGoombaSprite;
         private readonly Func<ISprite> _createKoopaSprite;

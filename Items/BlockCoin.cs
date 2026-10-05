@@ -9,8 +9,8 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Items
 {
- // inherits shared item functionality from Item class
-    public class BlockCoin : Item
+    // inherits shared item functionality from Item class
+    internal class BlockCoin : Item
     {
         private const float MoveSpeed = 180f;
         // half is used for rising and half for falling.

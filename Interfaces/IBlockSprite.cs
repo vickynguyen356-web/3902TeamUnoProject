@@ -3,7 +3,7 @@ using TeamUno.Mario.Entities;
 
 namespace TeamUno.Mario.Interfaces
 {
-    public interface IBlockSprite
+    internal interface IBlockSprite
     {
         BlockType Type
         {

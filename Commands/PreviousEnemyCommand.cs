@@ -2,7 +2,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Commands
 {
-    public class PreviousEnemyCommand : ICommand
+    internal class PreviousEnemyCommand : ICommand
     {
         private readonly IDemoControls _demoControls;
 

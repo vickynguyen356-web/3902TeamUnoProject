@@ -4,7 +4,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class PlayerStateMachine
+    internal class PlayerStateMachine
     {
         private const float MinimumRunningSpeed = 15f;
         private const float FireballPoseDurationSeconds = 0.12f;

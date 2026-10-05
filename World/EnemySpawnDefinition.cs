@@ -3,7 +3,7 @@ using TeamUno.Mario.Entities;
 
 namespace TeamUno.Mario.World
 {
-    public class EnemySpawnDefinition
+    internal class EnemySpawnDefinition
     {
         private readonly EnemyType _type;
         private readonly Vector2 _position;

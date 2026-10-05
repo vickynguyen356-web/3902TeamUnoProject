@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TeamUno.Mario.Interfaces
 {
-    public interface IEnemy
+    internal interface IEnemy
     {
         Vector2 Position
         {

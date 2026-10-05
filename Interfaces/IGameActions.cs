@@ -1,6 +1,6 @@
 namespace TeamUno.Mario.Interfaces
 {
-    public interface IGameActions
+    internal interface IGameActions
     {
         void Quit();
         void Reset();
