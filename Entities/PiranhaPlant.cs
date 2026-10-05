@@ -36,8 +36,8 @@ namespace TeamUno.Mario.Entities
             Open
         }
 
-        public PiranhaPlant(ISprite sprite, Vector2 position)
-            : base(sprite, position)
+        public PiranhaPlant(ISprite sprite, Vector2 position, IProjectileFactory projectileFactory)
+            : base(sprite, position, projectileFactory)
         {
             _piranhaAnimations = PiranhaSpriteFactory.CreatePiranhaAnimations();
 

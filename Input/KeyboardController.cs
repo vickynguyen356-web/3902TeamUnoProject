@@ -15,6 +15,7 @@ namespace TeamUno.Mario.Input
         private readonly ICommand _standCommand;
         private readonly ICommand _throwFireballCommand;
         private readonly ICommand _damageCommand;
+        private readonly ICommand _spitFireCommand;
 
         public KeyboardController(IPlayer player, IGameActions gameActions, KeyboardInput input)
         {
@@ -41,6 +42,7 @@ namespace TeamUno.Mario.Input
             _standCommand = new CrouchCommand(player, false);
             _throwFireballCommand = new ThrowFireballCommand(player);
             _damageCommand = new DamageCommand(gameActions);
+            _spitFireCommand = new SpitFireCommand(gameActions);
         }
 
         public void Update()
@@ -87,6 +89,11 @@ namespace TeamUno.Mario.Input
             {
                 _throwFireballCommand.Execute();
             }
+
+            if (_input.WasPressed(Keys.B))
+            {
+                _spitFireCommand.Execute();
+            }
         }
 
         private void HandleDamageKey()
@@ -94,6 +101,11 @@ namespace TeamUno.Mario.Input
             if (_input.WasPressed(Keys.E))
             {
                 _damageCommand.Execute();
+            }
+
+            if (_input.WasPressed(Keys.B))
+            {
+                _spitFireCommand.Execute();
             }
         }
     }

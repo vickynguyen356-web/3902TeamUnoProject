@@ -5,5 +5,7 @@ namespace TeamUno.Mario.Interfaces
         void Quit();
         void Reset();
         void TriggerDamage();
+        void SpitFire();
+        void ThrowFireball();
     }
 }

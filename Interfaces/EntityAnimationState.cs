@@ -10,6 +10,7 @@ namespace TeamUno.Mario.Interfaces
         Fall,
         ThrowFireball,
         ThrowHammer,
+        Fireball,
         SpitFire,
         Swim,
         Climb,
