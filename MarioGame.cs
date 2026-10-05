@@ -48,7 +48,12 @@ namespace TeamUno.Mario
                 _levelDefinition.PlayerSpawnPosition,
                 PlayerForm.Fire);
 
-            BowserFireballSpriteFactory fireballSpriteFactory = new BowserFireballSpriteFactory(enemyTexture);
+            //BowserFireballSpriteFactory fireballSpriteFactory = new BowserFireballSpriteFactory(enemyTexture);
+            IProjectileFactory projectileFactory = new ProjectileFactory(
+                delegate ()
+                {
+                    return ProjectileSpriteFactory.Create(enemyTexture);
+                });
 
             IEnemyFactory enemyFactory = new EnemyFactory(
                 delegate()
@@ -70,13 +75,14 @@ namespace TeamUno.Mario
                 delegate()
                 {
                     return BowserSpriteFactory.Create(enemyTexture);
-                });
+                },
+                projectileFactory);
             IItemFactory itemFactory = new ItemFactory(
                 delegate()
                 {
                     return ItemSpriteFactory.Create(itemTexture);
                 });
-            DemoLevel level = new DemoLevel(_levelDefinition, enemyFactory, itemFactory);
+            DemoLevel level = new DemoLevel(_levelDefinition, enemyFactory, itemFactory, projectileFactory);
             // the session updates and resets the level, including its items
             _gameSession = new GameSession(
                 player,
