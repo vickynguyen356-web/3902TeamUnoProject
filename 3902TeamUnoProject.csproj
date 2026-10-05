@@ -10,6 +10,7 @@
     <AnalysisMode>All</AnalysisMode> 
     <NoWarn>$(NoWarn);CA1852</NoWarn>
     <NoWarn>$(NoWarn);CA1859</NoWarn>
+    <NoWarn>$(NoWarn);CA2213</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*" />
