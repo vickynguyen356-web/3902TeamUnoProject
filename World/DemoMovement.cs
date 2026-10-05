@@ -20,10 +20,7 @@ namespace TeamUno.Mario.World
 
         public DemoMovement(int stageWidth, int floorY)
         {
-            if (stageWidth <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(stageWidth));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(stageWidth);
 
             _stageWidth = stageWidth;
             _floorY = floorY;

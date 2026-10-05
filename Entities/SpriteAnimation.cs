@@ -26,10 +26,7 @@ namespace TeamUno.Mario.Entities
 
         public SpriteAnimation(float frameDuration, params SpriteFrame[] frames)
         {
-            if (frameDuration <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(frameDuration));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(frameDuration);
 
             if (frames == null || frames.Length == 0)
             {
