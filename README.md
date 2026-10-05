@@ -43,7 +43,9 @@ The demo starts with Fire Mario. Pressing E changes him from Fire to Super, then
 
 Moving items return to their starting position after passing the right side of the screen. Pressing 6 again replays the Block Coin effect.
 
-**Blocks:** The available types are Brick, Question, Used, Ground, Solid, Coin, and Pipe.
+**Blocks:** The available types are Brick, Question, Used, Ground, Solid, FlagPole, Empty and Pipe.
+
+The question block is animated to change between the different question block type dependent on the time.
 
 **Enemies:** The available types are Goomba, Koopa, Piranha Plant, Hammer Bro, and Bowser. The selection controls let the user view each enemy and its current behavior.
 
