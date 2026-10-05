@@ -4,9 +4,12 @@ Sprint number: 2
 Name of the .cs file being reviewed: World/CollisionSystem.cs
 Author of the .cs file being reviewed: Ishika
 Minutes taken for review: 20
+
 Specific comments on code quality:
 Checking Mario’s previous and current positions helps determine which side of a block he hit and how to respond
 The question block handles its own response when hit from below. This keeps that behavior separate from checking for collisions
 Adding short comments for each collision case would make the method easier to follow, such as landing on a block or hitting its side
+
 Readability: More descriptive variable names would make it easier to understand what each collision check is doing. Short comments explaining each collision case would also help.
+
 A hypothetical change: If we wanted Mario to stand on pipes and stop when walking into them, we could add pipes to the collision check. Since the code already uses each block’s position and size, we could reuse the existing logic instead of writing separate collision code for pipes.
