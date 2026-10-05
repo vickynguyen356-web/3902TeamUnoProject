@@ -43,7 +43,9 @@ The demo starts with Fire Mario. Pressing E changes him from Fire to Super, then
 
 Moving items return to their starting position after passing the right side of the screen. Pressing 6 again replays the Block Coin effect.
 
-**Blocks:** The available types are Brick, Question, Used, Ground, Solid, Coin, and Pipe.
+**Blocks:** The available types are Brick, Question, Used, Ground, Solid, FlagPole, Empty and Pipe.
+
+The question block is animated to change between the different question block type dependent on the time.
 
 **Enemies:** The available types are Goomba, Koopa, Piranha Plant, Hammer Bro, and Bowser. The selection controls let the user view each enemy and its current behavior.
 
@@ -62,4 +64,3 @@ The project uses Git/GitHub for source management and MonoGame's Content Builder
 - Collisions with the displayed blocks, items, and enemies are not connected yet. Mario can pass through them, and items do not grant power-ups, points, or extra lives.
 - The fireball keys currently show the throwing animation but do not create a moving fireball.
 - Enemy damage and defeat behavior will be built up more in the following sprint.
-- A mouse controller exists in the code but is not connected to the demo.
