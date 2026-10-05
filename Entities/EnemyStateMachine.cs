@@ -86,7 +86,7 @@ namespace TeamUno.Mario.Entities
             IsFlipped = false;
         }
 
-        public void TakeDamage()
+        public static void TakeDamage()
         {
             // TODO: implement enemy damage logic
         }
