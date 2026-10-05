@@ -1,0 +1,17 @@
+Author of code review: Ishika Aahna
+Date of code review: 10/01/2026
+Sprint number: 2
+Name of .cs file reviewed: Entities/Bowser.cs
+Author of .cs file: Vy Nguyen
+Minutes taken for review: 15
+
+Readability:
+Overall is easy to follow with methods and the variables
+Animation separate from update makes it more readable
+
+Code Quality:
+SpitFire logic and variables are implemented with clarity
+Avoids unnecessary repetition
+
+Possible Changes:
+Updation of the movement can be broken down into smaller methods for ease of readability

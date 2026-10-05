@@ -1,0 +1,14 @@
+Author of code review: Jake
+Date of code review: Not provided
+Sprint number: 2
+Name of .cs file reviewed: Entities/EnemyFactory.cs
+Author of .cs file: Vy Nguyen
+Minutes taken for review: Not provided
+
+These comments cover the original code merged for Sprint 2.
+
+Readability: The names and switch cases make it easy to see which enemy is being created. The constructor takes several similar arguments, so it takes a little more effort to follow those.
+
+Code quality: Keeping enemy creation together avoids repeating it in the level code. Adding an enemy still means updating the factory, but that seems reasonable
+
+Possible change: Add another enemy type. We would add its class, sprite setup, and factory case. The existing enemies would need little change
