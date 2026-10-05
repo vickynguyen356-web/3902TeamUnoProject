@@ -31,8 +31,8 @@ namespace TeamUno.Mario.Entities
         private readonly float _leftBound;
         private readonly float _rightBound;
 
-        public Goomba(ISprite sprite, Vector2 position)
-            : base(sprite, position)
+        public Goomba(ISprite sprite, Vector2 position, IProjectileFactory projectileFactory)
+            : base(sprite, position, projectileFactory)
         {
             _goombaAnimations = GoombaSpriteFactory.CreateGoombaAnimations();
             _startingPos = position;

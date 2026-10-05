@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using TeamUno.Mario.Items;
 using TeamUno.Mario.Entities;
 using TeamUno.Mario.Interfaces;
+using TeamUno.Mario.Projectiles;
 
 namespace TeamUno.Mario.World
 {
@@ -25,7 +26,8 @@ namespace TeamUno.Mario.World
 
         public void Draw(SpriteBatch spriteBatch, Rectangle viewport, GameSession session)
         {
-            spriteBatch.Draw(_backgroundTexture, viewport, Color.White * 0.45f);
+            // don't draw background for now
+            // spriteBatch.Draw(_backgroundTexture, viewport, Color.White * 0.45f);
             DrawFloor(spriteBatch, viewport, session.Level.Definition.FloorY);
             DrawLevel(spriteBatch, session.Level);
             session.Player.Draw(spriteBatch);
@@ -58,6 +60,11 @@ namespace TeamUno.Mario.World
             foreach (IEnemy enemy in level.Enemies)
             {
                 enemy.Draw(spriteBatch);
+            }
+
+            foreach (IProjectile projectile in level.Projectiles)
+            {
+                projectile.Draw(spriteBatch);
             }
         }
 

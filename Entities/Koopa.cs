@@ -32,8 +32,8 @@ namespace TeamUno.Mario.Entities
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _koopaAnimations;
         private readonly Vector2 _startingPos;
 
-        public Koopa(ISprite sprite, Vector2 position)
-            : base(sprite, position)
+        public Koopa(ISprite sprite, Vector2 position, IProjectileFactory projectileFactory)
+            : base(sprite, position, projectileFactory)
         {
             _koopaAnimations = KoopaSpriteFactory.CreateKoopaAnimations();
             _startingPos = position;

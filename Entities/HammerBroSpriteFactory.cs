@@ -22,7 +22,7 @@ namespace TeamUno.Mario.Entities
                 CreateFrame(1, 4, 1, 4),
                 CreateFrame(2, 4, 2, 4));
 
-            SpriteAnimation throwHammer = new SpriteAnimation(0.28f, CreateFrame(3, 4, 3, 4),
+            SpriteAnimation throwHammer = new SpriteAnimation(0.28f, CreateFrame(4, 3, 4, 3),
                 CreateFrame(1, 4, 1, 4));
 
             return new Dictionary<EntityAnimationState, SpriteAnimation>

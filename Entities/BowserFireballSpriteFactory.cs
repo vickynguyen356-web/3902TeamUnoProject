@@ -1,34 +1,34 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class BowserSpriteFactory
+    public class BowserFireballSpriteFactory
     {
         private const int FrameWidth = 64;
         private const int FrameHeight = 64;
-        public static ISprite Create(Texture2D spriteSheetTexture)
+
+        private readonly Texture2D _enemiesTexture;
+        public BowserFireballSpriteFactory(Texture2D enemyTexture)
         {
-            return new SpriteSheetSprite(spriteSheetTexture, 2f);
+            _enemiesTexture = enemyTexture;
         }
 
-        internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreateBowserAnimations()
+        public ISprite Create()
         {
-            SpriteAnimation idle = new SpriteAnimation(0.28f, CreateFrame(1, 5, 1, 5));
+            return new SpriteSheetSprite(_enemiesTexture, 2f);
+        }
 
-            SpriteAnimation walk = new SpriteAnimation(0.28f, CreateFrame(0, 5, 0, 5),
-                CreateFrame(1, 5, 1, 5));
-
-            SpriteAnimation spitFire = new SpriteAnimation(0.28f, CreateFrame(6, 4, 6, 4),
-                CreateFrame(5, 4, 5, 4));
+        internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreateFireballAnimations()
+        {
+            SpriteAnimation fireball = new SpriteAnimation(0.28f, CreateFrame(4, 5, 4, 5),
+                CreateFrame(5, 5, 5, 5));
 
             return new Dictionary<EntityAnimationState, SpriteAnimation>
             {
-                { EntityAnimationState.Idle, idle },
-                { EntityAnimationState.Run, walk },
-                { EntityAnimationState.SpitFire, spitFire }
+                { EntityAnimationState.Fireball, fireball }
             };
         }
 

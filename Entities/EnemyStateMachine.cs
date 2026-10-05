@@ -90,5 +90,10 @@ namespace TeamUno.Mario.Entities
         {
             // TODO: implement enemy damage logic
         }
+
+        public void Kill()
+        {
+            _isDead = true;
+        }
     }
 }
