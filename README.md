@@ -64,4 +64,3 @@ The project uses Git/GitHub for source management and MonoGame's Content Builder
 - Collisions with the displayed blocks, items, and enemies are not connected yet. Mario can pass through them, and items do not grant power-ups, points, or extra lives.
 - The fireball keys currently show the throwing animation but do not create a moving fireball.
 - Enemy damage and defeat behavior will be built up more in the following sprint.
-- A mouse controller exists in the code but is not connected to the demo.
