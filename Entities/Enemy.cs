@@ -106,7 +106,7 @@ namespace TeamUno.Mario.Entities
 
         public virtual void TakeDamage()
         {
-            StateMachine.TakeDamage();
+            EnemyStateMachine.TakeDamage();
         }
 
         public virtual void Kill()
