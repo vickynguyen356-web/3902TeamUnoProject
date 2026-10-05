@@ -58,7 +58,9 @@ The project uses interfaces to define common actions for players, items, enemies
 
 Shared code is kept in base classes. For example, `Item` handles position, bounds, drawing, animation updates, and resetting. Specific items inherit this behavior and add their own movement when needed. State classes help organize player and enemy behavior and animations.
 
-The project uses Git/GitHub for source management and MonoGame's Content Builder to prepare game assets. The selection, damage, and reset controls make it easier to check individual features without restarting the program.
+The project uses Git/GitHub for source management and MonoGame's Content Builder to prepare game assets. The selection, damage, and reset controls make it easier to check individual features without restarting the program. 
+
+We used .NET code analyzers to check code quality. The warnings found and the changes made are documented in the Documentation folder.
 
 ## Known Bugs and Limitations
 
