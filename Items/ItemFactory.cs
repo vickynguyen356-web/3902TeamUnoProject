@@ -13,10 +13,7 @@ namespace TeamUno.Mario.Items
         public ItemFactory(Func<ISprite> createSprite)
         {
             // sprite-creation function is required to create items
-            if (createSprite == null)
-            {
-                throw new ArgumentNullException(nameof(createSprite));
-            }
+            ArgumentNullException.ThrowIfNull(createSprite);
 
             _createSprite = createSprite;
         }

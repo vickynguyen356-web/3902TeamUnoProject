@@ -9,10 +9,7 @@ namespace TeamUno.Mario.Commands
 
         public JumpCommand(IPlayer player)
         {
-            if (player == null)
-            {
-                throw new ArgumentNullException(nameof(player));
-            }
+            ArgumentNullException.ThrowIfNull(player);
 
             _player = player;
         }

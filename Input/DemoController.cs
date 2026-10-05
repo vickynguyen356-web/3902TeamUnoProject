@@ -24,15 +24,9 @@ namespace TeamUno.Mario.Input
 
         public DemoController(IDemoControls demoControls, KeyboardInput input)
         {
-            if (demoControls == null)
-            {
-                throw new ArgumentNullException(nameof(demoControls));
-            }
+            ArgumentNullException.ThrowIfNull(demoControls);
 
-            if (input == null)
-            {
-                throw new ArgumentNullException(nameof(input));
-            }
+            ArgumentNullException.ThrowIfNull(input);
 
             _input = input;
             _previousBlockCommand = new PreviousBlockCommand(demoControls);

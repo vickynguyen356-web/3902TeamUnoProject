@@ -77,15 +77,9 @@ namespace TeamUno.Mario.Items
         protected Item(Vector2 position, ISprite sprite, SpriteAnimation animation)
         {
             // sprite is required to display the item
-            if (sprite == null)
-            {
-                throw new ArgumentNullException(nameof(sprite));
-            }
+            ArgumentNullException.ThrowIfNull(sprite);
             // animation is required to update the sprite
-            if (animation == null)
-            {
-                throw new ArgumentNullException(nameof(animation));
-            }
+            ArgumentNullException.ThrowIfNull(animation);
 
             _sprite = sprite;
             _animation = animation;

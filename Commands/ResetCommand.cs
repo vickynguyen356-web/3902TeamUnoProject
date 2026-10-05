@@ -9,10 +9,7 @@ namespace TeamUno.Mario.Commands
 
         public ResetCommand(IGameActions gameActions)
         {
-            if (gameActions == null)
-            {
-                throw new ArgumentNullException(nameof(gameActions));
-            }
+            ArgumentNullException.ThrowIfNull(gameActions);
 
             _gameActions = gameActions;
         }

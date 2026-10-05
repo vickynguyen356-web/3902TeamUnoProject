@@ -132,10 +132,7 @@ namespace TeamUno.Mario.Entities
 
         public MarioPlayer(ISprite sprite, Vector2 position, PlayerForm startingForm = PlayerForm.Super)
         {
-            if (sprite == null)
-            {
-                throw new ArgumentNullException(nameof(sprite));
-            }
+            ArgumentNullException.ThrowIfNull(sprite);
 
             _sprite = sprite;
             _superAnimations = MarioSpriteFactory.CreateSuperAnimations();

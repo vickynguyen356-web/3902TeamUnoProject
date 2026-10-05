@@ -183,10 +183,7 @@ namespace TeamUno.Mario.World
 
         private static LevelDefinition ValidateDefinition(LevelDefinition definition)
         {
-            if (definition == null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
+            ArgumentNullException.ThrowIfNull(definition);
 
             if (definition.Blocks.Count != 1 || definition.Items.Count != 1 || definition.Enemies.Count != 1)
             {

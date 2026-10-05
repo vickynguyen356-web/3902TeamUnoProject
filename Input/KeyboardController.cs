@@ -19,20 +19,11 @@ namespace TeamUno.Mario.Input
 
         public KeyboardController(IPlayer player, IGameActions gameActions, KeyboardInput input)
         {
-            if (player == null)
-            {
-                throw new ArgumentNullException(nameof(player));
-            }
+            ArgumentNullException.ThrowIfNull(player);
 
-            if (gameActions == null)
-            {
-                throw new ArgumentNullException(nameof(gameActions));
-            }
+            ArgumentNullException.ThrowIfNull(gameActions);
 
-            if (input == null)
-            {
-                throw new ArgumentNullException(nameof(input));
-            }
+            ArgumentNullException.ThrowIfNull(input);
 
             _input = input;
             _moveLeftCommand = new MoveCommand(player, -1);
