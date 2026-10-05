@@ -5,7 +5,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Projectiles
 {
-    public class Fireball : Projectile
+    internal class Fireball : Projectile
     {
         public const int FireballWidth = 64;
         public const int FireballHeight = 64;

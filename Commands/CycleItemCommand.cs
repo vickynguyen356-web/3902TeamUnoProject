@@ -2,7 +2,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Commands
 {
-    public class CycleItemCommand : ICommand
+    internal class CycleItemCommand : ICommand
     {
         private readonly IDemoControls _demoControls;
         private readonly int _direction;

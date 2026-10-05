@@ -1,6 +1,6 @@
 namespace TeamUno.Mario.Entities
 {
-    public enum EnemyType
+    internal enum EnemyType
     {
         Goomba,
         Koopa,

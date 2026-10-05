@@ -6,7 +6,7 @@ using TeamUno.Mario.Items;
 
 namespace TeamUno.Mario.World
 {
-    public class DemoLevel : Level, IDemoControls
+    internal class DemoLevel : Level, IDemoControls
     {
         private static readonly BlockType[] _blockTypes =
         {

@@ -4,7 +4,7 @@ using TeamUno.Mario.Items;
 
 namespace TeamUno.Mario.Entities
 {
-    public class FloatingCoin : Item
+    internal class FloatingCoin : Item
     {
         public override ItemType Type
         {

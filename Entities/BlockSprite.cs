@@ -3,7 +3,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public abstract class BlockSprite : IBlockSprite
+    internal abstract class BlockSprite : IBlockSprite
     {
         private BlockType _type;
 
@@ -34,7 +34,7 @@ namespace TeamUno.Mario.Entities
         }
     }
 
-    public class BrickBlockSprite : BlockSprite
+    internal class BrickBlockSprite : BlockSprite
     {
         public BrickBlockSprite() : base(BlockType.Brick)
         {
@@ -46,7 +46,7 @@ namespace TeamUno.Mario.Entities
         }
     }
 
-    public class QuestionBlockSprite : BlockSprite
+    internal class QuestionBlockSprite : BlockSprite
     {
         private const float FrameDurationSeconds = 0.16f;
         private readonly Rectangle[] _frames =
@@ -78,7 +78,7 @@ namespace TeamUno.Mario.Entities
         }
     }
 
-    public class UsedBlockSprite : BlockSprite
+    internal class UsedBlockSprite : BlockSprite
     {
         public UsedBlockSprite() : base(BlockType.Used)
         {
@@ -90,7 +90,7 @@ namespace TeamUno.Mario.Entities
         }
     }
 
-    public class SolidBlockSprite : BlockSprite
+    internal class SolidBlockSprite : BlockSprite
     {
         public SolidBlockSprite() : base(BlockType.Solid)
         {
@@ -102,7 +102,7 @@ namespace TeamUno.Mario.Entities
         }
     }
 
-    public class FlagPoleBlockSprite : BlockSprite
+    internal class FlagPoleBlockSprite : BlockSprite
     {
         public FlagPoleBlockSprite() : base(BlockType.FlagPole)
         {
@@ -114,7 +114,7 @@ namespace TeamUno.Mario.Entities
         }
     }
 
-    public class GroundBlockSprite : BlockSprite
+    internal class GroundBlockSprite : BlockSprite
     {
         public GroundBlockSprite() : base(BlockType.Ground)
         {
@@ -126,7 +126,7 @@ namespace TeamUno.Mario.Entities
         }
     }
 
-    public class PipeBlockSprite : BlockSprite
+    internal class PipeBlockSprite : BlockSprite
     {
         public PipeBlockSprite() : base(BlockType.Pipe)
         {
@@ -138,7 +138,7 @@ namespace TeamUno.Mario.Entities
         }
     }
 
-    public class TallPipeBlockSprite : BlockSprite
+    internal class TallPipeBlockSprite : BlockSprite
     {
         public TallPipeBlockSprite() : base(BlockType.Pipe)
         {
@@ -150,7 +150,7 @@ namespace TeamUno.Mario.Entities
         }
     }
 
-    public class HorizontalPipeBlockSprite : BlockSprite
+    internal class HorizontalPipeBlockSprite : BlockSprite
     {
         public HorizontalPipeBlockSprite() : base(BlockType.Pipe)
         {
@@ -162,7 +162,7 @@ namespace TeamUno.Mario.Entities
         }
     }
 
-    public class TallPipeBlockSpriteTwo : BlockSprite
+    internal class TallPipeBlockSpriteTwo : BlockSprite
     {
         public TallPipeBlockSpriteTwo() : base(BlockType.Pipe)
         {
@@ -174,7 +174,7 @@ namespace TeamUno.Mario.Entities
         }
     }
 
-    public static class BlockSpriteFactory
+    internal static class BlockSpriteFactory
     {
         public static IBlockSprite Create(BlockType type)
         {

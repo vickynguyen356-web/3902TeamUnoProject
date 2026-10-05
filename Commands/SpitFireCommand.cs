@@ -3,7 +3,7 @@ using System;
 
 namespace TeamUno.Mario.Commands
 {
-    public class SpitFireCommand : ICommand
+    internal class SpitFireCommand : ICommand
     {
         private readonly IGameActions _gameActions;
 

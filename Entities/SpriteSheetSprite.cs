@@ -5,7 +5,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class SpriteSheetSprite : ISprite
+    internal class SpriteSheetSprite : ISprite
     {
         private readonly Texture2D _spriteSheetTexture;
         private readonly float _spriteScale;

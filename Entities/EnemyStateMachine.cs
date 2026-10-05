@@ -4,7 +4,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class EnemyStateMachine
+    internal class EnemyStateMachine
     {
         private const float MinimumRunningSpeed = 13f;
         private EntityAnimationState _animationState = EntityAnimationState.Idle;

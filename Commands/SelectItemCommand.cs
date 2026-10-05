@@ -3,7 +3,7 @@ using TeamUno.Mario.Items;
 
 namespace TeamUno.Mario.Commands
 {
-    public class SelectItemCommand : ICommand
+    internal class SelectItemCommand : ICommand
     {
         private readonly IItemSelection _selection;
         private readonly ItemType _itemType;

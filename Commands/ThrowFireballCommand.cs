@@ -3,7 +3,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Commands
 {
-    public class ThrowFireballCommand : ICommand
+    internal class ThrowFireballCommand : ICommand
     {
         private readonly IPlayer _player;
 

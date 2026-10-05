@@ -3,7 +3,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Commands
 {
-    public class ResetCommand : ICommand
+    internal class ResetCommand : ICommand
     {
         private readonly IGameActions _gameActions;
 

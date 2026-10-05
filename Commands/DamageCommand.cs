@@ -2,7 +2,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Commands
 {
-    public class DamageCommand : ICommand
+    internal class DamageCommand : ICommand
     {
         private readonly IGameActions _gameActions;
 

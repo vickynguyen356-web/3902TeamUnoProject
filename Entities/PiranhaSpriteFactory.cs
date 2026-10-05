@@ -5,7 +5,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class PiranhaSpriteFactory
+    internal class PiranhaSpriteFactory
     {
         private const int FrameWidth = 64;
         private const int FrameHeight = 64;

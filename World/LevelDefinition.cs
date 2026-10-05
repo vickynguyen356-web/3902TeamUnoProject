@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace TeamUno.Mario.World
 {
-    public class LevelDefinition
+    internal class LevelDefinition
     {
         private readonly int _width;
         private readonly int _height;

@@ -5,7 +5,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Input
 {
-    public class KeyboardController : IController
+    internal class KeyboardController : IController
     {
         private readonly KeyboardInput _input;
         private readonly ICommand _moveLeftCommand;

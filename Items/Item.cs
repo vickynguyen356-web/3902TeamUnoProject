@@ -8,7 +8,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Items
 {
-    public abstract class Item : IItem
+    internal abstract class Item : IItem
     //class that implements interface
     // follows contract defined by IItem interface
     // items inherit from this class and provide their own item type

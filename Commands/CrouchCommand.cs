@@ -3,7 +3,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Commands
 {
-    public class CrouchCommand : ICommand
+    internal class CrouchCommand : ICommand
     {
         private readonly IPlayer _player;
         private readonly bool _shouldCrouch;

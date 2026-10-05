@@ -4,7 +4,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Items
 {
-    public class OneUpMushroom : Item
+    internal class OneUpMushroom : Item
     {
         // move right at 60 pixels per second
         private const float MoveSpeed = 60f;

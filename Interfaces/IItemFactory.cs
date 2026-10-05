@@ -3,7 +3,7 @@ using TeamUno.Mario.Items;
 
 namespace TeamUno.Mario.Interfaces
 {
-    public interface IItemFactory
+    internal interface IItemFactory
     {
         IItem Create(ItemType type, Vector2 position);
     }

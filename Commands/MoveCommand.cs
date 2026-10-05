@@ -3,7 +3,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Commands
 {
-    public class MoveCommand : ICommand
+    internal class MoveCommand : ICommand
     {
         private readonly IPlayer _player;
         private readonly float _movementDirection;

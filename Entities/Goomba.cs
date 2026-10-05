@@ -4,7 +4,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class Goomba : Enemy
+    internal class Goomba : Enemy
     {
         public const int GoombaWidth = 64;
         public const int GoombaHeight = 64;

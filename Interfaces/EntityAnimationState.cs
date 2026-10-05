@@ -1,6 +1,6 @@
 namespace TeamUno.Mario.Interfaces
 {
-    public enum EntityAnimationState
+    internal enum EntityAnimationState
     {
         Idle,
         Run,
