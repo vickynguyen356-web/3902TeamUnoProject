@@ -40,7 +40,7 @@ namespace TeamUno.Mario.Entities
             _distanceTraveled = 0f;
             Velocity.X = -WalkSpeed;
 
-            UpdateAnimation(new GameTime());
+            UpdateMovementAnimation(new GameTime(), _koopaAnimations);
         }
 
         public override void Update(GameTime gameTime)
@@ -62,26 +62,7 @@ namespace TeamUno.Mario.Entities
                 }
             }
 
-            UpdateAnimation(gameTime);
-        }
-
-        private void UpdateAnimation(GameTime gameTime)
-        {
-            StateMachine.Update(Velocity);
-
-            Sprite.Update(gameTime, GetCurrentAnimation());
-        }
-
-        private SpriteAnimation GetCurrentAnimation()
-        {
-            SpriteAnimation animation;
-
-            if (_koopaAnimations.TryGetValue(StateMachine.AnimationState, out animation))
-            {
-                return animation;
-            }
-
-            return _koopaAnimations[EntityAnimationState.Idle];
+            UpdateMovementAnimation(gameTime, _koopaAnimations);
         }
 
         public void Reset()
@@ -96,7 +77,7 @@ namespace TeamUno.Mario.Entities
             StateMachine.Reset();
             Sprite.Reset();
 
-            UpdateAnimation(new GameTime());
+            UpdateMovementAnimation(new GameTime(), _koopaAnimations);
         }
     }
 }

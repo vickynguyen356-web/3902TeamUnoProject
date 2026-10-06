@@ -6,11 +6,15 @@ namespace TeamUno.Mario.Entities
 {
     public class PlayerStateMachine
     {
+        public const float FormTransitionDurationSeconds = 0.7f;
         private const float MinimumRunningSpeed = 15f;
         private const float FireballPoseDurationSeconds = 0.12f;
 
         private readonly PlayerForm _startingForm;
         private float _throwTimeRemaining;
+        private float _transitionTimeRemaining;
+        private PlayerForm _transitionStartForm;
+        private PlayerForm _transitionTargetForm;
         private EntityAnimationState _animationState = EntityAnimationState.Idle;
         private PlayerForm _form;
         private bool _isCrouching;
@@ -80,10 +84,35 @@ namespace TeamUno.Mario.Entities
             }
         }
 
+        public bool IsChangingForm
+        {
+            get
+            {
+                return _transitionTimeRemaining > 0;
+            }
+        }
+
+        public PlayerForm TransitionStartForm
+        {
+            get
+            {
+                return _transitionStartForm;
+            }
+        }
+
+        public PlayerForm TransitionTargetForm
+        {
+            get
+            {
+                return _transitionTargetForm;
+            }
+        }
+
         public PlayerStateMachine(PlayerForm startingForm = PlayerForm.Super)
         {
             _startingForm = startingForm;
             _form = startingForm;
+            ResetFormTransition();
         }
 
         public void UpdateThrowTimer(float elapsedSeconds)
@@ -91,9 +120,45 @@ namespace TeamUno.Mario.Entities
             _throwTimeRemaining = Math.Max(0, _throwTimeRemaining - elapsedSeconds);
         }
 
+        public bool BeginFormTransition(PlayerForm targetForm)
+        {
+            if (!Enum.IsDefined(typeof(PlayerForm), targetForm))
+            {
+                throw new ArgumentOutOfRangeException(nameof(targetForm));
+            }
+
+            if (targetForm == Form || IsDead || IsChangingForm)
+            {
+                return false;
+            }
+
+            _transitionStartForm = Form;
+            _transitionTargetForm = targetForm;
+            _transitionTimeRemaining = FormTransitionDurationSeconds;
+            IsCrouching = false;
+            _throwTimeRemaining = 0;
+            AnimationState = EntityAnimationState.Transform;
+            return true;
+        }
+
+        public void UpdateFormTransition(float elapsedSeconds)
+        {
+            if (!IsChangingForm || elapsedSeconds <= 0)
+            {
+                return;
+            }
+
+            _transitionTimeRemaining = Math.Max(0, _transitionTimeRemaining - elapsedSeconds);
+            if (!IsChangingForm)
+            {
+                Form = TransitionTargetForm;
+                AnimationState = EntityAnimationState.Idle;
+            }
+        }
+
         public bool TryThrowFireball()
         {
-            if (Form != PlayerForm.Fire || IsDead || IsCrouching || IsThrowing)
+            if (Form != PlayerForm.Fire || IsDead || IsCrouching || IsThrowing || IsChangingForm)
             {
                 return false;
             }
@@ -107,6 +172,10 @@ namespace TeamUno.Mario.Entities
             if (IsDead)
             {
                 AnimationState = EntityAnimationState.Dead;
+            }
+            else if (IsChangingForm)
+            {
+                AnimationState = EntityAnimationState.Transform;
             }
             else if (IsCrouching)
             {
@@ -144,11 +213,19 @@ namespace TeamUno.Mario.Entities
             IsCrouching = false;
             IsDead = false;
             _throwTimeRemaining = 0;
+            ResetFormTransition();
+        }
+
+        private void ResetFormTransition()
+        {
+            _transitionTimeRemaining = 0;
+            _transitionStartForm = Form;
+            _transitionTargetForm = Form;
         }
 
         public void TakeDamage()
         {
-            if (IsDead)
+            if (IsDead || IsChangingForm)
             {
                 return;
             }
@@ -162,20 +239,16 @@ namespace TeamUno.Mario.Entities
                 return;
             }
 
-            if (Form == PlayerForm.Fire)
-            {
-                Form = PlayerForm.Super;
-            }
-            else
-            {
-                Form = PlayerForm.Small;
-            }
-
-            IsCrouching = false;
+            BeginFormTransition(PlayerForm.Small);
         }
 
         public void SetCrouching(bool crouching)
         {
+            if (IsChangingForm)
+            {
+                return;
+            }
+
             IsCrouching = crouching && !IsSmall && !IsDead;
             if (IsCrouching)
             {

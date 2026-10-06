@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 using TeamUno.Mario.Commands;
 using TeamUno.Mario.Interfaces;
@@ -8,13 +9,13 @@ namespace TeamUno.Mario.Input
     public class KeyboardController : IController
     {
         private readonly KeyboardInput _input;
+        private readonly Dictionary<Keys, ICommand> _heldCommands;
+        private readonly Dictionary<Keys, ICommand> _pressedCommands;
+        private readonly List<ICommand> _activeCommands = new List<ICommand>();
         private readonly ICommand _moveLeftCommand;
         private readonly ICommand _moveRightCommand;
-        private readonly ICommand _jumpCommand;
         private readonly ICommand _crouchCommand;
         private readonly ICommand _standCommand;
-        private readonly ICommand _throwFireballCommand;
-        private readonly ICommand _damageCommand;
 
         public KeyboardController(IPlayer player, IGameActions gameActions, KeyboardInput input)
         {
@@ -23,77 +24,95 @@ namespace TeamUno.Mario.Input
                 throw new ArgumentNullException(nameof(player));
             }
 
-            if (gameActions == null)
-            {
-                throw new ArgumentNullException(nameof(gameActions));
-            }
-
             if (input == null)
             {
                 throw new ArgumentNullException(nameof(input));
             }
 
+            if (gameActions == null)
+            {
+                throw new ArgumentNullException(nameof(gameActions));
+            }
+
             _input = input;
             _moveLeftCommand = new MoveCommand(player, -1);
             _moveRightCommand = new MoveCommand(player, 1);
-            _jumpCommand = new JumpCommand(player);
             _crouchCommand = new CrouchCommand(player, true);
             _standCommand = new CrouchCommand(player, false);
-            _throwFireballCommand = new ThrowFireballCommand(player);
-            _damageCommand = new DamageCommand(gameActions);
+            ICommand jumpCommand = new JumpCommand(player);
+            ICommand throwFireballCommand = new ThrowFireballCommand(player);
+            ICommand spitFireCommand = new SpitFireCommand(gameActions);
+
+            _heldCommands = new Dictionary<Keys, ICommand>
+            {
+                { Keys.A, _moveLeftCommand },
+                { Keys.Left, _moveLeftCommand },
+                { Keys.D, _moveRightCommand },
+                { Keys.Right, _moveRightCommand },
+                { Keys.S, _crouchCommand },
+                { Keys.Down, _crouchCommand }
+            };
+
+            _pressedCommands = new Dictionary<Keys, ICommand>
+            {
+                { Keys.W, jumpCommand },
+                { Keys.Up, jumpCommand },
+                { Keys.Space, jumpCommand },
+                { Keys.Z, throwFireballCommand },
+                { Keys.N, throwFireballCommand },
+                { Keys.B, spitFireCommand }
+            };
         }
 
         public void Update()
         {
-            HandleMovementKeys();
-            HandlePlayerActionKeys();
-            HandleDamageKey();
-        }
+            CollectActiveCommands(_heldCommands, false);
+            CancelOpposingMovement();
 
-        private void HandleMovementKeys()
-        {
-            bool moveLeft = _input.IsDown(Keys.A) || _input.IsDown(Keys.Left);
-            bool moveRight = _input.IsDown(Keys.D) || _input.IsDown(Keys.Right);
-            bool crouch = _input.IsDown(Keys.S) || _input.IsDown(Keys.Down);
-
-            if (moveLeft && !moveRight)
-            {
-                _moveLeftCommand.Execute();
-            }
-
-            if (moveRight && !moveLeft)
-            {
-                _moveRightCommand.Execute();
-            }
-
-            if (crouch)
-            {
-                _crouchCommand.Execute();
-            }
-            else
+            if (!_activeCommands.Contains(_crouchCommand))
             {
                 _standCommand.Execute();
             }
+
+            ExecuteActiveCommands();
+
+            CollectActiveCommands(_pressedCommands, true);
+            ExecuteActiveCommands();
         }
 
-        private void HandlePlayerActionKeys()
+        private void CollectActiveCommands(Dictionary<Keys, ICommand> bindings, bool newlyPressedOnly)
         {
-            if (_input.WasPressed(Keys.W) || _input.WasPressed(Keys.Up) || _input.WasPressed(Keys.Space))
-            {
-                _jumpCommand.Execute();
-            }
+            _activeCommands.Clear();
 
-            if (_input.WasPressed(Keys.Z) || _input.WasPressed(Keys.N))
+            foreach (KeyValuePair<Keys, ICommand> binding in bindings)
             {
-                _throwFireballCommand.Execute();
+                bool isActive = _input.IsDown(binding.Key);
+                if (newlyPressedOnly)
+                {
+                    isActive = _input.WasPressed(binding.Key);
+                }
+
+                if (isActive && !_activeCommands.Contains(binding.Value))
+                {
+                    _activeCommands.Add(binding.Value);
+                }
             }
         }
 
-        private void HandleDamageKey()
+        private void CancelOpposingMovement()
         {
-            if (_input.WasPressed(Keys.E))
+            if (_activeCommands.Contains(_moveLeftCommand) && _activeCommands.Contains(_moveRightCommand))
             {
-                _damageCommand.Execute();
+                _activeCommands.Remove(_moveLeftCommand);
+                _activeCommands.Remove(_moveRightCommand);
+            }
+        }
+
+        private void ExecuteActiveCommands()
+        {
+            foreach (ICommand command in _activeCommands)
+            {
+                command.Execute();
             }
         }
     }

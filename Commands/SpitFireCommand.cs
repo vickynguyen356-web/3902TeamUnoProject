@@ -2,18 +2,18 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Commands
 {
-    public class DamageCommand : ICommand
+    public class SpitFireCommand : ICommand
     {
         private readonly IGameActions _gameActions;
 
-        public DamageCommand(IGameActions gameActions)
+        public SpitFireCommand(IGameActions gameActions)
         {
             _gameActions = gameActions;
         }
 
         public void Execute()
         {
-            _gameActions.TriggerDamage();
+            _gameActions.SpitFire();
         }
     }
 }

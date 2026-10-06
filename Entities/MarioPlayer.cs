@@ -22,10 +22,11 @@ namespace TeamUno.Mario.Entities
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _smallAnimations;
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _fireAnimations;
         private readonly PlayerStateMachine _stateMachine;
+        private SpriteAnimation _formTransitionAnimation;
         private readonly Vector2 _startingPosition;
         private Vector2 _position;
         private Vector2 _velocity;
-        private bool _isGrounded = true;
+        private bool _isGrounded;
         private SpriteEffects _facingDirection = SpriteEffects.None;
         private float _movementDirection;
         private bool _jumpRequested;
@@ -96,6 +97,14 @@ namespace TeamUno.Mario.Entities
             }
         }
 
+        public bool IsChangingForm
+        {
+            get
+            {
+                return _stateMachine.IsChangingForm;
+            }
+        }
+
         public EntityAnimationState AnimationState
         {
             get
@@ -162,8 +171,24 @@ namespace TeamUno.Mario.Entities
             _fireballRequested = true;
         }
 
+        public void BeginFormTransition(PlayerForm targetForm)
+        {
+            int previousHeight = Bounds.Height;
+            if (_stateMachine.BeginFormTransition(targetForm))
+            {
+                PreserveFeetPosition(previousHeight);
+                StartFormTransitionAnimation();
+            }
+        }
+
         internal void UpdateVelocity(float elapsedSeconds)
         {
+            if (IsChangingForm)
+            {
+                ClearInputRequests();
+                return;
+            }
+
             _stateMachine.UpdateThrowTimer(elapsedSeconds);
             if (!IsDead)
             {
@@ -186,16 +211,13 @@ namespace TeamUno.Mario.Entities
 
             _velocity.Y = _velocity.Y + Gravity * elapsedSeconds;
 
-            _movementDirection = 0;
-            _jumpRequested = false;
-            _fireballRequested = false;
+            ClearInputRequests();
         }
 
         private void UpdateHorizontalVelocity(float elapsedSeconds)
         {
             if (_movementDirection != 0)
             {
-                // FlipHorizontally selects the right-facing picture from the sheet
                 if (_movementDirection > 0)
                 {
                     FacingDirection = SpriteEffects.FlipHorizontally;
@@ -234,6 +256,17 @@ namespace TeamUno.Mario.Entities
             }
         }
 
+        internal void UpdatePosition(float elapsedSeconds)
+        {
+            if (IsChangingForm)
+            {
+                return;
+            }
+
+            Position = Position + _velocity * elapsedSeconds;
+            IsGrounded = false;
+        }
+
         internal void ApplyMotion(Vector2 position, Vector2 velocity, bool isGrounded)
         {
             Position = position;
@@ -243,12 +276,26 @@ namespace TeamUno.Mario.Entities
 
         internal void UpdateAnimation(GameTime gameTime)
         {
+            int previousHeight = Bounds.Height;
+            bool wasChangingForm = IsChangingForm;
+            _stateMachine.UpdateFormTransition((float)gameTime.ElapsedGameTime.TotalSeconds);
+            if (wasChangingForm && !IsChangingForm)
+            {
+                PreserveFeetPosition(previousHeight);
+                _formTransitionAnimation = null;
+            }
+
             _stateMachine.Update(IsGrounded, _velocity);
             _sprite.Update(gameTime, GetAnimation());
         }
 
         private SpriteAnimation GetAnimation()
         {
+            if (IsChangingForm)
+            {
+                return _formTransitionAnimation;
+            }
+
             IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> formAnimations;
             switch (Form)
             {
@@ -276,10 +323,9 @@ namespace TeamUno.Mario.Entities
         {
             Position = _startingPosition;
             _velocity = Vector2.Zero;
-            _movementDirection = 0;
-            _jumpRequested = false;
-            _fireballRequested = false;
-            IsGrounded = true;
+            ClearInputRequests();
+            _formTransitionAnimation = null;
+            IsGrounded = false;
             FacingDirection = SpriteEffects.None;
             _stateMachine.Reset();
             _sprite.Reset();
@@ -288,10 +334,21 @@ namespace TeamUno.Mario.Entities
 
         public void TakeDamage()
         {
+            if (IsDead || IsChangingForm)
+            {
+                return;
+            }
+
             int previousHeight = Bounds.Height;
             _stateMachine.TakeDamage();
             PreserveFeetPosition(previousHeight);
             _fireballRequested = false;
+
+            if (IsChangingForm)
+            {
+                StartFormTransitionAnimation();
+                return;
+            }
 
             if (IsDead)
             {
@@ -306,6 +363,22 @@ namespace TeamUno.Mario.Entities
             int previousHeight = Bounds.Height;
             _stateMachine.SetCrouching(crouching);
             PreserveFeetPosition(previousHeight);
+        }
+
+        private void StartFormTransitionAnimation()
+        {
+            _formTransitionAnimation = MarioSpriteFactory.CreateFormTransitionAnimation(
+                _stateMachine.TransitionStartForm, _stateMachine.TransitionTargetForm);
+            ClearInputRequests();
+            _sprite.Reset();
+            _sprite.Update(new GameTime(), _formTransitionAnimation);
+        }
+
+        private void ClearInputRequests()
+        {
+            _movementDirection = 0;
+            _jumpRequested = false;
+            _fireballRequested = false;
         }
 
         private void PreserveFeetPosition(int previousHeight)

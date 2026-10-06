@@ -10,6 +10,6 @@ namespace TeamUno.Mario.Interfaces
 
         void Update(GameTime gameTime, SpriteAnimation animation);
 
-        void Draw(SpriteBatch spriteBatch, Rectangle bounds, SpriteEffects facingDirection);
+        void Draw(SpriteBatch spriteBatch, Rectangle bounds, SpriteEffects facingDirection, float rotation = 0f, bool rotateAroundCenter = false);
     }
 }

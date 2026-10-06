@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using TeamUno.Mario.Interfaces;
 
@@ -26,8 +25,7 @@ namespace TeamUno.Mario.Items
 
         public override void Update(GameTime gameTime)
         {
-            // use seconds but it is capped to prevent a large jump after a slow update
-            float seconds = Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, 1f / 30f);
+            float seconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             // increase X to move right
             Position = Position + new Vector2(MoveSpeed * seconds, 0);
             // let Item update the sprite's animation

@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
@@ -21,7 +20,7 @@ namespace TeamUno.Mario.Entities
         private const int DefaultWidth = 48;
         private const int DefaultHeight = 48;
 
-        private IBlockSprite _spriteBlock;
+        private BlockSprite _spriteBlock;
         private BlockType _type;
         private readonly Vector2 _position;
         private readonly int _width;
@@ -104,6 +103,11 @@ namespace TeamUno.Mario.Entities
             }
 
             Rectangle sourceRectangle = _spriteBlock.GetSourceRectangle();
+            if (sourceRectangle == Rectangle.Empty)
+            {
+                return;
+            }
+
             spriteBatch.Draw(blockTexture, Bounds, sourceRectangle, Color.White);
         }
 
