@@ -6,7 +6,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Items
 {
-    public static class ItemSpriteFactory
+    internal static class ItemSpriteFactory
     {
         // draw sprites at twice their original size
         public const float SpriteScale = 2f;

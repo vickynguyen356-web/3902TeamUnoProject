@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace TeamUno.Mario.World
 {
-    public class LevelDefinition
+    internal class LevelDefinition
     {
         private readonly int _width;
         private readonly int _height;
@@ -79,35 +79,20 @@ namespace TeamUno.Mario.World
             IReadOnlyList<ItemSpawnDefinition> items,
             IReadOnlyList<EnemySpawnDefinition> enemies)
         {
-            if (width <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(width));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
 
-            if (height <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(height));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
 
             if (floorY < 0 || floorY > height)
             {
                 throw new ArgumentOutOfRangeException(nameof(floorY));
             }
 
-            if (blocks == null)
-            {
-                throw new ArgumentNullException(nameof(blocks));
-            }
+            ArgumentNullException.ThrowIfNull(blocks);
 
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
+            ArgumentNullException.ThrowIfNull(items);
 
-            if (enemies == null)
-            {
-                throw new ArgumentNullException(nameof(enemies));
-            }
+            ArgumentNullException.ThrowIfNull(enemies);
 
             _width = width;
             _height = height;

@@ -4,7 +4,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class EnemyFactory : IEnemyFactory
+    internal class EnemyFactory : IEnemyFactory
     {
         private readonly Func<ISprite> _createGoombaSprite;
         private readonly Func<ISprite> _createKoopaSprite;
@@ -20,10 +20,7 @@ namespace TeamUno.Mario.Entities
             Func<ISprite> createBowserSprite,
             IProjectileFactory projectileFactory)
         {
-            if (projectileFactory == null)
-            {
-                throw new ArgumentNullException(nameof(projectileFactory));
-            }
+            ArgumentNullException.ThrowIfNull(projectileFactory);
 
             _createGoombaSprite = createGoombaSprite;
             _createKoopaSprite = createKoopaSprite;

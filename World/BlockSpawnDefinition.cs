@@ -4,7 +4,7 @@ using TeamUno.Mario.Entities;
 
 namespace TeamUno.Mario.World
 {
-    public class BlockSpawnDefinition
+    internal class BlockSpawnDefinition
     {
         private readonly Vector2 _position;
         private readonly BlockType _type;
@@ -45,15 +45,9 @@ namespace TeamUno.Mario.World
 
         public BlockSpawnDefinition(Vector2 position, BlockType type, int width = 48, int height = 48)
         {
-            if (width <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(width));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
 
-            if (height <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(height));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
 
             _position = position;
             _type = type;

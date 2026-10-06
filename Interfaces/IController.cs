@@ -1,6 +1,6 @@
 namespace TeamUno.Mario.Interfaces
 {
-    public interface IController
+    internal interface IController
     {
         void Update();
     }

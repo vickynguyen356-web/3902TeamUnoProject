@@ -1,6 +1,6 @@
 namespace TeamUno.Mario.Interfaces
 {
-    public interface IPlayer
+    internal interface IPlayer
     {
         void Move(float movementDirection);
         void Jump();

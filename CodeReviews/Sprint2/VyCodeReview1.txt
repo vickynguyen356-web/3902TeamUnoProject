@@ -1,0 +1,14 @@
+Author of code review: Vy
+Date of code review: 9/28/26
+Sprint number: 2
+Name of .cs file reviewed: BaseGame.cs
+Author of .cs file: Jake
+Minutes taken for review: 15
+Readability:
+Renaming Core.cs to BaseGame.cs makes the purpose of the file clearer.
+In lines 11-21, expanding the SpriteBatch makes it less readable; it could be condensed to protected SpriteBatch SpriteBatch { get; private set; }.
+Code quality:
+Updating the namespace from Sprint0 to TeamUno.Mario makes the project consistent throughout and makes it clear from the base project used from Sprint 0.
+Letting SpriteBatch get encapsulated from a protected property is good to prevent derived classes that use SpriteBatch from accessing the _spriteBatch field.
+Hypothetical change:
+If we wanted to add a title screen or a pause screen, the BaseGame design would make this easy since MonoGame initialization and SpriteBatch are centralized.

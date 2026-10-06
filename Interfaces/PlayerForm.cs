@@ -1,6 +1,6 @@
 namespace TeamUno.Mario.Interfaces
 {
-    public enum PlayerForm
+    internal enum PlayerForm
     {
         Small,
         Super,

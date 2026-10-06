@@ -4,7 +4,7 @@ using TeamUno.Mario.Entities;
 
 namespace TeamUno.Mario.Interfaces
 {
-    public interface ISprite
+    internal interface ISprite
     {
         void Reset();
 

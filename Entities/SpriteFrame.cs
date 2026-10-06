@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TeamUno.Mario.Entities
 {
-    public readonly struct SpriteFrame
+    internal readonly struct SpriteFrame
     {
         private readonly Rectangle _leftSource;
         private readonly Rectangle _rightSource;

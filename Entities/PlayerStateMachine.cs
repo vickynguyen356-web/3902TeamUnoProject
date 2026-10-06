@@ -4,7 +4,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class PlayerStateMachine
+    internal class PlayerStateMachine
     {
         public const float FormTransitionDurationSeconds = 0.7f;
         private const float MinimumRunningSpeed = 15f;
@@ -122,7 +122,7 @@ namespace TeamUno.Mario.Entities
 
         public bool BeginFormTransition(PlayerForm targetForm)
         {
-            if (!Enum.IsDefined(typeof(PlayerForm), targetForm))
+            if (!Enum.IsDefined(targetForm))
             {
                 throw new ArgumentOutOfRangeException(nameof(targetForm));
             }

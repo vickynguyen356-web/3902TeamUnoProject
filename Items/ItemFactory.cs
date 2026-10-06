@@ -5,7 +5,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Items
 {
-    public class ItemFactory : IItemFactory
+    internal class ItemFactory : IItemFactory
     {
         // stores a function that creates a sprite when called
         private readonly Func<ISprite> _createSprite;
@@ -13,10 +13,7 @@ namespace TeamUno.Mario.Items
         public ItemFactory(Func<ISprite> createSprite)
         {
             // sprite-creation function is required to create items
-            if (createSprite == null)
-            {
-                throw new ArgumentNullException(nameof(createSprite));
-            }
+            ArgumentNullException.ThrowIfNull(createSprite);
 
             _createSprite = createSprite;
         }

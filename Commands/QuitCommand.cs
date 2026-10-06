@@ -3,16 +3,13 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Commands
 {
-    public class QuitCommand : ICommand
+    internal class QuitCommand : ICommand
     {
         private readonly IGameActions _gameActions;
 
         public QuitCommand(IGameActions gameActions)
         {
-            if (gameActions == null)
-            {
-                throw new ArgumentNullException(nameof(gameActions));
-            }
+            ArgumentNullException.ThrowIfNull(gameActions);
 
             _gameActions = gameActions;
         }

@@ -1,0 +1,14 @@
+Author of code review: Jake
+Date of code review: Not provided
+Sprint number: 2
+Name of .cs file reviewed: Items/ItemDemo.cs
+Author of .cs file: Adithi Teligi Harapanahalli Math
+Minutes taken for review: Not provided
+
+These comments cover the original code merged for Sprint 2.
+
+Readability: Names like CurrentItem and Cycle make the selection logic clear. Keeping item names in a separate list makes it harder to tell whether the labels still match the items.
+
+Code quality: Using IItem lets the different items share the same update and draw calls. ItemDemo also handles construction and controls text, so it takes on responsibilities that overlap with the current logic
+
+Possible change: Put several items in a normal level. The item classes could stay, but the level would need to own and update all of them instead of only displaying the selected item

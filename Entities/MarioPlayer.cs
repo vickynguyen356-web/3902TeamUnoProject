@@ -6,7 +6,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class MarioPlayer : IPlayer
+    internal class MarioPlayer : IPlayer
     {
         public const int StandingHeight = 72;
         private const int BodyWidth = 42;
@@ -141,10 +141,7 @@ namespace TeamUno.Mario.Entities
 
         public MarioPlayer(ISprite sprite, Vector2 position, PlayerForm startingForm = PlayerForm.Super)
         {
-            if (sprite == null)
-            {
-                throw new ArgumentNullException(nameof(sprite));
-            }
+            ArgumentNullException.ThrowIfNull(sprite);
 
             _sprite = sprite;
             _superAnimations = MarioSpriteFactory.CreateSuperAnimations();

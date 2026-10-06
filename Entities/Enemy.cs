@@ -6,7 +6,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public abstract class Enemy : IEnemy, IProjectileEmitter
+    internal abstract class Enemy : IEnemy, IProjectileEmitter
     {
         protected readonly EnemyStateMachine StateMachine;
         protected readonly ISprite Sprite;
@@ -39,10 +39,7 @@ namespace TeamUno.Mario.Entities
 
         protected Enemy(ISprite sprite, Vector2 position)
         {
-            if (sprite == null)
-            {
-                throw new ArgumentNullException(nameof(sprite));
-            }
+            ArgumentNullException.ThrowIfNull(sprite);
 
             Sprite = sprite;
             Position = position;
@@ -120,12 +117,14 @@ namespace TeamUno.Mario.Entities
             StateMachine.TakeDamage();
         }
 
+        public virtual void Kill()
+        {
+            StateMachine.Kill();
+        }
+
         protected void AddProjectile(IProjectile projectile)
         {
-            if (projectile == null)
-            {
-                throw new ArgumentNullException(nameof(projectile));
-            }
+            ArgumentNullException.ThrowIfNull(projectile);
 
             projectile.IsEnemyProjectile = true;
             _projectiles.Add(projectile);

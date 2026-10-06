@@ -6,7 +6,7 @@ using TeamUno.Mario.Projectiles;
 
 namespace TeamUno.Mario.Entities
 {
-    public class Bowser : Enemy
+    internal class Bowser : Enemy
     {
         public const int BowserWidth = 64;
         public const int BowserHeight = 64;
@@ -40,10 +40,7 @@ namespace TeamUno.Mario.Entities
         public Bowser(ISprite sprite, Vector2 position, IProjectileFactory projectileFactory)
             : base(sprite, position)
         {
-            if (projectileFactory == null)
-            {
-                throw new ArgumentNullException(nameof(projectileFactory));
-            }
+            ArgumentNullException.ThrowIfNull(projectileFactory);
 
             _projectileFactory = projectileFactory;
             _bowserAnimations = BowserSpriteFactory.CreateBowserAnimations();

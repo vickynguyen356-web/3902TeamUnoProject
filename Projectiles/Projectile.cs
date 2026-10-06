@@ -5,7 +5,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Projectiles
 {
-    public abstract class Projectile : IProjectile
+    internal abstract class Projectile : IProjectile
     {
         protected readonly ISprite Sprite;
         protected Vector2 Velocity;
@@ -74,10 +74,7 @@ namespace TeamUno.Mario.Projectiles
 
         protected Projectile(ISprite sprite, Vector2 position, Vector2 velocity)
         {
-            if (sprite == null)
-            {
-                throw new ArgumentNullException(nameof(sprite));
-            }
+            ArgumentNullException.ThrowIfNull(sprite);
 
             Sprite = sprite;
             Position = position;

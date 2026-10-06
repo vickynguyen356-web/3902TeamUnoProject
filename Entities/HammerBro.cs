@@ -6,7 +6,7 @@ using TeamUno.Mario.Projectiles;
 
 namespace TeamUno.Mario.Entities
 {
-    public class HammerBro : Enemy
+    internal class HammerBro : Enemy
     {
         public const int HammerBroWidth = 64;
         public const int HammerBroHeight = 64;
@@ -51,10 +51,7 @@ namespace TeamUno.Mario.Entities
         public HammerBro(ISprite sprite, Vector2 position, IProjectileFactory projectileFactory)
             : base(sprite, position)
         {
-            if (projectileFactory == null)
-            {
-                throw new ArgumentNullException(nameof(projectileFactory));
-            }
+            ArgumentNullException.ThrowIfNull(projectileFactory);
 
             _projectileFactory = projectileFactory;
             _hammerBroAnimations = HammerBroSpriteFactory.CreateHammerBroAnimations();
