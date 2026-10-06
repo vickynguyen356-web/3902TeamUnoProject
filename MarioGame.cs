@@ -17,7 +17,6 @@ namespace TeamUno.Mario
         private GameSession _gameSession;
         private GameRenderer _gameRenderer;
         private CombinedController _controller;
-        private Camera _camera;
 
         public MarioGame() : this(LevelLayouts.CreateFirstLevel())
         {
@@ -79,7 +78,8 @@ namespace TeamUno.Mario
                 });
 
             Level level = new Level(_levelDefinition, enemyFactory, itemFactory, projectileFactory);
-            _gameSession = new GameSession(player, level);
+            Camera camera = new Camera(GraphicsDevice.Viewport.Width, level.Definition.Width);
+            _gameSession = new GameSession(player, level, camera);
 
             KeyboardInput input = new KeyboardInput();
             _controller = new CombinedController(
@@ -87,8 +87,6 @@ namespace TeamUno.Mario
                 _gameSession,
                 new KeyboardController(player, _gameSession, input));
             _gameRenderer = new GameRenderer(backgroundTexture, blockTexture);
-            _camera = new Camera(GraphicsDevice.Viewport.Width, level.Definition.Width);
-            _camera.Follow(player.Bounds);
         }
 
         protected override void Update(GameTime gameTime)
@@ -105,7 +103,6 @@ namespace TeamUno.Mario
                 _gameSession.Update(gameTime);
             }
 
-            _camera.Follow(_gameSession.Player.Bounds);
             base.Update(gameTime);
         }
 
@@ -117,7 +114,7 @@ namespace TeamUno.Mario
             _gameRenderer.DrawBackground(SpriteBatch, GraphicsDevice.Viewport.Bounds);
             SpriteBatch.End();
 
-            SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _camera.Transform);
+            SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _gameSession.Camera.Transform);
             _gameRenderer.DrawWorld(SpriteBatch, _gameSession);
             SpriteBatch.End();
 
