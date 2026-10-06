@@ -8,7 +8,7 @@ using TeamUno.Mario.Projectiles;
 
 namespace TeamUno.Mario.World
 {
-    public class Level
+    internal class Level
     {
         private readonly LevelDefinition _definition;
         private readonly IEnemyFactory _enemyFactory;
@@ -65,25 +65,13 @@ namespace TeamUno.Mario.World
 
         public Level(LevelDefinition definition, IEnemyFactory enemyFactory, IItemFactory itemFactory, IProjectileFactory projectileFactory)
         {
-            if (definition == null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
+            ArgumentNullException.ThrowIfNull(definition);
 
-            if (enemyFactory == null)
-            {
-                throw new ArgumentNullException(nameof(enemyFactory));
-            }
+            ArgumentNullException.ThrowIfNull(enemyFactory);
 
-            if (itemFactory == null)
-            {
-                throw new ArgumentNullException(nameof(itemFactory));
-            }
+            ArgumentNullException.ThrowIfNull(itemFactory);
 
-            if (projectileFactory == null)
-            {
-                throw new ArgumentNullException(nameof(projectileFactory));
-            }
+            ArgumentNullException.ThrowIfNull(projectileFactory);
 
             _definition = definition;
             _enemyFactory = enemyFactory;
@@ -138,10 +126,7 @@ namespace TeamUno.Mario.World
 
         public void SpawnMarioFireball(MarioPlayer source)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
+            ArgumentNullException.ThrowIfNull(source);
 
             float direction = -1f;
             if (source.FacingDirection == SpriteEffects.FlipHorizontally)
@@ -166,10 +151,7 @@ namespace TeamUno.Mario.World
 
         public void AddProjectiles(IProjectile projectile)
         {
-            if (projectile == null)
-            {
-                throw new ArgumentNullException(nameof(projectile));
-            }
+            ArgumentNullException.ThrowIfNull(projectile);
 
             _projectiles.Add(projectile);
         }

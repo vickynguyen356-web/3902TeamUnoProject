@@ -3,7 +3,7 @@ using TeamUno.Mario.Items;
 
 namespace TeamUno.Mario.World
 {
-    public class ItemSpawnDefinition
+    internal class ItemSpawnDefinition
     {
         private readonly ItemType _type;
         private readonly Vector2 _position;

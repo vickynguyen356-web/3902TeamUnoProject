@@ -1,0 +1,16 @@
+Author of code review: Vy
+Date of code review: 9/28/26
+Sprint number: 2
+Name of .cs file reviewed: CycleItemCommand.cs
+Author of .cs file: Jake
+Minutes taken for review: 15
+
+Readability:
+Class has clear and descriptive names, like _demoControls and _direction.
+
+Code quality:
+Using the interface IDemoControls allows for coupling to be reduced instead of using ItemDemo.
+If the game needed item cycling outside of the demo system, the command has to be refactored to a more general interface.
+
+Hypothetical change:
+If we were to add a new requirement where pressing the item-cycling button should skip certain items, the current implementation wouldn't be able to be changed easily since the command does not actually contain any cycling logic.

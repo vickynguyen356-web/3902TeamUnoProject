@@ -5,7 +5,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class Koopa : Enemy
+    internal class Koopa : Enemy
     {
         public const int KoopaWidth = 64;
         public const int KoopaHeight = 64;

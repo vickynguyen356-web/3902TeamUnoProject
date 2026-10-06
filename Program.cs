@@ -1,6 +1,6 @@
 namespace TeamUno.Mario
 {
-    public class Program
+    internal class Program
     {
         public static void Main()
         {

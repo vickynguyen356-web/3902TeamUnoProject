@@ -9,7 +9,7 @@ using TeamUno.Mario.World;
 
 namespace TeamUno.Mario
 {
-    public class MarioGame : BaseGame
+    internal class MarioGame : BaseGame
     {
         private const int WindowWidth = 1280;
         private const int WindowHeight = 720;

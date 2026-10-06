@@ -6,7 +6,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Input
 {
-    public class KeyboardController : IController
+    internal class KeyboardController : IController
     {
         private readonly KeyboardInput _input;
         private readonly Dictionary<Keys, ICommand> _heldCommands;
@@ -19,20 +19,11 @@ namespace TeamUno.Mario.Input
 
         public KeyboardController(IPlayer player, IGameActions gameActions, KeyboardInput input)
         {
-            if (player == null)
-            {
-                throw new ArgumentNullException(nameof(player));
-            }
+            ArgumentNullException.ThrowIfNull(player);
 
-            if (input == null)
-            {
-                throw new ArgumentNullException(nameof(input));
-            }
+            ArgumentNullException.ThrowIfNull(input);
 
-            if (gameActions == null)
-            {
-                throw new ArgumentNullException(nameof(gameActions));
-            }
+            ArgumentNullException.ThrowIfNull(gameActions);
 
             _input = input;
             _moveLeftCommand = new MoveCommand(player, -1);

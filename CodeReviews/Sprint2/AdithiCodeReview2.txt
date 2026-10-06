@@ -1,0 +1,12 @@
+Author of code review: Adithi Teligi
+Date of code review: 10/01/2026
+Sprint number: 2
+Name of .cs file reviewed: Game1.cs
+Author of .cs file: Ishika
+Minutes taken for review: 20
+
+Code Quality: Using separate classes for input, game updates, and drawing keeps the class organized. The game session and collision system also use the same level, so they work with the same game objects.
+
+Readability:  Names like WindowWidth and WindowHeight make the values easy to understand. Also keeping loading, updating, and drawing in separate methods makes the code easier to follow.
+
+Hypothetical change: If we wanted to add a pause feature, we could stop updating the game while still drawing it on the screen. The separate update and draw methods would make this easier. We would also need to prevent movement and other gameplay inputs while paused.

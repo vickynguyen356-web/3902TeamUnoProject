@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TeamUno.Mario.Entities
 {
-    public enum BlockType
+    internal enum BlockType
     {
         Brick,
         Question,
@@ -15,7 +15,7 @@ namespace TeamUno.Mario.Entities
         Empty
     }
 
-    public class Block
+    internal class Block
     {
         private const int DefaultWidth = 48;
         private const int DefaultHeight = 48;

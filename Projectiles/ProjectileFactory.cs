@@ -4,16 +4,13 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Projectiles
 {
-    public class ProjectileFactory : IProjectileFactory
+    internal class ProjectileFactory : IProjectileFactory
     {
         private readonly Func<ISprite> _sprite;
 
         public ProjectileFactory(Func<ISprite> sprite)
         {
-            if (sprite == null)
-            {
-                throw new ArgumentNullException(nameof(sprite));
-            }
+            ArgumentNullException.ThrowIfNull(sprite);
 
             _sprite = sprite;
         }

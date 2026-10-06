@@ -4,7 +4,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public static class PiranhaSpriteFactory
+    internal static class PiranhaSpriteFactory
     {
         public static ISprite Create(Texture2D spriteSheetTexture)
         {

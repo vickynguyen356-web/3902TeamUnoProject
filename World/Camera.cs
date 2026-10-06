@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace TeamUno.Mario.World
 {
-    public class Camera
+    internal class Camera
     {
         private readonly int _viewportWidth;
         private readonly int _levelWidth;
@@ -27,15 +27,8 @@ namespace TeamUno.Mario.World
 
         public Camera(int viewportWidth, int levelWidth)
         {
-            if (viewportWidth <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(viewportWidth));
-            }
-
-            if (levelWidth <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(levelWidth));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(viewportWidth);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(levelWidth);
 
             _viewportWidth = viewportWidth;
             _levelWidth = levelWidth;

@@ -1,10 +1,11 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class EnemyStateMachine
+    internal class EnemyStateMachine
     {
         private const float MinimumRunningSpeed = 13f;
         private EntityAnimationState _animationState = EntityAnimationState.Idle;
@@ -86,9 +87,15 @@ namespace TeamUno.Mario.Entities
             IsFlipped = false;
         }
 
+        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Enemy damage will update this enemy's state")]
         public void TakeDamage()
         {
             // TODO: implement enemy damage logic
+        }
+
+        public void Kill()
+        {
+            _isDead = true;
         }
     }
 }

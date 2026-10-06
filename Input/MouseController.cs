@@ -4,7 +4,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Input
 {
-    public class MouseController : IController
+    internal class MouseController : IController
     {
         private readonly ICommand _jumpCommand;
         private MouseState _previousMouseState;

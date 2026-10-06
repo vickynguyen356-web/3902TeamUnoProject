@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace TeamUno.Mario.Interfaces
 {
-    public interface IProjectileEmitter
+    internal interface IProjectileEmitter
     {
         IReadOnlyList<IProjectile> Projectiles
         {

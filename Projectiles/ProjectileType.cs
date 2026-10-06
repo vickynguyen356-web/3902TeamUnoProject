@@ -1,6 +1,6 @@
 namespace TeamUno.Mario.Projectiles
 {
-    public enum ProjectileType
+    internal enum ProjectileType
     {
         Fireball,
         Hammer

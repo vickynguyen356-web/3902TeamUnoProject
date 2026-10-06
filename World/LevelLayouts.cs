@@ -5,7 +5,7 @@ using TeamUno.Mario.Items;
 
 namespace TeamUno.Mario.World
 {
-    public static class LevelLayouts
+    internal static class LevelLayouts
     {
         public static LevelDefinition CreateFirstLevel()
         {

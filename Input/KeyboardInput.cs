@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace TeamUno.Mario.Input
 {
-    public class KeyboardInput
+    internal class KeyboardInput
     {
         private KeyboardState _previousKeyState;
         private KeyboardState _currentKeyState;

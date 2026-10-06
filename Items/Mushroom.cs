@@ -3,7 +3,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Items
 {
-    public class Mushroom : Item
+    internal class Mushroom : Item
     // inherits drawing, animation handling, and reset from Item
     {
         // move right at 60 pixels per second

@@ -1,0 +1,14 @@
+Author of code review: Jake
+Date of code review: Not provided
+Sprint number: 2
+Name of .cs file reviewed: Entities/Block.cs
+Author of .cs file: Ishika Aahna
+Minutes taken for review: Not provided
+
+These comments cover the original code merged for Sprint 2.
+
+Readability: The class is short and the position, size, and drawing code are easy to follow. IBlock is a confusing name because it provides sprite information rather than representing the whole block.
+
+Code quality: Separating the block's size and position from its sprite makes the drawing code reusable. The block and sprite both store a type, which could become harder to keep consistent when blocks change state.
+
+Possible change: Turn a question block into a used block after Mario hits it. There is no method for that yet, so we would need to update the block's type and its sprite together.

@@ -6,7 +6,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities
 {
-    public class MarioSpriteFactory
+    internal class MarioSpriteFactory
     {
         public static ISprite Create(Texture2D spriteSheetTexture)
         {

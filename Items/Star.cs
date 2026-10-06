@@ -3,7 +3,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Items
 {
-    public class Star : Item
+    internal class Star : Item
     {
         // horizontal speed, bounce height, and vertical speed
         private const float MoveSpeed = 90f;

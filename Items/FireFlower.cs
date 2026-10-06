@@ -3,7 +3,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Items
 {
-    public class FireFlower : Item
+    internal class FireFlower : Item
     // inherits from Item class
     {
         public override ItemType Type

@@ -3,16 +3,13 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Commands
 {
-    public class JumpCommand : ICommand
+    internal class JumpCommand : ICommand
     {
         private readonly IPlayer _player;
 
         public JumpCommand(IPlayer player)
         {
-            if (player == null)
-            {
-                throw new ArgumentNullException(nameof(player));
-            }
+            ArgumentNullException.ThrowIfNull(player);
 
             _player = player;
         }

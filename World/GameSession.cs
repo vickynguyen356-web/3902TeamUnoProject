@@ -1,11 +1,12 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities;
 using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.World
 {
-    public class GameSession : IGameActions
+    internal class GameSession : IGameActions
     {
         private static readonly TimeSpan MaximumElapsedTime = TimeSpan.FromSeconds(1.0 / 30.0);
         private readonly GameTime _simulationTime = new GameTime();
@@ -44,15 +45,9 @@ namespace TeamUno.Mario.World
 
         public GameSession(MarioPlayer player, Level level)
         {
-            if (player == null)
-            {
-                throw new ArgumentNullException(nameof(player));
-            }
+            ArgumentNullException.ThrowIfNull(player);
 
-            if (level == null)
-            {
-                throw new ArgumentNullException(nameof(level));
-            }
+            ArgumentNullException.ThrowIfNull(level);
 
             _player = player;
             _level = level;
@@ -116,10 +111,12 @@ namespace TeamUno.Mario.World
             }
         }
 
+        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Pipe transitions will update the current session")]
         public void BeginPipeTransition(Block pipe, Vector2 destination)
         {
         }
 
+        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Flagpole movement will update the current session")]
         public void BeginFlagpoleSlide(Block flagpole)
         {
         }

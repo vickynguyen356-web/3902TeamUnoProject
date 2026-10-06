@@ -3,17 +3,14 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Commands
 {
-    public class CrouchCommand : ICommand
+    internal class CrouchCommand : ICommand
     {
         private readonly IPlayer _player;
         private readonly bool _shouldCrouch;
 
         public CrouchCommand(IPlayer player, bool shouldCrouch)
         {
-            if (player == null)
-            {
-                throw new ArgumentNullException(nameof(player));
-            }
+            ArgumentNullException.ThrowIfNull(player);
 
             _player = player;
             _shouldCrouch = shouldCrouch;
