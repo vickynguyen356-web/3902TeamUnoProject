@@ -1,4 +1,15 @@
 # CSE 3902 — Team Uno Mario
+
+## Sprint 3 in progress
+
+The current build uses a scrolling level and the refactored controller. Mario's movement keys, R to reset, and Q / Escape to quit remain. Z / N now spawn Mario's fireballs in Fire form, and B makes Bowser spit fire. The demo selection and damage keys have been removed.
+
+`GameSession` owns the camera and updates it after movement and collision handling. Pipe code can use `session.Camera.PauseFollowing()`, `MoveTo(x)`, and `ResumeFollowing()`. The camera follows Mario horizontally in both directions, stays within the level, and resumes following when the session resets.
+
+Projectiles and Mario's form transition animations are implemented. Collision handling, pipe transitions, flagpole movement, and enemy damage still have stubs for Sprint 3 work. Mario currently falls through the floor until collision handling is implemented.
+
+The sections below describe the Sprint 2 demo.
+
 ## Sprint 2
 Root namespace: `TeamUno.Mario`
 

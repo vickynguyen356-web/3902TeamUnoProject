@@ -13,6 +13,7 @@ namespace TeamUno.Mario.World
         private readonly CollisionSystem _collisionSystem = new CollisionSystem();
         private readonly MarioPlayer _player;
         private readonly Level _level;
+        private readonly Camera _camera;
         private bool _shouldExit;
 
         public MarioPlayer Player
@@ -31,6 +32,14 @@ namespace TeamUno.Mario.World
             }
         }
 
+        public Camera Camera
+        {
+            get
+            {
+                return _camera;
+            }
+        }
+
         public bool ShouldExit
         {
             get
@@ -43,15 +52,19 @@ namespace TeamUno.Mario.World
             }
         }
 
-        public GameSession(MarioPlayer player, Level level)
+        public GameSession(MarioPlayer player, Level level, Camera camera)
         {
             ArgumentNullException.ThrowIfNull(player);
 
             ArgumentNullException.ThrowIfNull(level);
 
+            ArgumentNullException.ThrowIfNull(camera);
+
             _player = player;
             _level = level;
+            _camera = camera;
             Player.FireballRequested += SpawnMarioFireball;
+            Camera.Follow(Player.Bounds);
         }
 
         public void Update(GameTime gameTime)
@@ -77,6 +90,7 @@ namespace TeamUno.Mario.World
             Level.Update(_simulationTime);
             _collisionSystem.Update(this, previousPlayerBounds);
             Player.UpdateAnimation(_simulationTime);
+            Camera.Follow(Player.Bounds);
         }
 
         public void Quit()
@@ -92,6 +106,8 @@ namespace TeamUno.Mario.World
             _simulationTime.IsRunningSlowly = false;
             Level.Reset();
             Player.Reset();
+            Camera.ResumeFollowing();
+            Camera.Follow(Player.Bounds);
         }
 
         private void SpawnMarioFireball()
