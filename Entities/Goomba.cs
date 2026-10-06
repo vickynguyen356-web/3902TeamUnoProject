@@ -40,7 +40,7 @@ namespace TeamUno.Mario.Entities
             _rightBound = position.X + PatrolDistance;
             Velocity.X = -RunSpeed;
 
-            UpdateAnimation(new GameTime());
+            UpdateMovementAnimation(new GameTime(), _goombaAnimations);
         }
 
         public override void Update(GameTime gameTime)
@@ -61,26 +61,7 @@ namespace TeamUno.Mario.Entities
                 }
             }
 
-            UpdateAnimation(gameTime);
-        }
-
-        private void UpdateAnimation(GameTime gameTime)
-        {
-            StateMachine.Update(Velocity);
-
-            Sprite.Update(gameTime, GetCurrentAnimation());
-        }
-
-        private SpriteAnimation GetCurrentAnimation()
-        {
-            SpriteAnimation animation;
-
-            if (_goombaAnimations.TryGetValue(StateMachine.AnimationState, out animation))
-            {
-                return animation;
-            }
-
-            return _goombaAnimations[EntityAnimationState.Idle];
+            UpdateMovementAnimation(gameTime, _goombaAnimations);
         }
 
         public void Reset()
@@ -91,7 +72,7 @@ namespace TeamUno.Mario.Entities
             StateMachine.Reset();
             Sprite.Reset();
 
-            UpdateAnimation(new GameTime());
+            UpdateMovementAnimation(new GameTime(), _goombaAnimations);
         }
     }
 }

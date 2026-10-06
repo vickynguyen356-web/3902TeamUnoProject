@@ -14,6 +14,7 @@ namespace TeamUno.Mario.Interfaces
         Swim,
         Climb,
         Open,
-        Closed
+        Closed,
+        Transform
     }
 }

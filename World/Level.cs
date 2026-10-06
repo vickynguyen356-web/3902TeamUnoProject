@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using TeamUno.Mario.Entities;
 using TeamUno.Mario.Interfaces;
+using TeamUno.Mario.Projectiles;
 
 namespace TeamUno.Mario.World
 {
@@ -11,12 +13,15 @@ namespace TeamUno.Mario.World
         private readonly LevelDefinition _definition;
         private readonly IEnemyFactory _enemyFactory;
         private readonly IItemFactory _itemFactory;
+        private readonly IProjectileFactory _projectileFactory;
         private readonly List<Block> _blocks = new List<Block>();
         private readonly List<IItem> _items = new List<IItem>();
         private readonly List<IEnemy> _enemies = new List<IEnemy>();
+        private readonly List<IProjectile> _projectiles = new List<IProjectile>();
         private readonly IReadOnlyList<Block> _readOnlyBlocks;
         private readonly IReadOnlyList<IItem> _readOnlyItems;
         private readonly IReadOnlyList<IEnemy> _readOnlyEnemies;
+        private readonly IReadOnlyList<IProjectile> _readOnlyProjectiles;
 
         public LevelDefinition Definition
         {
@@ -50,7 +55,15 @@ namespace TeamUno.Mario.World
             }
         }
 
-        public Level(LevelDefinition definition, IEnemyFactory enemyFactory, IItemFactory itemFactory)
+        public IReadOnlyList<IProjectile> Projectiles
+        {
+            get
+            {
+                return _readOnlyProjectiles;
+            }
+        }
+
+        public Level(LevelDefinition definition, IEnemyFactory enemyFactory, IItemFactory itemFactory, IProjectileFactory projectileFactory)
         {
             if (definition == null)
             {
@@ -67,16 +80,23 @@ namespace TeamUno.Mario.World
                 throw new ArgumentNullException(nameof(itemFactory));
             }
 
+            if (projectileFactory == null)
+            {
+                throw new ArgumentNullException(nameof(projectileFactory));
+            }
+
             _definition = definition;
             _enemyFactory = enemyFactory;
             _itemFactory = itemFactory;
+            _projectileFactory = projectileFactory;
             _readOnlyBlocks = _blocks.AsReadOnly();
             _readOnlyItems = _items.AsReadOnly();
             _readOnlyEnemies = _enemies.AsReadOnly();
+            _readOnlyProjectiles = _projectiles.AsReadOnly();
             LoadDefinition();
         }
 
-        public virtual void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             foreach (IItem item in _items)
             {
@@ -92,41 +112,90 @@ namespace TeamUno.Mario.World
             {
                 block.Update(gameTime);
             }
+
+            CollectProjectiles();
+
+            for (int index = _projectiles.Count - 1; index >= 0; index = index - 1)
+            {
+                IProjectile projectile = _projectiles[index];
+                if (!projectile.IsDead)
+                {
+                    projectile.Update(gameTime);
+                }
+
+                Rectangle bounds = projectile.Bounds;
+                if (bounds.Right < 0 || bounds.Left > Definition.Width || bounds.Top > Definition.Height)
+                {
+                    projectile.Kill();
+                }
+
+                if (projectile.IsDead)
+                {
+                    _projectiles.RemoveAt(index);
+                }
+            }
         }
 
-        public virtual void Reset()
+        public void SpawnMarioFireball(MarioPlayer source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            float direction = -1f;
+            if (source.FacingDirection == SpriteEffects.FlipHorizontally)
+            {
+                direction = 1f;
+            }
+
+            Rectangle sourceBounds = source.Bounds;
+            Vector2 position = new Vector2(
+                sourceBounds.Right,
+                sourceBounds.Center.Y - Fireball.FireballHeight / 2f);
+            if (direction < 0)
+            {
+                position.X = sourceBounds.Left - Fireball.FireballWidth;
+            }
+
+            Vector2 velocity = new Vector2(direction * 200f, -100f);
+            IProjectile fireball = _projectileFactory.Create(ProjectileType.Fireball, position, velocity);
+            fireball.IsEnemyProjectile = false;
+            AddProjectiles(fireball);
+        }
+
+        public void AddProjectiles(IProjectile projectile)
+        {
+            if (projectile == null)
+            {
+                throw new ArgumentNullException(nameof(projectile));
+            }
+
+            _projectiles.Add(projectile);
+        }
+
+        private void CollectProjectiles()
+        {
+            foreach (IEnemy enemy in _enemies)
+            {
+                IProjectileEmitter emitter = enemy as IProjectileEmitter;
+                if (emitter == null)
+                {
+                    continue;
+                }
+
+                foreach (IProjectile projectile in emitter.Projectiles)
+                {
+                    AddProjectiles(projectile);
+                }
+
+                emitter.ClearProjectiles();
+            }
+        }
+
+        public void Reset()
         {
             LoadDefinition();
-        }
-
-        protected void ReplaceBlock(int index, BlockSpawnDefinition definition)
-        {
-            if (definition == null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
-
-            _blocks[index] = CreateBlock(definition);
-        }
-
-        protected void ReplaceItem(int index, ItemSpawnDefinition definition)
-        {
-            if (definition == null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
-
-            _items[index] = _itemFactory.Create(definition.Type, definition.Position);
-        }
-
-        protected void ReplaceEnemy(int index, EnemySpawnDefinition definition)
-        {
-            if (definition == null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
-
-            _enemies[index] = _enemyFactory.Create(definition.Type, definition.Position);
         }
 
         private void LoadDefinition()
@@ -134,6 +203,7 @@ namespace TeamUno.Mario.World
             _blocks.Clear();
             _items.Clear();
             _enemies.Clear();
+            _projectiles.Clear();
 
             foreach (BlockSpawnDefinition block in Definition.Blocks)
             {

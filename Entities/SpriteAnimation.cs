@@ -6,6 +6,7 @@ namespace TeamUno.Mario.Entities
     public class SpriteAnimation
     {
         private readonly float _frameDuration;
+        private readonly bool _isLooping;
         private readonly IReadOnlyList<SpriteFrame> _frames;
 
         public float FrameDuration
@@ -24,7 +25,20 @@ namespace TeamUno.Mario.Entities
             }
         }
 
+        public bool IsLooping
+        {
+            get
+            {
+                return _isLooping;
+            }
+        }
+
         public SpriteAnimation(float frameDuration, params SpriteFrame[] frames)
+            : this(frameDuration, true, frames)
+        {
+        }
+
+        public SpriteAnimation(float frameDuration, bool isLooping, params SpriteFrame[] frames)
         {
             if (frameDuration <= 0)
             {
@@ -37,7 +51,7 @@ namespace TeamUno.Mario.Entities
             }
 
             _frameDuration = frameDuration;
-            // Copy the frames so callers cannot change this animation
+            _isLooping = isLooping;
             _frames = new List<SpriteFrame>(frames).AsReadOnly();
         }
     }

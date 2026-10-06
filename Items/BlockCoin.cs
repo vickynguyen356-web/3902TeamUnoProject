@@ -1,5 +1,3 @@
-// provides Math.Min
-using System;
 // provides position and timing types: Vector2 and GameTime
 using Microsoft.Xna.Framework;
 // provides SpriteBatch for drawing sprites
@@ -53,9 +51,7 @@ namespace TeamUno.Mario.Items
             {
                 return;
             }
-            // read elapsed time and convert it to float.
-            // 1/30 of a second per update
-            float seconds = Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, 1f / 30f);
+            float seconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             // coin's remaining time
             _timer = _timer - seconds;
             // hide coin when its time ends

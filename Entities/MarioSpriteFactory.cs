@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,9 +13,28 @@ namespace TeamUno.Mario.Entities
             return new SpriteSheetSprite(spriteSheetTexture, 2f);
         }
 
+        internal static SpriteAnimation CreateFormTransitionAnimation(PlayerForm sourceForm, PlayerForm targetForm)
+        {
+            SpriteFrame sourceFrame = CreateStandingFrame(sourceForm);
+            SpriteFrame targetFrame = CreateStandingFrame(targetForm);
+            SpriteFrame[] frames = new SpriteFrame[]
+            {
+                sourceFrame,
+                targetFrame,
+                sourceFrame,
+                targetFrame,
+                sourceFrame,
+                targetFrame,
+                targetFrame
+            };
+
+            float frameDuration = PlayerStateMachine.FormTransitionDurationSeconds / frames.Length;
+            return new SpriteAnimation(frameDuration, false, frames);
+        }
+
         internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreateSuperAnimations()
         {
-            SpriteAnimation idle = new SpriteAnimation(0.80f, CreateFrame(180, 52, 16, 32, 209, 52));
+            SpriteAnimation idle = new SpriteAnimation(0.80f, CreateStandingFrame(PlayerForm.Super));
 
             SpriteFrame[] walkingFrames = new SpriteFrame[3];
             walkingFrames[0] = CreateFrame(150, 52, 16, 32, 239, 52);
@@ -26,7 +46,7 @@ namespace TeamUno.Mario.Entities
             SpriteAnimation jump = new SpriteAnimation(0.20f, CreateFrame(30, 52, 16, 32, 359, 52));
             SpriteAnimation fall = new SpriteAnimation(0.28f, CreateFrame(30, 52, 16, 32, 359, 52));
             SpriteAnimation dead = new SpriteAnimation(0.28f, CreateFrame(0, 16, 15, 14, 390, 16));
-            SpriteAnimation throwFireball = new SpriteAnimation(1f, CreateFrame(180, 52, 16, 32, 209, 52));
+            SpriteAnimation throwFireball = new SpriteAnimation(1f, CreateStandingFrame(PlayerForm.Super));
             SpriteAnimation swim = new SpriteAnimation(0.12f,
                 CreateFrame(52, 88, 16, 30, 337, 88),
                 CreateFrame(78, 88, 14, 30, 313, 88),
@@ -54,7 +74,7 @@ namespace TeamUno.Mario.Entities
 
         internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreateSmallAnimations()
         {
-            SpriteAnimation idle = new SpriteAnimation(0.80f, CreateFrame(181, 0, 13, 16, 211, 0));
+            SpriteAnimation idle = new SpriteAnimation(0.80f, CreateStandingFrame(PlayerForm.Small));
 
             SpriteFrame[] walkingFrames = new SpriteFrame[3];
             walkingFrames[0] = CreateFrame(150, 0, 14, 15, 241, 0);
@@ -62,11 +82,11 @@ namespace TeamUno.Mario.Entities
             walkingFrames[2] = CreateFrame(89, 0, 16, 16, 300, 0);
             SpriteAnimation run = new SpriteAnimation(0.28f, walkingFrames);
 
-            SpriteAnimation crouch = new SpriteAnimation(1f, CreateFrame(181, 0, 13, 16, 211, 0));
+            SpriteAnimation crouch = new SpriteAnimation(1f, CreateStandingFrame(PlayerForm.Small));
             SpriteAnimation jump = new SpriteAnimation(0.20f, CreateFrame(29, 0, 17, 16, 359, 0));
             SpriteAnimation fall = new SpriteAnimation(0.28f, CreateFrame(29, 0, 17, 16, 359, 0));
             SpriteAnimation dead = new SpriteAnimation(0.28f, CreateFrame(0, 16, 15, 14, 390, 16));
-            SpriteAnimation throwFireball = new SpriteAnimation(1f, CreateFrame(181, 0, 13, 16, 211, 0));
+            SpriteAnimation throwFireball = new SpriteAnimation(1f, CreateStandingFrame(PlayerForm.Small));
             SpriteAnimation swim = new SpriteAnimation(0.12f,
                 CreateFrame(90, 30, 14, 15, 301, 30),
                 CreateFrame(120, 30, 14, 15, 271, 30),
@@ -92,7 +112,7 @@ namespace TeamUno.Mario.Entities
 
         internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreateFireAnimations()
         {
-            SpriteAnimation idle = new SpriteAnimation(0.80f, CreateFrame(180, 122, 16, 32, 209, 122));
+            SpriteAnimation idle = new SpriteAnimation(0.80f, CreateStandingFrame(PlayerForm.Fire));
 
             SpriteFrame[] walkingFrames = new SpriteFrame[3];
             walkingFrames[0] = CreateFrame(152, 122, 16, 32, 237, 122);
@@ -130,7 +150,21 @@ namespace TeamUno.Mario.Entities
             };
         }
 
-        // The sheet stores separate left and right frames with uneven pose spacing
+        private static SpriteFrame CreateStandingFrame(PlayerForm form)
+        {
+            switch (form)
+            {
+                case PlayerForm.Small:
+                    return CreateFrame(181, 0, 13, 16, 211, 0);
+                case PlayerForm.Super:
+                    return CreateFrame(180, 52, 16, 32, 209, 52);
+                case PlayerForm.Fire:
+                    return CreateFrame(180, 122, 16, 32, 209, 122);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(form));
+            }
+        }
+
         private static SpriteFrame CreateFrame(
             int leftFrameX, int leftFrameY, int width, int height, int rightFrameX, int rightFrameY)
         {

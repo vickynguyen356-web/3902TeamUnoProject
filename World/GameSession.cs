@@ -7,7 +7,9 @@ namespace TeamUno.Mario.World
 {
     public class GameSession : IGameActions
     {
-        private readonly IPlayerMovement _playerMovement;
+        private static readonly TimeSpan MaximumElapsedTime = TimeSpan.FromSeconds(1.0 / 30.0);
+        private readonly GameTime _simulationTime = new GameTime();
+        private readonly CollisionSystem _collisionSystem = new CollisionSystem();
         private readonly MarioPlayer _player;
         private readonly Level _level;
         private bool _shouldExit;
@@ -40,7 +42,7 @@ namespace TeamUno.Mario.World
             }
         }
 
-        public GameSession(MarioPlayer player, Level level, IPlayerMovement playerMovement)
+        public GameSession(MarioPlayer player, Level level)
         {
             if (player == null)
             {
@@ -52,27 +54,34 @@ namespace TeamUno.Mario.World
                 throw new ArgumentNullException(nameof(level));
             }
 
-            if (playerMovement == null)
-            {
-                throw new ArgumentNullException(nameof(playerMovement));
-            }
-
             _player = player;
             _level = level;
-            _playerMovement = playerMovement;
+            Player.FireballRequested += SpawnMarioFireball;
         }
 
         public void Update(GameTime gameTime)
         {
-            // Limit large time steps after a slow frame
-            float elapsedSeconds = Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, 1f / 30f);
+            TimeSpan elapsedTime = gameTime.ElapsedGameTime;
+            if (elapsedTime > MaximumElapsedTime)
+            {
+                elapsedTime = MaximumElapsedTime;
+            }
+            else if (elapsedTime < TimeSpan.Zero)
+            {
+                elapsedTime = TimeSpan.Zero;
+            }
+
+            _simulationTime.ElapsedGameTime = elapsedTime;
+            _simulationTime.TotalGameTime = _simulationTime.TotalGameTime + elapsedTime;
+            _simulationTime.IsRunningSlowly = gameTime.IsRunningSlowly;
+            float elapsedSeconds = (float)elapsedTime.TotalSeconds;
+            Rectangle previousPlayerBounds = Player.Bounds;
 
             Player.UpdateVelocity(elapsedSeconds);
-            _playerMovement.Move(Player, elapsedSeconds);
-
-            // Animation uses the updated velocity and grounded state
-            Player.UpdateAnimation(gameTime);
-            Level.Update(gameTime);
+            Player.UpdatePosition(elapsedSeconds);
+            Level.Update(_simulationTime);
+            _collisionSystem.Update(this, previousPlayerBounds);
+            Player.UpdateAnimation(_simulationTime);
         }
 
         public void Quit()
@@ -83,13 +92,36 @@ namespace TeamUno.Mario.World
         public void Reset()
         {
             ShouldExit = false;
+            _simulationTime.ElapsedGameTime = TimeSpan.Zero;
+            _simulationTime.TotalGameTime = TimeSpan.Zero;
+            _simulationTime.IsRunningSlowly = false;
             Level.Reset();
             Player.Reset();
         }
 
-        public void TriggerDamage()
+        private void SpawnMarioFireball()
         {
-            Player.TakeDamage();
+            Level.SpawnMarioFireball(Player);
+        }
+
+        public void SpitFire()
+        {
+            foreach (IEnemy enemy in Level.Enemies)
+            {
+                Bowser bowser = enemy as Bowser;
+                if (bowser != null)
+                {
+                    bowser.SpitFire();
+                }
+            }
+        }
+
+        public void BeginPipeTransition(Block pipe, Vector2 destination)
+        {
+        }
+
+        public void BeginFlagpoleSlide(Block flagpole)
+        {
         }
     }
 }

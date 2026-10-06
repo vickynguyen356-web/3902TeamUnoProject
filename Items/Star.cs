@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using TeamUno.Mario.Interfaces;
 
@@ -31,8 +30,7 @@ namespace TeamUno.Mario.Items
 
         public override void Update(GameTime gameTime)
         {
-            // limit elapsed time
-            float seconds = Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, 1f / 30f);
+            float seconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             // keep moving right throughout the bounce
             float x = Position.X + MoveSpeed * seconds;
             float y = Position.Y;
