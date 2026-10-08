@@ -1,5 +1,5 @@
 using Microsoft.Xna.Framework;
-using TeamUno.Mario.Entities;
+using TeamUno.Mario.Entities.Enemies;
 
 namespace TeamUno.Mario.World
 {

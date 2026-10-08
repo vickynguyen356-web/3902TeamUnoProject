@@ -1,36 +1,45 @@
+// connects game components and runs them together
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TeamUno.Mario.Entities;
+using TeamUno.Mario.Entities.Enemies;
+using TeamUno.Mario.Entities.Items;
+using TeamUno.Mario.Entities.Player;
+using TeamUno.Mario.Entities.Projectiles;
 using TeamUno.Mario.Input;
 using TeamUno.Mario.Interfaces;
-using TeamUno.Mario.Items;
-using TeamUno.Mario.Projectiles;
 using TeamUno.Mario.World;
 
 namespace TeamUno.Mario
 {
-    internal class MarioGame : BaseGame
+    internal class MarioGame : Game
     {
         private const int WindowWidth = 1280;
         private const int WindowHeight = 720;
         private readonly LevelDefinition _levelDefinition;
+        private readonly GraphicsDeviceManager _graphicsDeviceManager;
+        private SpriteBatch _spriteBatch;
         private GameSession _gameSession;
         private GameRenderer _gameRenderer;
-        private CombinedController _controller;
+        private IController _controller;
 
-        public MarioGame() : this(LevelLayouts.CreateFirstLevel())
+        public MarioGame()
         {
-        }
+            _levelDefinition = LevelLayouts.CreateFirstLevel();
+            _graphicsDeviceManager = new GraphicsDeviceManager(this);
+            _graphicsDeviceManager.PreferredBackBufferWidth = WindowWidth;
+            _graphicsDeviceManager.PreferredBackBufferHeight = WindowHeight;
+            _graphicsDeviceManager.IsFullScreen = false;
+            _graphicsDeviceManager.ApplyChanges();
 
-        private MarioGame(LevelDefinition levelDefinition)
-            : base("Team Uno Mario", WindowWidth, WindowHeight, false)
-        {
-            _levelDefinition = levelDefinition;
+            Window.Title = "Team Uno Mario";
+            Content.RootDirectory = "Content";
+            IsMouseVisible = true;
         }
 
         protected override void LoadContent()
         {
             base.LoadContent();
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             Texture2D marioTexture = Content.Load<Texture2D>("mario");
             Texture2D enemyTexture = Content.Load<Texture2D>("enemiesSprites");
@@ -38,54 +47,21 @@ namespace TeamUno.Mario
             Texture2D backgroundTexture = Content.Load<Texture2D>("background");
             Texture2D blockTexture = Content.Load<Texture2D>("blocksspritesheetbg");
 
+            ProjectileFactory.Initialize(enemyTexture, itemTexture);
+            EnemyFactory.Initialize(enemyTexture);
+            ItemFactory.Initialize(itemTexture);
+
             MarioPlayer player = new MarioPlayer(
                 MarioSpriteFactory.Create(marioTexture),
                 _levelDefinition.PlayerSpawnPosition,
                 PlayerForm.Fire);
 
-            IProjectileFactory projectileFactory = new ProjectileFactory(
-                delegate()
-                {
-                    return ProjectileSpriteFactory.Create(enemyTexture);
-                });
-
-            IEnemyFactory enemyFactory = new EnemyFactory(
-                delegate()
-                {
-                    return GoombaSpriteFactory.Create(enemyTexture);
-                },
-                delegate()
-                {
-                    return KoopaSpriteFactory.Create(enemyTexture);
-                },
-                delegate()
-                {
-                    return PiranhaSpriteFactory.Create(enemyTexture);
-                },
-                delegate()
-                {
-                    return HammerBroSpriteFactory.Create(enemyTexture);
-                },
-                delegate()
-                {
-                    return BowserSpriteFactory.Create(enemyTexture);
-                },
-                projectileFactory);
-            IItemFactory itemFactory = new ItemFactory(
-                delegate()
-                {
-                    return ItemSpriteFactory.Create(itemTexture);
-                });
-
-            Level level = new Level(_levelDefinition, enemyFactory, itemFactory, projectileFactory);
+            Level level = new Level(_levelDefinition);
             Camera camera = new Camera(GraphicsDevice.Viewport.Width, level.Definition.Width);
+            // the session updates and resets the level, including its items
             _gameSession = new GameSession(player, level, camera);
 
-            KeyboardInput input = new KeyboardInput();
-            _controller = new CombinedController(
-                input,
-                _gameSession,
-                new KeyboardController(player, _gameSession, input));
+            _controller = new KeyboardController(player, _gameSession);
             _gameRenderer = new GameRenderer(backgroundTexture, blockTexture);
         }
 
@@ -98,10 +74,7 @@ namespace TeamUno.Mario
                 return;
             }
 
-            if (!_controller.ResetThisFrame)
-            {
-                _gameSession.Update(gameTime);
-            }
+            _gameSession.Update(gameTime, _controller.IsJumpHeld);
 
             base.Update(gameTime);
         }
@@ -110,15 +83,21 @@ namespace TeamUno.Mario
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            _gameRenderer.DrawBackground(SpriteBatch, GraphicsDevice.Viewport.Bounds);
-            SpriteBatch.End();
+            _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            _gameRenderer.DrawBackground(_spriteBatch, GraphicsDevice.Viewport.Bounds);
+            _spriteBatch.End();
 
-            SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _gameSession.Camera.Transform);
-            _gameRenderer.DrawWorld(SpriteBatch, _gameSession);
-            SpriteBatch.End();
+            _spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _gameSession.Camera.Transform);
+            _gameRenderer.DrawWorld(_spriteBatch, _gameSession);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        protected override void UnloadContent()
+        {
+            _spriteBatch.Dispose();
+            base.UnloadContent();
         }
     }
 }

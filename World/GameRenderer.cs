@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TeamUno.Mario.Entities;
+using TeamUno.Mario.Entities.Blocks;
 using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.World

@@ -2,11 +2,15 @@
 
 ## Sprint 3 in progress
 
-The current build uses a scrolling level and the refactored controller. Mario's movement keys, R to reset, and Q / Escape to quit remain. Z / N now spawn Mario's fireballs in Fire form, and B makes Bowser spit fire. The demo selection and damage keys have been removed.
+The current build uses a scrolling level and the refactored controller. Mario's movement keys, R to reset, and Q / Escape to quit remain. Z / N spawn Mario's fireballs in Fire form. Bowser fires on a timer. The demo selection, damage, and Bowser control keys have been removed.
 
 `GameSession` owns the camera and updates it after movement and collision handling. Pipe code can use `session.Camera.PauseFollowing()`, `MoveTo(x)`, and `ResumeFollowing()`. The camera follows Mario horizontally in both directions, stays within the level, and resumes following when the session resets.
 
-Projectiles and Mario's form transition animations are implemented. Collision handling, pipe transitions, flagpole movement, and enemy damage still have stubs for Sprint 3 work. Mario currently falls through the floor until collision handling is implemented.
+Mario's fireballs and Bowser's flames use separate sprites and movement. Mario's fireballs fall with gravity, while Bowser's flames travel straight. Projectile collision responses still need to be connected.
+
+The factories are static and receive their textures in `MarioGame.LoadContent()`. Mario and enemies create projectiles and keep them in temporary lists through `IProjectileEmitter`. Level collects them during the same update and clears those lists, then handles the projectiles from there.
+
+Mario's form transition animations are implemented, along with a basic floor collision example. Platform and Vine are reserved block types for one-way surfaces and climbing; their sprites and interactions are not implemented yet. The rest of collision handling, pipe transitions, flagpole movement, and enemy damage still need Sprint 3 work.
 
 The sections below describe the Sprint 2 demo.
 

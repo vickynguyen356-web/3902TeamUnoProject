@@ -1,5 +1,5 @@
 using Microsoft.Xna.Framework;
-using TeamUno.Mario.Items;
+using TeamUno.Mario.Entities.Items;
 
 namespace TeamUno.Mario.World
 {

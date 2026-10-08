@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using TeamUno.Mario.Entities.Blocks;
+using TeamUno.Mario.Entities.Enemies;
+using TeamUno.Mario.Entities.Items;
 
 namespace TeamUno.Mario.World
 {
@@ -8,7 +11,6 @@ namespace TeamUno.Mario.World
     {
         private readonly int _width;
         private readonly int _height;
-        private readonly int _floorY;
         private readonly Vector2 _playerSpawnPosition;
         private readonly IReadOnlyList<BlockSpawnDefinition> _blocks;
         private readonly IReadOnlyList<ItemSpawnDefinition> _items;
@@ -27,14 +29,6 @@ namespace TeamUno.Mario.World
             get
             {
                 return _height;
-            }
-        }
-
-        public int FloorY
-        {
-            get
-            {
-                return _floorY;
             }
         }
 
@@ -73,30 +67,19 @@ namespace TeamUno.Mario.World
         public LevelDefinition(
             int width,
             int height,
-            int floorY,
             Vector2 playerSpawnPosition,
             IReadOnlyList<BlockSpawnDefinition> blocks,
             IReadOnlyList<ItemSpawnDefinition> items,
             IReadOnlyList<EnemySpawnDefinition> enemies)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
-
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
-
-            if (floorY < 0 || floorY > height)
-            {
-                throw new ArgumentOutOfRangeException(nameof(floorY));
-            }
-
             ArgumentNullException.ThrowIfNull(blocks);
-
             ArgumentNullException.ThrowIfNull(items);
-
             ArgumentNullException.ThrowIfNull(enemies);
 
             _width = width;
             _height = height;
-            _floorY = floorY;
             _playerSpawnPosition = playerSpawnPosition;
             _blocks = new List<BlockSpawnDefinition>(blocks).AsReadOnly();
             _items = new List<ItemSpawnDefinition>(items).AsReadOnly();

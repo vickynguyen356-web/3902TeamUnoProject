@@ -1,23 +1,22 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using TeamUno.Mario.Entities;
+using TeamUno.Mario.Entities.Blocks;
+using TeamUno.Mario.Entities.Enemies;
+using TeamUno.Mario.Entities.Items;
 using TeamUno.Mario.Interfaces;
-using TeamUno.Mario.Projectiles;
 
 namespace TeamUno.Mario.World
 {
     internal class Level
     {
         private readonly LevelDefinition _definition;
-        private readonly IEnemyFactory _enemyFactory;
-        private readonly IItemFactory _itemFactory;
-        private readonly IProjectileFactory _projectileFactory;
+        // lists for the blocks, items, enemies, and projectiles in the level
         private readonly List<Block> _blocks = new List<Block>();
         private readonly List<IItem> _items = new List<IItem>();
         private readonly List<IEnemy> _enemies = new List<IEnemy>();
         private readonly List<IProjectile> _projectiles = new List<IProjectile>();
+        // read only lists
         private readonly IReadOnlyList<Block> _readOnlyBlocks;
         private readonly IReadOnlyList<IItem> _readOnlyItems;
         private readonly IReadOnlyList<IEnemy> _readOnlyEnemies;
@@ -63,20 +62,11 @@ namespace TeamUno.Mario.World
             }
         }
 
-        public Level(LevelDefinition definition, IEnemyFactory enemyFactory, IItemFactory itemFactory, IProjectileFactory projectileFactory)
+        public Level(LevelDefinition definition)
         {
             ArgumentNullException.ThrowIfNull(definition);
 
-            ArgumentNullException.ThrowIfNull(enemyFactory);
-
-            ArgumentNullException.ThrowIfNull(itemFactory);
-
-            ArgumentNullException.ThrowIfNull(projectileFactory);
-
             _definition = definition;
-            _enemyFactory = enemyFactory;
-            _itemFactory = itemFactory;
-            _projectileFactory = projectileFactory;
             _readOnlyBlocks = _blocks.AsReadOnly();
             _readOnlyItems = _items.AsReadOnly();
             _readOnlyEnemies = _enemies.AsReadOnly();
@@ -86,22 +76,34 @@ namespace TeamUno.Mario.World
 
         public void Update(GameTime gameTime)
         {
-            foreach (IItem item in _items)
+            for (int index = _items.Count - 1; index >= 0; index = index - 1)
             {
-                item.Update(gameTime);
+                IItem item = _items[index];
+                if (!item.IsExpired)
+                {
+                    item.Update(gameTime);
+                }
+
+                if (item.IsExpired)
+                {
+                    _items.RemoveAt(index);
+                }
             }
 
             foreach (IEnemy enemy in _enemies)
             {
                 enemy.Update(gameTime);
+                IProjectileEmitter emitter = enemy as IProjectileEmitter;
+                if (emitter != null)
+                {
+                    CollectProjectiles(emitter);
+                }
             }
 
             foreach (Block block in _blocks)
             {
                 block.Update(gameTime);
             }
-
-            CollectProjectiles();
 
             for (int index = _projectiles.Count - 1; index >= 0; index = index - 1)
             {
@@ -124,55 +126,21 @@ namespace TeamUno.Mario.World
             }
         }
 
-        public void SpawnMarioFireball(MarioPlayer source)
-        {
-            ArgumentNullException.ThrowIfNull(source);
-
-            float direction = -1f;
-            if (source.FacingDirection == SpriteEffects.FlipHorizontally)
-            {
-                direction = 1f;
-            }
-
-            Rectangle sourceBounds = source.Bounds;
-            Vector2 position = new Vector2(
-                sourceBounds.Right,
-                sourceBounds.Center.Y - Fireball.FireballHeight / 2f);
-            if (direction < 0)
-            {
-                position.X = sourceBounds.Left - Fireball.FireballWidth;
-            }
-
-            Vector2 velocity = new Vector2(direction * 200f, -100f);
-            IProjectile fireball = _projectileFactory.Create(ProjectileType.Fireball, position, velocity);
-            fireball.IsEnemyProjectile = false;
-            AddProjectiles(fireball);
-        }
-
-        public void AddProjectiles(IProjectile projectile)
+        public void AddProjectile(IProjectile projectile)
         {
             ArgumentNullException.ThrowIfNull(projectile);
 
             _projectiles.Add(projectile);
         }
 
-        private void CollectProjectiles()
+        public void CollectProjectiles(IProjectileEmitter emitter)
         {
-            foreach (IEnemy enemy in _enemies)
+            foreach (IProjectile projectile in emitter.Projectiles)
             {
-                IProjectileEmitter emitter = enemy as IProjectileEmitter;
-                if (emitter == null)
-                {
-                    continue;
-                }
-
-                foreach (IProjectile projectile in emitter.Projectiles)
-                {
-                    AddProjectiles(projectile);
-                }
-
-                emitter.ClearProjectiles();
+                AddProjectile(projectile);
             }
+
+            emitter.ClearProjectiles();
         }
 
         public void Reset()
@@ -187,25 +155,25 @@ namespace TeamUno.Mario.World
             _enemies.Clear();
             _projectiles.Clear();
 
-            foreach (BlockSpawnDefinition block in Definition.Blocks)
+            foreach (BlockSpawnDefinition blockDefinition in Definition.Blocks)
             {
-                _blocks.Add(CreateBlock(block));
+                Block block = new Block(
+                    blockDefinition.Position,
+                    blockDefinition.Type,
+                    blockDefinition.Width,
+                    blockDefinition.Height);
+                _blocks.Add(block);
             }
 
             foreach (ItemSpawnDefinition item in Definition.Items)
             {
-                _items.Add(_itemFactory.Create(item.Type, item.Position));
+                _items.Add(ItemFactory.Create(item.Type, item.Position));
             }
 
             foreach (EnemySpawnDefinition enemy in Definition.Enemies)
             {
-                _enemies.Add(_enemyFactory.Create(enemy.Type, enemy.Position));
+                _enemies.Add(EnemyFactory.Create(enemy.Type, enemy.Position));
             }
-        }
-
-        private static Block CreateBlock(BlockSpawnDefinition definition)
-        {
-            return new Block(definition.Position, definition.Type, definition.Width, definition.Height);
         }
     }
 }

@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TeamUno.Mario.Projectiles;
+using TeamUno.Mario.Entities.Projectiles;
 
 namespace TeamUno.Mario.Interfaces
 {
@@ -29,12 +29,10 @@ namespace TeamUno.Mario.Interfaces
         bool IsEnemyProjectile
         {
             get;
-            set;
         }
 
         void Update(GameTime gameTime);
         void Draw(SpriteBatch spriteBatch);
-        void Reset();
         void Kill();
     }
 }
