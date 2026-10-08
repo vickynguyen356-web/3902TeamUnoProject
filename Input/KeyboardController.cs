@@ -8,31 +8,40 @@ namespace TeamUno.Mario.Input
 {
     internal class KeyboardController : IController
     {
-        private readonly KeyboardInput _input;
+        private KeyboardState _previousKeyState;
+        private bool _isJumpHeld;
         private readonly Dictionary<Keys, ICommand> _heldCommands;
         private readonly Dictionary<Keys, ICommand> _pressedCommands;
-        private readonly List<ICommand> _activeCommands = new List<ICommand>();
+        private readonly List<ICommand> _pendingCommands = new List<ICommand>();
         private readonly ICommand _moveLeftCommand;
         private readonly ICommand _moveRightCommand;
         private readonly ICommand _crouchCommand;
         private readonly ICommand _standCommand;
+        private readonly ICommand _jumpCommand;
+        private readonly ICommand _quitCommand;
+        private readonly ICommand _resetCommand;
 
-        public KeyboardController(IPlayer player, IGameActions gameActions, KeyboardInput input)
+        public bool IsJumpHeld
+        {
+            get
+            {
+                return _isJumpHeld;
+            }
+        }
+
+        public KeyboardController(IPlayer player, IGameActions gameActions)
         {
             ArgumentNullException.ThrowIfNull(player);
-
-            ArgumentNullException.ThrowIfNull(input);
-
             ArgumentNullException.ThrowIfNull(gameActions);
 
-            _input = input;
             _moveLeftCommand = new MoveCommand(player, -1);
             _moveRightCommand = new MoveCommand(player, 1);
             _crouchCommand = new CrouchCommand(player, true);
             _standCommand = new CrouchCommand(player, false);
-            ICommand jumpCommand = new JumpCommand(player);
+            _quitCommand = new QuitCommand(gameActions);
+            _resetCommand = new ResetCommand(gameActions);
+            _jumpCommand = new JumpCommand(player);
             ICommand throwFireballCommand = new ThrowFireballCommand(player);
-            ICommand spitFireCommand = new SpitFireCommand(gameActions);
 
             _heldCommands = new Dictionary<Keys, ICommand>
             {
@@ -46,63 +55,87 @@ namespace TeamUno.Mario.Input
 
             _pressedCommands = new Dictionary<Keys, ICommand>
             {
-                { Keys.W, jumpCommand },
-                { Keys.Up, jumpCommand },
-                { Keys.Space, jumpCommand },
+                { Keys.Q, _quitCommand },
+                { Keys.Escape, _quitCommand },
+                { Keys.R, _resetCommand },
+                { Keys.W, _jumpCommand },
+                { Keys.Up, _jumpCommand },
+                { Keys.Space, _jumpCommand },
                 { Keys.Z, throwFireballCommand },
-                { Keys.N, throwFireballCommand },
-                { Keys.B, spitFireCommand }
+                { Keys.N, throwFireballCommand }
             };
         }
 
         public void Update()
         {
-            CollectActiveCommands(_heldCommands, false);
-            CancelOpposingMovement();
+            Update(Keyboard.GetState());
+        }
 
-            if (!_activeCommands.Contains(_crouchCommand))
+        public void Update(KeyboardState keyboardState)
+        {
+            ReadBindings(keyboardState);
+            _previousKeyState = keyboardState;
+            ExecuteCommands();
+        }
+
+        private void ReadBindings(KeyboardState keyboardState)
+        {
+            _pendingCommands.Clear();
+            _isJumpHeld = false;
+
+            foreach (Keys key in keyboardState.GetPressedKeys())
+            {
+                ICommand command;
+
+                if (_heldCommands.TryGetValue(key, out command))
+                {
+                    _pendingCommands.Add(command);
+                }
+
+                if (_pressedCommands.TryGetValue(key, out command))
+                {
+                    if (command == _jumpCommand)
+                    {
+                        _isJumpHeld = true;
+                    }
+
+                    if (_previousKeyState.IsKeyUp(key))
+                    {
+                        _pendingCommands.Add(command);
+                    }
+                }
+            }
+        }
+
+        private void ExecuteCommands()
+        {
+            if (_pendingCommands.Contains(_quitCommand))
+            {
+                _quitCommand.Execute();
+                return;
+            }
+
+            if (_pendingCommands.Contains(_resetCommand))
+            {
+                _resetCommand.Execute();
+                return;
+            }
+
+            if (!_pendingCommands.Contains(_crouchCommand))
             {
                 _standCommand.Execute();
             }
 
-            ExecuteActiveCommands();
+            bool opposingMovement = _pendingCommands.Contains(_moveLeftCommand)
+                && _pendingCommands.Contains(_moveRightCommand);
 
-            CollectActiveCommands(_pressedCommands, true);
-            ExecuteActiveCommands();
-        }
-
-        private void CollectActiveCommands(Dictionary<Keys, ICommand> bindings, bool newlyPressedOnly)
-        {
-            _activeCommands.Clear();
-
-            foreach (KeyValuePair<Keys, ICommand> binding in bindings)
+            foreach (ICommand command in _pendingCommands)
             {
-                bool isActive = _input.IsDown(binding.Key);
-                if (newlyPressedOnly)
+                if (opposingMovement && (command == _moveLeftCommand || command == _moveRightCommand))
                 {
-                    isActive = _input.WasPressed(binding.Key);
+                    continue;
                 }
 
-                if (isActive && !_activeCommands.Contains(binding.Value))
-                {
-                    _activeCommands.Add(binding.Value);
-                }
-            }
-        }
-
-        private void CancelOpposingMovement()
-        {
-            if (_activeCommands.Contains(_moveLeftCommand) && _activeCommands.Contains(_moveRightCommand))
-            {
-                _activeCommands.Remove(_moveLeftCommand);
-                _activeCommands.Remove(_moveRightCommand);
-            }
-        }
-
-        private void ExecuteActiveCommands()
-        {
-            foreach (ICommand command in _activeCommands)
-            {
                 command.Execute();
             }
         }

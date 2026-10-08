@@ -1,6 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
-using TeamUno.Mario.Entities;
+using TeamUno.Mario.Entities.Blocks;
 
 namespace TeamUno.Mario.World
 {
@@ -46,7 +46,6 @@ namespace TeamUno.Mario.World
         public BlockSpawnDefinition(Vector2 position, BlockType type, int width = 48, int height = 48)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
-
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
 
             _position = position;

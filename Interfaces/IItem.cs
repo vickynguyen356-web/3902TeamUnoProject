@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TeamUno.Mario.Items;
+using TeamUno.Mario.Entities.Items;
 
 namespace TeamUno.Mario.Interfaces
 {
@@ -21,8 +21,12 @@ namespace TeamUno.Mario.Interfaces
             get;
         }
 
+        bool IsExpired
+        {
+            get;
+        }
+
         void Update(GameTime gameTime);
         void Draw(SpriteBatch spriteBatch);
-        void Reset();
     }
 }

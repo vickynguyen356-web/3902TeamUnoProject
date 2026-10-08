@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using TeamUno.Mario.Entities;
-using TeamUno.Mario.Items;
+using TeamUno.Mario.Entities.Blocks;
+using TeamUno.Mario.Entities.Enemies;
+using TeamUno.Mario.Entities.Items;
+using TeamUno.Mario.Entities.Player;
 
 namespace TeamUno.Mario.World
 {
@@ -36,31 +38,29 @@ namespace TeamUno.Mario.World
             blocks.Add(new BlockSpawnDefinition(new Vector2(2592, 336), BlockType.Brick));
             blocks.Add(new BlockSpawnDefinition(new Vector2(3504, floorY - 498), BlockType.FlagPole, 48, 498));
 
-            return new LevelDefinition(
-                width,
-                height,
-                floorY,
-                new Vector2(96, floorY - MarioPlayer.StandingHeight),
-                blocks,
-                new ItemSpawnDefinition[]
-                {
-                    new ItemSpawnDefinition(ItemType.Mushroom, new Vector2(240, floorY)),
-                    new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(408, 288)),
-                    new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(456, 288)),
-                    new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(504, 288)),
-                    new ItemSpawnDefinition(ItemType.FireFlower, new Vector2(1440, floorY)),
-                    new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(2520, 288)),
-                    new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(2568, 288)),
-                    new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(2616, 288))
-                },
-                new EnemySpawnDefinition[]
-                {
-                    new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(720, floorY - Goomba.GoombaHeight)),
-                    new EnemySpawnDefinition(EnemyType.Koopa, new Vector2(1680, floorY - Koopa.KoopaHeight)),
-                    new EnemySpawnDefinition(EnemyType.HammerBro, new Vector2(2208, floorY - HammerBro.HammerBroHeight)),
-                    new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(2880, floorY - Goomba.GoombaHeight)),
-                    new EnemySpawnDefinition(EnemyType.Bowser, new Vector2(3264, floorY - Bowser.BowserHeight))
-                });
+            ItemSpawnDefinition[] items = new ItemSpawnDefinition[]
+            {
+                new ItemSpawnDefinition(ItemType.Mushroom, new Vector2(224, floorY - 32)),
+                new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(400, 256)),
+                new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(448, 256)),
+                new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(496, 256)),
+                new ItemSpawnDefinition(ItemType.FireFlower, new Vector2(1424, floorY - 32)),
+                new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(2512, 256)),
+                new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(2560, 256)),
+                new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(2608, 256))
+            };
+
+            EnemySpawnDefinition[] enemies = new EnemySpawnDefinition[]
+            {
+                new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(720, floorY - Goomba.GoombaHeight)),
+                new EnemySpawnDefinition(EnemyType.Koopa, new Vector2(1680, floorY - Koopa.KoopaHeight)),
+                new EnemySpawnDefinition(EnemyType.HammerBro, new Vector2(2208, floorY - HammerBro.HammerBroHeight)),
+                new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(2880, floorY - Goomba.GoombaHeight)),
+                new EnemySpawnDefinition(EnemyType.Bowser, new Vector2(3264, floorY - Bowser.BowserHeight))
+            };
+
+            Vector2 playerSpawnPosition = new Vector2(96, floorY - MarioPlayer.StandingHeight);
+            return new LevelDefinition(width, height, playerSpawnPosition, blocks, items, enemies);
         }
     }
 }

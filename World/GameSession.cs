@@ -1,15 +1,12 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
-using TeamUno.Mario.Entities;
+using TeamUno.Mario.Entities.Player;
 using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.World
 {
     internal class GameSession : IGameActions
     {
-        private static readonly TimeSpan MaximumElapsedTime = TimeSpan.FromSeconds(1.0 / 30.0);
-        private readonly GameTime _simulationTime = new GameTime();
         private readonly CollisionSystem _collisionSystem = new CollisionSystem();
         private readonly MarioPlayer _player;
         private readonly Level _level;
@@ -55,41 +52,27 @@ namespace TeamUno.Mario.World
         public GameSession(MarioPlayer player, Level level, Camera camera)
         {
             ArgumentNullException.ThrowIfNull(player);
-
             ArgumentNullException.ThrowIfNull(level);
-
             ArgumentNullException.ThrowIfNull(camera);
 
             _player = player;
             _level = level;
             _camera = camera;
-            Player.FireballRequested += SpawnMarioFireball;
             Camera.Follow(Player.Bounds);
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, bool isJumpHeld = false)
         {
-            TimeSpan elapsedTime = gameTime.ElapsedGameTime;
-            if (elapsedTime > MaximumElapsedTime)
-            {
-                elapsedTime = MaximumElapsedTime;
-            }
-            else if (elapsedTime < TimeSpan.Zero)
-            {
-                elapsedTime = TimeSpan.Zero;
-            }
-
-            _simulationTime.ElapsedGameTime = elapsedTime;
-            _simulationTime.TotalGameTime = _simulationTime.TotalGameTime + elapsedTime;
-            _simulationTime.IsRunningSlowly = gameTime.IsRunningSlowly;
-            float elapsedSeconds = (float)elapsedTime.TotalSeconds;
+            float elapsedSeconds = CalculateElapsedSeconds(gameTime);
             Rectangle previousPlayerBounds = Player.Bounds;
 
+            Player.UpdateState(elapsedSeconds);
             Player.UpdateVelocity(elapsedSeconds);
             Player.UpdatePosition(elapsedSeconds);
-            Level.Update(_simulationTime);
-            _collisionSystem.Update(this, previousPlayerBounds);
-            Player.UpdateAnimation(_simulationTime);
+            Level.CollectProjectiles(Player);
+            Level.Update(gameTime);
+            _collisionSystem.Update(this, previousPlayerBounds, isJumpHeld);
+            Player.UpdateAnimation(gameTime);
             Camera.Follow(Player.Bounds);
         }
 
@@ -101,40 +84,17 @@ namespace TeamUno.Mario.World
         public void Reset()
         {
             ShouldExit = false;
-            _simulationTime.ElapsedGameTime = TimeSpan.Zero;
-            _simulationTime.TotalGameTime = TimeSpan.Zero;
-            _simulationTime.IsRunningSlowly = false;
             Level.Reset();
             Player.Reset();
             Camera.ResumeFollowing();
             Camera.Follow(Player.Bounds);
         }
 
-        private void SpawnMarioFireball()
+        private static float CalculateElapsedSeconds(GameTime gameTime)
         {
-            Level.SpawnMarioFireball(Player);
-        }
-
-        public void SpitFire()
-        {
-            foreach (IEnemy enemy in Level.Enemies)
-            {
-                Bowser bowser = enemy as Bowser;
-                if (bowser != null)
-                {
-                    bowser.SpitFire();
-                }
-            }
-        }
-
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Pipe transitions will update the current session")]
-        public void BeginPipeTransition(Block pipe, Vector2 destination)
-        {
-        }
-
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Flagpole movement will update the current session")]
-        public void BeginFlagpoleSlide(Block flagpole)
-        {
+            const float maximumElapsedSeconds = 1f / 30f;
+            float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            return Math.Min(elapsedSeconds, maximumElapsedSeconds);
         }
     }
 }
