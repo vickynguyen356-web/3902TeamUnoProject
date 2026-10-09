@@ -7,10 +7,9 @@ namespace TeamUno.Mario.World
 {
     internal class CollisionSystem
     {
-        public void Update(GameSession session, Rectangle previousPlayerBounds, bool isJumpHeld = false)
+        public void Update(Level level, Rectangle previousPlayerBounds, bool isJumpHeld = false)
         {
-            ResolveMarioFloorCollision(session.Player, session.Level.Blocks, previousPlayerBounds);
-
+            ResolveMarioFloorCollision(level.Player, level.Blocks, previousPlayerBounds);
         }
 
         private static void ResolveMarioFloorCollision(

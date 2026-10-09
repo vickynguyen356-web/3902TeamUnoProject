@@ -11,6 +11,11 @@ namespace TeamUno.Mario.Interfaces
             get;
         }
 
+        Vector2 CurrentVelocity
+        {
+            get;
+        }
+
         Rectangle Bounds
         {
             get;
@@ -33,6 +38,7 @@ namespace TeamUno.Mario.Interfaces
 
         void Update(GameTime gameTime);
         void Draw(SpriteBatch spriteBatch);
+        void ApplyMotion(Vector2 position, Vector2 velocity);
         void Kill();
     }
 }

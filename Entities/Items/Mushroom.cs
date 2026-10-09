@@ -17,16 +17,16 @@ namespace TeamUno.Mario.Entities.Items
         }
 
         public Mushroom(Vector2 position, ISprite sprite)
-            : base(position, sprite, ItemSpriteFactory.CreateMushroomAnimation())
+            : base(position, sprite, ItemSpriteFactory.CreateMushroomAnimation(), 32, 32)
         {
             // Item constructor sets up position, sprite, and animation
+            Velocity = new Vector2(MoveSpeed, 0f);
         }
 
         public override void Update(GameTime gameTime)
         {
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            // increase X to move right
-            Position = Position + new Vector2(MoveSpeed * elapsedSeconds, 0);
+            Position = Position + Velocity * elapsedSeconds;
             // let Item update the sprite's animation
             base.Update(gameTime);
         }
