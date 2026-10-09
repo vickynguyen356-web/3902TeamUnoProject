@@ -30,6 +30,14 @@ namespace TeamUno.Mario.Entities.Enemies
             }
         }
 
+        public Vector2 CurrentVelocity
+        {
+            get
+            {
+                return Velocity;
+            }
+        }
+
         public abstract int Width
         {
             get;
@@ -119,6 +127,12 @@ namespace TeamUno.Mario.Entities.Enemies
         public virtual void TakeDamage()
         {
             StateMachine.TakeDamage();
+        }
+
+        public void ApplyMotion(Vector2 position, Vector2 velocity)
+        {
+            Position = position;
+            Velocity = velocity;
         }
 
         public virtual void Kill()

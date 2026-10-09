@@ -14,7 +14,7 @@ namespace TeamUno.Mario.Entities.Items
         }
 
         public FloatingCoin(Vector2 position, ISprite sprite)
-            : base(position, sprite, ItemSpriteFactory.CreateFloatingCoinAnimation())
+            : base(position, sprite, ItemSpriteFactory.CreateFloatingCoinAnimation(), 16, 32)
         {
         }
     }

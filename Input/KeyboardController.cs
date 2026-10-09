@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
-using TeamUno.Mario.Commands;
 using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Input
@@ -10,16 +8,18 @@ namespace TeamUno.Mario.Input
     {
         private KeyboardState _previousKeyState;
         private bool _isJumpHeld;
-        private readonly Dictionary<Keys, ICommand> _heldCommands;
-        private readonly Dictionary<Keys, ICommand> _pressedCommands;
-        private readonly List<ICommand> _pendingCommands = new List<ICommand>();
-        private readonly ICommand _moveLeftCommand;
-        private readonly ICommand _moveRightCommand;
-        private readonly ICommand _crouchCommand;
-        private readonly ICommand _standCommand;
-        private readonly ICommand _jumpCommand;
-        private readonly ICommand _quitCommand;
-        private readonly ICommand _resetCommand;
+        private readonly Dictionary<Keys, InputAction> _heldActions;
+        private readonly Dictionary<Keys, InputAction> _pressedActions;
+        private readonly List<InputAction> _actions = new List<InputAction>();
+        private readonly IReadOnlyList<InputAction> _actionView;
+
+        public IReadOnlyList<InputAction> Actions
+        {
+            get
+            {
+                return _actionView;
+            }
+        }
 
         public bool IsJumpHeld
         {
@@ -29,40 +29,30 @@ namespace TeamUno.Mario.Input
             }
         }
 
-        public KeyboardController(IPlayer player, IGameActions gameActions)
+        public KeyboardController()
         {
-            ArgumentNullException.ThrowIfNull(player);
-            ArgumentNullException.ThrowIfNull(gameActions);
+            _actionView = _actions.AsReadOnly();
 
-            _moveLeftCommand = new MoveCommand(player, -1);
-            _moveRightCommand = new MoveCommand(player, 1);
-            _crouchCommand = new CrouchCommand(player, true);
-            _standCommand = new CrouchCommand(player, false);
-            _quitCommand = new QuitCommand(gameActions);
-            _resetCommand = new ResetCommand(gameActions);
-            _jumpCommand = new JumpCommand(player);
-            ICommand throwFireballCommand = new ThrowFireballCommand(player);
-
-            _heldCommands = new Dictionary<Keys, ICommand>
+            _heldActions = new Dictionary<Keys, InputAction>
             {
-                { Keys.A, _moveLeftCommand },
-                { Keys.Left, _moveLeftCommand },
-                { Keys.D, _moveRightCommand },
-                { Keys.Right, _moveRightCommand },
-                { Keys.S, _crouchCommand },
-                { Keys.Down, _crouchCommand }
+                { Keys.A, InputAction.MoveLeft },
+                { Keys.Left, InputAction.MoveLeft },
+                { Keys.D, InputAction.MoveRight },
+                { Keys.Right, InputAction.MoveRight },
+                { Keys.S, InputAction.Crouch },
+                { Keys.Down, InputAction.Crouch }
             };
 
-            _pressedCommands = new Dictionary<Keys, ICommand>
+            _pressedActions = new Dictionary<Keys, InputAction>
             {
-                { Keys.Q, _quitCommand },
-                { Keys.Escape, _quitCommand },
-                { Keys.R, _resetCommand },
-                { Keys.W, _jumpCommand },
-                { Keys.Up, _jumpCommand },
-                { Keys.Space, _jumpCommand },
-                { Keys.Z, throwFireballCommand },
-                { Keys.N, throwFireballCommand }
+                { Keys.Q, InputAction.Quit },
+                { Keys.Escape, InputAction.Quit },
+                { Keys.R, InputAction.Reset },
+                { Keys.W, InputAction.Jump },
+                { Keys.Up, InputAction.Jump },
+                { Keys.Space, InputAction.Jump },
+                { Keys.Z, InputAction.ThrowFireball },
+                { Keys.N, InputAction.ThrowFireball }
             };
         }
 
@@ -73,71 +63,33 @@ namespace TeamUno.Mario.Input
 
         public void Update(KeyboardState keyboardState)
         {
-            ReadBindings(keyboardState);
-            _previousKeyState = keyboardState;
-            ExecuteCommands();
-        }
-
-        private void ReadBindings(KeyboardState keyboardState)
-        {
-            _pendingCommands.Clear();
+            _actions.Clear();
             _isJumpHeld = false;
 
             foreach (Keys key in keyboardState.GetPressedKeys())
             {
-                ICommand command;
+                InputAction action;
 
-                if (_heldCommands.TryGetValue(key, out command))
+                if (_heldActions.TryGetValue(key, out action))
                 {
-                    _pendingCommands.Add(command);
+                    _actions.Add(action);
                 }
 
-                if (_pressedCommands.TryGetValue(key, out command))
+                if (_pressedActions.TryGetValue(key, out action))
                 {
-                    if (command == _jumpCommand)
+                    if (action == InputAction.Jump)
                     {
                         _isJumpHeld = true;
                     }
 
                     if (_previousKeyState.IsKeyUp(key))
                     {
-                        _pendingCommands.Add(command);
+                        _actions.Add(action);
                     }
                 }
             }
-        }
 
-        private void ExecuteCommands()
-        {
-            if (_pendingCommands.Contains(_quitCommand))
-            {
-                _quitCommand.Execute();
-                return;
-            }
-
-            if (_pendingCommands.Contains(_resetCommand))
-            {
-                _resetCommand.Execute();
-                return;
-            }
-
-            if (!_pendingCommands.Contains(_crouchCommand))
-            {
-                _standCommand.Execute();
-            }
-
-            bool opposingMovement = _pendingCommands.Contains(_moveLeftCommand)
-                && _pendingCommands.Contains(_moveRightCommand);
-
-            foreach (ICommand command in _pendingCommands)
-            {
-                if (opposingMovement && (command == _moveLeftCommand || command == _moveRightCommand))
-                {
-                    continue;
-                }
-
-                command.Execute();
-            }
+            _previousKeyState = keyboardState;
         }
     }
 }

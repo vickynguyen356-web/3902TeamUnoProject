@@ -16,7 +16,7 @@ namespace TeamUno.Mario.Entities.Items
 
         // passes the position, sprite, and fire flower animation to Item constructor to set up the item
         public FireFlower(Vector2 position, ISprite sprite)
-            : base(position, sprite, ItemSpriteFactory.CreateFireFlowerAnimation())
+            : base(position, sprite, ItemSpriteFactory.CreateFireFlowerAnimation(), 32, 32)
         {
         }
     }

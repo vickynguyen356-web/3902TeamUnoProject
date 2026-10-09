@@ -17,16 +17,16 @@ namespace TeamUno.Mario.Entities.Items
         }
 
         public OneUpMushroom(Vector2 position, ISprite sprite)
-            : base(position, sprite, ItemSpriteFactory.CreateOneUpMushroomAnimation())
+            : base(position, sprite, ItemSpriteFactory.CreateOneUpMushroomAnimation(), 32, 32)
             // the Item constructor sets up position, sprite, and animation
         {
+            Velocity = new Vector2(MoveSpeed, 0f);
         }
 
         public override void Update(GameTime gameTime)
         {
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            // move horizontally to the right without changing the height
-            Position = Position + new Vector2(MoveSpeed * elapsedSeconds, 0);
+            Position = Position + Velocity * elapsedSeconds;
             // update sprite through the shared Item behavior
             base.Update(gameTime);
         }
