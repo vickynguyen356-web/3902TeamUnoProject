@@ -6,7 +6,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities.Projectiles
 {
-    internal abstract class Projectile : IProjectile
+    internal abstract class Projectile : IProjectile, ICollidable
     {
         protected readonly ISprite Sprite;
         protected Vector2 Velocity;

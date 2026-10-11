@@ -3,14 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TeamUno.Mario.Interfaces
 {
-    internal interface IEnemy
+    internal interface IEnemy : ICollidable
     {
         Vector2 Position
-        {
-            get;
-        }
-
-        Rectangle Bounds
         {
             get;
         }

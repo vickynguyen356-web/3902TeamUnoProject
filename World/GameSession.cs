@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
+using TeamUno.Mario.Collision;
 using TeamUno.Mario.Entities.Player;
 using TeamUno.Mario.Interfaces;
 
@@ -7,7 +8,7 @@ namespace TeamUno.Mario.World
 {
     internal class GameSession : IGameActions
     {
-        private readonly CollisionSystem _collisionSystem = new CollisionSystem();
+        private readonly CollisionSystem _collisionSystem = CollisionSystem.CreateDefault();
         private readonly MarioPlayer _player;
         private readonly Level _level;
         private readonly Camera _camera;
