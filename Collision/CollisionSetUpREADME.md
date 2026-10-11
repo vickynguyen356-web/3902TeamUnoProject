@@ -39,7 +39,7 @@ Extra Notes:
 ## Projectile Handlers
 
 | Handler | Keeps | Guard |
-| --- | --- |
+| --- | --- | --- |
 | MarioProjectileCollisionHandler | Enemy projectiles hitting Mario | if (!second.IsEnemyProjectile || second.IsDead || first.IsDead) return; |
 | EnemyProjectileCollisionHandler | Mario’s projectiles hitting enemies | if (second.IsEnemyProjectile || second.IsDead) return; |
 | ProjectileBlockCollisionHandler | Both kinds | Only if (first.IsDead) return;. Branch on IsEnemyProjectile and Type inside |
