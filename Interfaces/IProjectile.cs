@@ -4,14 +4,9 @@ using TeamUno.Mario.Entities.Projectiles;
 
 namespace TeamUno.Mario.Interfaces
 {
-    internal interface IProjectile
+    internal interface IProjectile : ICollidable
     {
         Vector2 Position
-        {
-            get;
-        }
-
-        Rectangle Bounds
         {
             get;
         }

@@ -4,7 +4,7 @@ using TeamUno.Mario.Entities.Items;
 
 namespace TeamUno.Mario.Interfaces
 {
-    internal interface IItem
+    internal interface IItem : ICollidable
     {
         ItemType Type
         {
@@ -12,11 +12,6 @@ namespace TeamUno.Mario.Interfaces
         }
 
         Vector2 Position
-        {
-            get;
-        }
-
-        Rectangle Bounds
         {
             get;
         }
