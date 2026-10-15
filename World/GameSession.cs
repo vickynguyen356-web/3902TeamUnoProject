@@ -1,34 +1,26 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using TeamUno.Mario.Commands;
+using TeamUno.Mario.Collision;
 using TeamUno.Mario.Entities.Player;
-using TeamUno.Mario.Input;
 using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.World
 {
-    internal enum GameSessionState
-    {
-        Playing,
-        Paused,
-        Menu
-    }
-
     internal class GameSession : IGameActions
     {
-        private readonly Texture2D _marioTexture;
-        private readonly int _viewportWidth;
-        private readonly IController _controller;
-        private readonly ICommand _quitCommand;
-        private readonly ICommand _resetCommand;
-        private readonly List<ICommand> _pendingPlayerCommands = new List<ICommand>();
-        private Dictionary<InputAction, ICommand> _playerCommands;
-        private ICommand _standCommand;
-        private Level _level;
-        private GameSessionState _state;
+        private readonly CollisionSystem _collisionSystem = CollisionSystem.CreateDefault();
+        private readonly MarioPlayer _player;
+        private readonly Level _level;
+        private readonly Camera _camera;
         private bool _shouldExit;
+
+        public MarioPlayer Player
+        {
+            get
+            {
+                return _player;
+            }
+        }
 
         public Level Level
         {
@@ -38,11 +30,11 @@ namespace TeamUno.Mario.World
             }
         }
 
-        public GameSessionState State
+        public Camera Camera
         {
             get
             {
-                return _state;
+                return _camera;
             }
         }
 
@@ -58,85 +50,31 @@ namespace TeamUno.Mario.World
             }
         }
 
-        public GameSession(Texture2D marioTexture, int viewportWidth, IController controller)
+        public GameSession(MarioPlayer player, Level level, Camera camera)
         {
-            ArgumentNullException.ThrowIfNull(marioTexture);
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(viewportWidth);
-            ArgumentNullException.ThrowIfNull(controller);
+            ArgumentNullException.ThrowIfNull(player);
+            ArgumentNullException.ThrowIfNull(level);
+            ArgumentNullException.ThrowIfNull(camera);
 
-            _marioTexture = marioTexture;
-            _viewportWidth = viewportWidth;
-            _controller = controller;
-            _quitCommand = new QuitCommand(this);
-            _resetCommand = new ResetCommand(this);
-            StartNewGame();
+            _player = player;
+            _level = level;
+            _camera = camera;
+            Camera.Follow(Player.Bounds);
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, bool isJumpHeld = false)
         {
-            _controller.Update();
-            if (TryExecuteSessionCommand())
-            {
-                return;
-            }
+            float elapsedSeconds = CalculateElapsedSeconds(gameTime);
+            Rectangle previousPlayerBounds = Player.Bounds;
 
-            if (ShouldExit || State != GameSessionState.Playing)
-            {
-                return;
-            }
-
-            PreparePlayerCommands();
-            Level.Update(gameTime, _pendingPlayerCommands, _controller.IsJumpHeld);
-        }
-
-        public void StartNewGame()
-        {
-            CreateLevel(LevelLayouts.CreateFirstLevel(), PlayerForm.Fire);
-        }
-
-        public void LoadLevel(LevelDefinition definition)
-        {
-            CreateLevel(definition, Level.Player.Form);
-        }
-
-        private void CreateLevel(LevelDefinition definition, PlayerForm startingForm)
-        {
-            ArgumentNullException.ThrowIfNull(definition);
-
-            ISprite playerSprite = MarioSpriteFactory.Create(_marioTexture);
-            _level = new Level(definition, playerSprite, _viewportWidth, startingForm);
-            BindPlayerCommands();
-            ShouldExit = false;
-            _state = GameSessionState.Playing;
-        }
-
-        private void BindPlayerCommands()
-        {
-            _playerCommands = new Dictionary<InputAction, ICommand>
-            {
-                { InputAction.MoveLeft, new MoveCommand(Level.Player, -1) },
-                { InputAction.MoveRight, new MoveCommand(Level.Player, 1) },
-                { InputAction.Crouch, new CrouchCommand(Level.Player, true) },
-                { InputAction.Jump, new JumpCommand(Level.Player) },
-                { InputAction.ThrowFireball, new ThrowFireballCommand(Level.Player) }
-            };
-            _standCommand = new CrouchCommand(Level.Player, false);
-            _pendingPlayerCommands.Clear();
-        }
-
-        public void Pause()
-        {
-            _state = GameSessionState.Paused;
-        }
-
-        public void OpenMenu()
-        {
-            _state = GameSessionState.Menu;
-        }
-
-        public void Resume()
-        {
-            _state = GameSessionState.Playing;
+            Player.UpdateState(elapsedSeconds);
+            Player.UpdateVelocity(elapsedSeconds);
+            Player.UpdatePosition(elapsedSeconds);
+            Level.CollectProjectiles(Player);
+            Level.Update(gameTime);
+            _collisionSystem.Update(this, previousPlayerBounds, isJumpHeld);
+            Player.UpdateAnimation(gameTime);
+            Camera.Follow(Player.Bounds);
         }
 
         public void Quit()
@@ -148,77 +86,16 @@ namespace TeamUno.Mario.World
         {
             ShouldExit = false;
             Level.Reset();
-            _state = GameSessionState.Playing;
+            Player.Reset();
+            Camera.ResumeFollowing();
+            Camera.Follow(Player.Bounds);
         }
 
-        private bool TryExecuteSessionCommand()
+        private static float CalculateElapsedSeconds(GameTime gameTime)
         {
-            bool resetRequested = false;
-            foreach (InputAction action in _controller.Actions)
-            {
-                if (action == InputAction.Quit)
-                {
-                    _quitCommand.Execute();
-                    return true;
-                }
-
-                if (action == InputAction.Reset)
-                {
-                    resetRequested = true;
-                }
-            }
-
-            if (resetRequested)
-            {
-                _resetCommand.Execute();
-                return true;
-            }
-
-            return false;
-        }
-
-        private void PreparePlayerCommands()
-        {
-            _pendingPlayerCommands.Clear();
-            bool movingLeft = false;
-            bool movingRight = false;
-            bool crouching = false;
-
-            foreach (InputAction action in _controller.Actions)
-            {
-                if (action == InputAction.MoveLeft)
-                {
-                    movingLeft = true;
-                }
-                else if (action == InputAction.MoveRight)
-                {
-                    movingRight = true;
-                }
-                else if (action == InputAction.Crouch)
-                {
-                    crouching = true;
-                }
-            }
-
-            if (!crouching)
-            {
-                _pendingPlayerCommands.Add(_standCommand);
-            }
-
-            foreach (InputAction action in _controller.Actions)
-            {
-                if (movingLeft && movingRight
-                    && (action == InputAction.MoveLeft || action == InputAction.MoveRight))
-                {
-                    continue;
-                }
-
-                ICommand command;
-                if (_playerCommands.TryGetValue(action, out command))
-                {
-                    _pendingPlayerCommands.Add(command);
-                }
-            }
+            const float maximumElapsedSeconds = 1f / 30f;
+            float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            return Math.Min(elapsedSeconds, maximumElapsedSeconds);
         }
     }
 }

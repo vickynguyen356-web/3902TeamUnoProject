@@ -1,0 +1,12 @@
+Author of code review: Vy
+Date of code review: 10/9/26
+Sprint number: 3
+Name of .cs file reviewed: Bowser.cs
+Author of .cs file: Jake and Vy
+Minutes taken for review: 15
+Readability:
+The update method in Bowser has been cleaned up to include more methods to handle the spitting fire animation and patrolling distance. Such methods are UpdatePatrol, UpdateSpitFire, and ReleaseFire. This makes the code easier to understand and simplifies complexity of the code. The addition of the constant MouthHeight gets rid of magic numbers as well.
+Code quality:
+There are lots of methods that have a single responsibility for patrolling, fire timing, and projectile creation, which makes code easier to modify/fix when bugs occur or if you want to implement any changes. The constants are also all at the top of the file, which makes them easy to find. 
+Hypothetical change:
+A helper method like GetFacingDirection would get rid of the if/else in UpdateSpitFire and ReleaseFire to further break methods to have a single responsibility for cleanliness and readability.
