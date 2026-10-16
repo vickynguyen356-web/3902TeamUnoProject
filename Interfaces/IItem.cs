@@ -4,7 +4,7 @@ using TeamUno.Mario.Entities.Items;
 
 namespace TeamUno.Mario.Interfaces
 {
-    internal interface IItem
+    internal interface IItem : ICollidable
     {
         ItemType Type
         {
@@ -16,16 +16,6 @@ namespace TeamUno.Mario.Interfaces
             get;
         }
 
-        Vector2 CurrentVelocity
-        {
-            get;
-        }
-
-        Rectangle Bounds
-        {
-            get;
-        }
-
         bool IsExpired
         {
             get;
@@ -33,7 +23,5 @@ namespace TeamUno.Mario.Interfaces
 
         void Update(GameTime gameTime);
         void Draw(SpriteBatch spriteBatch);
-        void ApplyMotion(Vector2 position, Vector2 velocity);
-        void Expire();
     }
 }
