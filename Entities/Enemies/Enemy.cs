@@ -9,7 +9,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities.Enemies
 {
-    internal abstract class Enemy : IEnemy, IProjectileEmitter, ICollidable
+    internal abstract class Enemy : IEnemy, IProjectileEmitter
     {
         protected readonly EnemyStateMachine StateMachine;
         protected readonly ISprite Sprite;
