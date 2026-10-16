@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities.Blocks
 {
@@ -18,7 +17,7 @@ namespace TeamUno.Mario.Entities.Blocks
         Vine
     }
 
-    internal class Block : ICollidable
+    internal class Block
     {
         private const int DefaultWidth = 48;
         private const int DefaultHeight = 48;
