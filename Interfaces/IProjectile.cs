@@ -4,9 +4,19 @@ using TeamUno.Mario.Entities.Projectiles;
 
 namespace TeamUno.Mario.Interfaces
 {
-    internal interface IProjectile : ICollidable
+    internal interface IProjectile
     {
         Vector2 Position
+        {
+            get;
+        }
+
+        Vector2 CurrentVelocity
+        {
+            get;
+        }
+
+        Rectangle Bounds
         {
             get;
         }
@@ -28,6 +38,7 @@ namespace TeamUno.Mario.Interfaces
 
         void Update(GameTime gameTime);
         void Draw(SpriteBatch spriteBatch);
+        void ApplyMotion(Vector2 position, Vector2 velocity);
         void Kill();
     }
 }
