@@ -17,14 +17,13 @@ namespace TeamUno.Mario.Entities.Items
         // readonly = field can be assigned during construction but cannot be reassigned after
         private readonly ISprite _sprite;
         private readonly SpriteAnimation _animation;
-        //stores item's collision dimensions
+        //stores item's scaled dimensions
         private readonly int _width;
         private readonly int _height;
         // stores item's current position
         // not readonly because moving items need to change it
         private Vector2 _position;
         private bool _isExpired;
-        protected Vector2 Velocity;
 
         public abstract ItemType Type
         {
@@ -41,14 +40,6 @@ namespace TeamUno.Mario.Entities.Items
             protected set
             {
                 _position = value;
-            }
-        }
-
-        public Vector2 CurrentVelocity
-        {
-            get
-            {
-                return Velocity;
             }
         }
 
@@ -93,7 +84,7 @@ namespace TeamUno.Mario.Entities.Items
             }
         }
 
-        protected Item(Vector2 position, ISprite sprite, SpriteAnimation animation, int width, int height)
+        protected Item(Vector2 position, ISprite sprite, SpriteAnimation animation)
         {
             // sprite is required to display the item
             ArgumentNullException.ThrowIfNull(sprite);
@@ -105,8 +96,11 @@ namespace TeamUno.Mario.Entities.Items
             // place the item at its starting position
             Position = position;
 
-            _width = width;
-            _height = height;
+            // use first animation frame to calculate item's dimensions after applying the sprite scale
+            // used displayed size = original size × scale
+            Rectangle frame = animation.Frames[0].LeftSource;
+            _width = (int)(frame.Width * ItemSpriteFactory.SpriteScale);
+            _height = (int)(frame.Height * ItemSpriteFactory.SpriteScale);
             // set up sprite with its animation
             _sprite.Update(new GameTime(), _animation);
         }
@@ -115,17 +109,6 @@ namespace TeamUno.Mario.Entities.Items
         public virtual void Update(GameTime gameTime)
         {
             _sprite.Update(gameTime, _animation);
-        }
-
-        public void ApplyMotion(Vector2 position, Vector2 velocity)
-        {
-            Position = position;
-            Velocity = velocity;
-        }
-
-        public void Expire()
-        {
-            IsExpired = true;
         }
 
         // draws the sprite inside the item's bounds
