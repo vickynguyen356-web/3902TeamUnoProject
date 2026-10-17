@@ -9,7 +9,7 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities.Player
 {
-    internal class MarioPlayer : IPlayer, IProjectileEmitter
+    internal class MarioPlayer : IPlayer, IProjectileEmitter, ICollidable
     {
         public const int StandingHeight = 64;
         private const int SmallHeight = 32;
