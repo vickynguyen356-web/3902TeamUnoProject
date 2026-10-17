@@ -26,9 +26,8 @@ namespace TeamUno.Mario.Entities.Items
 
         // runs when a BlockCoin is created. passes its position, sprite, and block coin animation to Item constructor
         public BlockCoin(Vector2 position, ISprite sprite)
-            : base(position, sprite, ItemSpriteFactory.CreateBlockCoinAnimation(), 16, 32)
+            : base(position, sprite, ItemSpriteFactory.CreateBlockCoinAnimation())
         {
-            Velocity = new Vector2(0f, -MoveSpeed);
         }
 
         // updates the coin's remaining lifetime and vertical position
@@ -42,7 +41,6 @@ namespace TeamUno.Mario.Entities.Items
             // read elapsed time and convert it to float.
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             // coin's remaining time
-            float previousTime = _timer;
             _timer = _timer - elapsedSeconds;
 
             if (_timer <= 0)
@@ -51,12 +49,22 @@ namespace TeamUno.Mario.Entities.Items
                 return;
             }
 
-            if (previousTime >= DisplayTime / 2 && _timer < DisplayTime / 2)
+            // copy current vertical position
+            float nextY = Position.Y;
+            // if at least half the time remains, move up.
+            if (_timer >= DisplayTime / 2)
             {
-                Velocity.Y = -Velocity.Y;
+                // subtracting moves the coin up
+                nextY = nextY - MoveSpeed * elapsedSeconds;
+            }
+            else
+            {
+                // second half, move down by adding to the Y
+                nextY = nextY + MoveSpeed * elapsedSeconds;
             }
 
-            Position = Position + Velocity * elapsedSeconds;
+            // apply the new Y
+            Position = new Vector2(Position.X, nextY);
             base.Update(gameTime);
         }
     }

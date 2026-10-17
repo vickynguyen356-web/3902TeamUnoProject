@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Blocks;
 using TeamUno.Mario.Entities.Enemies;
 using TeamUno.Mario.Entities.Items;
-using TeamUno.Mario.Entities.Player;
 using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.World
@@ -12,9 +11,6 @@ namespace TeamUno.Mario.World
     internal class Level
     {
         private readonly LevelDefinition _definition;
-        private readonly MarioPlayer _player;
-        private readonly Camera _camera;
-        private readonly CollisionSystem _collisionSystem = new CollisionSystem();
         // lists for the blocks, items, enemies, and projectiles in the level
         private readonly List<Block> _blocks = new List<Block>();
         private readonly List<IItem> _items = new List<IItem>();
@@ -31,22 +27,6 @@ namespace TeamUno.Mario.World
             get
             {
                 return _definition;
-            }
-        }
-
-        public MarioPlayer Player
-        {
-            get
-            {
-                return _player;
-            }
-        }
-
-        public Camera Camera
-        {
-            get
-            {
-                return _camera;
             }
         }
 
@@ -82,65 +62,34 @@ namespace TeamUno.Mario.World
             }
         }
 
-        public Level(LevelDefinition definition, ISprite playerSprite, int viewportWidth, PlayerForm startingForm)
+        public Level(LevelDefinition definition)
         {
             ArgumentNullException.ThrowIfNull(definition);
 
             _definition = definition;
-            _player = new MarioPlayer(playerSprite, definition.PlayerSpawnPosition, startingForm);
-            _camera = new Camera(viewportWidth, definition.Width);
             _readOnlyBlocks = _blocks.AsReadOnly();
             _readOnlyItems = _items.AsReadOnly();
             _readOnlyEnemies = _enemies.AsReadOnly();
             _readOnlyProjectiles = _projectiles.AsReadOnly();
             LoadDefinition();
-            Camera.Follow(Player.Bounds);
         }
 
-        public void Update(GameTime gameTime, IReadOnlyList<ICommand> commands, bool isJumpHeld = false)
+        public void Update(GameTime gameTime)
         {
-            foreach (ICommand command in commands)
+            for (int index = _items.Count - 1; index >= 0; index = index - 1)
             {
-                command.Execute();
-            }
-
-            float elapsedSeconds = Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, 1f / 30f);
-            GameTime simulationTime = new GameTime(
-                gameTime.TotalGameTime, TimeSpan.FromSeconds(elapsedSeconds), gameTime.IsRunningSlowly);
-            Rectangle previousPlayerBounds = Player.Bounds;
-
-            Player.UpdateState(elapsedSeconds);
-            Player.UpdateVelocity(elapsedSeconds);
-            Player.UpdatePosition(elapsedSeconds);
-            CollectProjectiles(Player);
-            UpdateItems(simulationTime);
-            UpdateEnemies(simulationTime);
-
-            foreach (Block block in _blocks)
-            {
-                block.Update(simulationTime);
-            }
-
-            UpdateProjectiles(simulationTime);
-            _collisionSystem.Update(this, previousPlayerBounds, isJumpHeld);
-            RemoveExpiredObjects();
-            Player.UpdateAnimation(simulationTime);
-            Camera.Follow(Player.Bounds);
-        }
-
-        private void UpdateItems(GameTime gameTime)
-        {
-            foreach (IItem item in _items)
-            {
+                IItem item = _items[index];
                 if (!item.IsExpired)
                 {
                     item.Update(gameTime);
                 }
-            }
-        }
 
-        private void UpdateEnemies(GameTime gameTime)
-        {
+                if (item.IsExpired)
+                {
+                    _items.RemoveAt(index);
+                }
+            }
+
             foreach (IEnemy enemy in _enemies)
             {
                 enemy.Update(gameTime);
@@ -150,12 +99,15 @@ namespace TeamUno.Mario.World
                     CollectProjectiles(emitter);
                 }
             }
-        }
 
-        private void UpdateProjectiles(GameTime gameTime)
-        {
-            foreach (IProjectile projectile in _projectiles)
+            foreach (Block block in _blocks)
             {
+                block.Update(gameTime);
+            }
+
+            for (int index = _projectiles.Count - 1; index >= 0; index = index - 1)
+            {
+                IProjectile projectile = _projectiles[index];
                 if (!projectile.IsDead)
                 {
                     projectile.Update(gameTime);
@@ -166,22 +118,8 @@ namespace TeamUno.Mario.World
                 {
                     projectile.Kill();
                 }
-            }
-        }
 
-        private void RemoveExpiredObjects()
-        {
-            for (int index = _items.Count - 1; index >= 0; index = index - 1)
-            {
-                if (_items[index].IsExpired)
-                {
-                    _items.RemoveAt(index);
-                }
-            }
-
-            for (int index = _projectiles.Count - 1; index >= 0; index = index - 1)
-            {
-                if (_projectiles[index].IsDead)
+                if (projectile.IsDead)
                 {
                     _projectiles.RemoveAt(index);
                 }
@@ -208,9 +146,6 @@ namespace TeamUno.Mario.World
         public void Reset()
         {
             LoadDefinition();
-            Player.Reset();
-            Camera.ResumeFollowing();
-            Camera.Follow(Player.Bounds);
         }
 
         private void LoadDefinition()

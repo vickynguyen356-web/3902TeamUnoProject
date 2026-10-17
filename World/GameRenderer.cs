@@ -21,26 +21,26 @@ namespace TeamUno.Mario.World
             spriteBatch.Draw(_backgroundTexture, viewport, Color.White * 0.45f);
         }
 
-        public void DrawWorld(SpriteBatch spriteBatch, Level level)
+        public void DrawWorld(SpriteBatch spriteBatch, GameSession session)
         {
-            foreach (Block block in level.Blocks)
+            foreach (Block block in session.Level.Blocks)
             {
                 block.Draw(spriteBatch, _blockTexture);
             }
 
-            foreach (IEnemy enemy in level.Enemies)
+            foreach (IEnemy enemy in session.Level.Enemies)
             {
                 enemy.Draw(spriteBatch);
             }
 
-            level.Player.Draw(spriteBatch);
+            session.Player.Draw(spriteBatch);
 
-            foreach (IItem item in level.Items)
+            foreach (IItem item in session.Level.Items)
             {
                 item.Draw(spriteBatch);
             }
 
-            foreach (IProjectile projectile in level.Projectiles)
+            foreach (IProjectile projectile in session.Level.Projectiles)
             {
                 projectile.Draw(spriteBatch);
             }
