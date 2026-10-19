@@ -41,6 +41,9 @@ namespace TeamUno.Mario.World
             ItemSpawnDefinition[] items = new ItemSpawnDefinition[]
             {
                 new ItemSpawnDefinition(ItemType.Mushroom, new Vector2(224, floorY - 32)),
+                // test placements until question blocks spawn these items
+                new ItemSpawnDefinition(ItemType.OneUpMushroom, new Vector2(304, floorY - 32)),
+                new ItemSpawnDefinition(ItemType.Star, new Vector2(560, floorY - 32)),
                 new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(400, 256)),
                 new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(448, 256)),
                 new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(496, 256)),

@@ -10,7 +10,7 @@ namespace TeamUno.Mario.Collision.Handlers
         public void Handle(IItem item, Block block, CollisionInfo info)
         {
             if (item.IsExpired || (item.Type != ItemType.Mushroom
-                && item.Type != ItemType.OneUpMushroom))
+                && item.Type != ItemType.OneUpMushroom && item.Type != ItemType.Star))
             {
                 return;
             }
@@ -42,7 +42,8 @@ namespace TeamUno.Mario.Collision.Handlers
                         return;
                     }
                     position.Y = blockBounds.Top - itemBounds.Height;
-                    velocity.Y = 0f;
+                    // stars bounce while mushrooms stay on the surface
+                    velocity.Y = item.Type == ItemType.Star ? -Star.BounceSpeed : 0f;
                     break;
                 case CollisionSide.Top:
                     if (velocity.Y >= 0f || block.Type == BlockType.Platform)
