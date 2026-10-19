@@ -90,9 +90,27 @@ namespace TeamUno.Mario.World
                 }
             }
 
-            foreach (IEnemy enemy in _enemies)
+            for (int index = _enemies.Count - 1; index >= 0; index = index - 1)
             {
+                IEnemy enemy = _enemies[index];
+                if (enemy.IsDead)
+                {
+                    _enemies.RemoveAt(index);
+                    continue;
+                }
+
                 enemy.Update(gameTime);
+                if (enemy.Bounds.Top >= Definition.Height)
+                {
+                    enemy.Kill();
+                }
+
+                if (enemy.IsDead)
+                {
+                    _enemies.RemoveAt(index);
+                    continue;
+                }
+
                 IProjectileEmitter emitter = enemy as IProjectileEmitter;
                 if (emitter != null)
                 {
