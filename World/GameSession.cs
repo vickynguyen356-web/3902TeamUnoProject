@@ -8,7 +8,9 @@ namespace TeamUno.Mario.World
 {
     internal class GameSession : IGameActions
     {
-        private readonly CollisionSystem _collisionSystem = CollisionSystem.CreateDefault();
+        private readonly CollisionSystem _collisionSystem;
+
+        public GameProgress Progress { get; } = new GameProgress();
         private readonly MarioPlayer _player;
         private readonly Level _level;
         private readonly Camera _camera;
@@ -59,6 +61,7 @@ namespace TeamUno.Mario.World
             _player = player;
             _level = level;
             _camera = camera;
+            _collisionSystem = CollisionSystem.CreateDefault(Progress);
             Camera.Follow(Player.Bounds);
         }
 
@@ -85,6 +88,7 @@ namespace TeamUno.Mario.World
         public void Reset()
         {
             ShouldExit = false;
+            Progress.Reset();
             Level.Reset();
             Player.Reset();
             Camera.ResumeFollowing();

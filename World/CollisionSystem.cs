@@ -53,12 +53,12 @@ namespace TeamUno.Mario.World
         }
 
         // Default, add or swap handlers here.
-        public static CollisionSystem CreateDefault()
+        public static CollisionSystem CreateDefault(GameProgress progress)
         {
             return new CollisionSystem(
                 new MarioBlockCollisionHandler(),
                 new MarioEnemyCollisionHandler(),
-                new MarioItemCollisionHandler(),
+                new MarioItemCollisionHandler(progress),
                 new MarioProjectileCollisionHandler(),
                 new EnemyBlockCollisionHandler(),
                 new ItemBlockCollisionHandler(),

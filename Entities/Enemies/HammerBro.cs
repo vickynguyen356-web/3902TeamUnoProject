@@ -56,6 +56,7 @@ namespace TeamUno.Mario.Entities.Enemies
         public override void Update(GameTime gameTime)
         {
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            elapsedSeconds = System.Math.Min(elapsedSeconds, 1f / 30f);
 
             if (IsDead)
             {
@@ -100,10 +101,12 @@ namespace TeamUno.Mario.Entities.Enemies
             {
                 // Walk in the current direction.
                 Velocity.X = GetPatrolVelocity();
-                Position = Position + Velocity * elapsedSeconds;
-
-                // Reached the left boundary.
-                if (Position.X <= _leftBound)
+                // stop and throw before turning away from a wall or edge
+                if (!TryWalk(elapsedSeconds))
+                {
+                    StartThrowing();
+                }
+                else if (Position.X <= _leftBound)
                 {
                     Position = new Vector2(_leftBound, Position.Y);
                     StartThrowing();

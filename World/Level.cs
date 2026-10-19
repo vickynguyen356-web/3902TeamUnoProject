@@ -172,7 +172,13 @@ namespace TeamUno.Mario.World
 
             foreach (EnemySpawnDefinition enemy in Definition.Enemies)
             {
-                _enemies.Add(EnemyFactory.Create(enemy.Type, enemy.Position));
+                IEnemy newEnemy = EnemyFactory.Create(enemy.Type, enemy.Position);
+                Enemy walkingEnemy = newEnemy as Enemy;
+                if (walkingEnemy != null)
+                {
+                    walkingEnemy.SetWorldBlocks(_readOnlyBlocks);
+                }
+                _enemies.Add(newEnemy);
             }
         }
     }
