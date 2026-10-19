@@ -25,6 +25,7 @@ namespace TeamUno.Mario.Entities.Blocks
 
         private BlockSprite _sprite;
         private BlockType _type;
+        private bool _isDeleted;
         private readonly Vector2 _position;
         private readonly int _width;
         private readonly int _height;
@@ -73,6 +74,14 @@ namespace TeamUno.Mario.Entities.Blocks
             }
         }
 
+        public bool IsDeleted
+        {
+            get
+            {
+                return _isDeleted;
+            }
+        }
+
         public Block(Vector2 position, BlockType type, int width = DefaultWidth, int height = DefaultHeight)
         {
             _position = position;
@@ -87,15 +96,17 @@ namespace TeamUno.Mario.Entities.Blocks
             _sprite.Update(gameTime);
         }
 
-        internal void HitFromBelow()
+        internal void HitFromBelow(bool canBreak)
         {
-            if (Type != BlockType.Question)
+            if (Type == BlockType.Question)
             {
-                return;
+                Type = BlockType.Used;
+                _sprite = BlockSpriteFactory.Create(Type);
             }
-
-            Type = BlockType.Used;
-            _sprite = BlockSpriteFactory.Create(Type);
+            else if (Type == BlockType.Brick && canBreak)
+            {
+                _isDeleted = true;
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch, Texture2D blockTexture)

@@ -167,7 +167,7 @@ namespace TeamUno.Mario.Entities.Player
             return true;
         }
 
-        public void UpdateAnimationState(bool isGrounded, Vector2 velocity)
+        public void UpdateAnimationState(bool isGrounded, Vector2 velocity, bool isClimbing = false)
         {
             if (IsDead)
             {
@@ -176,6 +176,10 @@ namespace TeamUno.Mario.Entities.Player
             else if (IsChangingForm)
             {
                 AnimationState = EntityAnimationState.Transform;
+            }
+            else if (isClimbing)
+            {
+                AnimationState = EntityAnimationState.Climb;
             }
             else if (IsCrouching)
             {
@@ -240,6 +244,15 @@ namespace TeamUno.Mario.Entities.Player
             }
 
             BeginFormTransition(PlayerForm.Small);
+        }
+
+        public void Die()
+        {
+            IsDead = true;
+            IsCrouching = false;
+            _throwTimeRemaining = 0;
+            _transitionTimeRemaining = 0;
+            AnimationState = EntityAnimationState.Dead;
         }
 
         public void SetCrouching(bool crouching)

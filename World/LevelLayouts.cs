@@ -15,19 +15,27 @@ namespace TeamUno.Mario.World
             const int width = 3840;
             const int height = 720;
             const int floorY = 528;
+            const int fallTestGapStartX = 3024;
+            const int fallTestGapEndX = 3072;
 
             List<BlockSpawnDefinition> blocks = new List<BlockSpawnDefinition>();
             for (int y = floorY; y < height; y = y + tileSize)
             {
                 for (int x = 0; x < width; x = x + tileSize)
                 {
-                    blocks.Add(new BlockSpawnDefinition(new Vector2(x, y), BlockType.Ground));
+                    if (x < fallTestGapStartX || x >= fallTestGapEndX)
+                    {
+                        blocks.Add(new BlockSpawnDefinition(new Vector2(x, y), BlockType.Ground));
+                    }
                 }
             }
 
             blocks.Add(new BlockSpawnDefinition(new Vector2(384, 336), BlockType.Brick));
             blocks.Add(new BlockSpawnDefinition(new Vector2(432, 336), BlockType.Question));
             blocks.Add(new BlockSpawnDefinition(new Vector2(480, 336), BlockType.Brick));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(336, floorY - 96), BlockType.Brick));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(384, floorY - 96), BlockType.Question));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(432, floorY - 96), BlockType.Brick));
             blocks.Add(new BlockSpawnDefinition(new Vector2(912, floorY - 130), BlockType.Pipe, 64, 130));
             blocks.Add(new BlockSpawnDefinition(new Vector2(1392, 336), BlockType.Question));
             blocks.Add(new BlockSpawnDefinition(new Vector2(1440, 336), BlockType.Brick));
