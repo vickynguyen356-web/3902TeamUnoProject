@@ -73,6 +73,13 @@ namespace TeamUno.Mario.World
             Level.CollectProjectiles(Player);
             Level.Update(gameTime);
             _collisionSystem.Update(this, previousPlayerBounds, isJumpHeld);
+            Level.RemoveDeletedBlocks();
+            Rectangle playerBounds = Player.Bounds;
+            if (playerBounds.Top >= Level.Definition.Height)
+            {
+                Player.DieFromFall();
+            }
+
             Player.UpdateAnimation(gameTime);
             Camera.Follow(Player.Bounds);
         }
