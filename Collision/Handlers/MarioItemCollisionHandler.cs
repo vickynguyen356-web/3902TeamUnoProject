@@ -43,8 +43,10 @@ namespace TeamUno.Mario.Collision.Handlers
                 case ItemType.OneUpMushroom:
                     _progress.AddLife();
                     break;
+                case ItemType.Star:
+                    player.ActivateStar();
+                    break;
                 default:
-                    // star collection still needs Mario's immunity behavior
                     // block coins are just the animation from hitting a block
                     return;
             }

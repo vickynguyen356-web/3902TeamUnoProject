@@ -7,6 +7,27 @@ namespace TeamUno.Mario.Entities.Player
     internal class PlayerStateMachine
     {
         public const float FormTransitionDurationSeconds = 0.7f;
+        private const float StarDuration = 10f;
+        private float _starTimeRemaining;
+
+        public bool IsStarActive
+        {
+            get { return _starTimeRemaining > 0f; }
+        }
+
+        public void ActivateStar()
+        {
+            if (!IsDead)
+            {
+                _starTimeRemaining = StarDuration;
+            }
+        }
+
+        public void UpdateStar(float elapsedSeconds)
+        {
+            _starTimeRemaining = Math.Max(0f, _starTimeRemaining - elapsedSeconds);
+        }
+
         private const float MinimumRunningSpeed = 15f;
         private const float FireballPoseDurationSeconds = 0.12f;
 
@@ -208,6 +229,7 @@ namespace TeamUno.Mario.Entities.Player
 
         public void Reset()
         {
+            _starTimeRemaining = 0f;
             AnimationState = EntityAnimationState.Idle;
             Form = _startingForm;
             IsCrouching = false;

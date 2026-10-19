@@ -193,6 +193,16 @@ namespace TeamUno.Mario.Entities.Player
             _projectiles.Clear();
         }
 
+        public bool IsStarActive
+        {
+            get { return _stateMachine.IsStarActive; }
+        }
+
+        public void ActivateStar()
+        {
+            _stateMachine.ActivateStar();
+        }
+
         public void BeginFormTransition(PlayerForm targetForm)
         {
             int previousHeight = Bounds.Height;
@@ -212,6 +222,7 @@ namespace TeamUno.Mario.Entities.Player
                 ClearInputRequests();
             }
 
+            _stateMachine.UpdateStar(elapsedSeconds);
             _stateMachine.UpdateThrowTimer(elapsedSeconds);
             _stateMachine.UpdateFormTransition(elapsedSeconds);
             if (wasChangingForm && !IsChangingForm)
@@ -377,7 +388,7 @@ namespace TeamUno.Mario.Entities.Player
 
         public void TakeDamage()
         {
-            if (IsDead || IsChangingForm)
+            if (IsDead || IsChangingForm || IsStarActive)
             {
                 return;
             }

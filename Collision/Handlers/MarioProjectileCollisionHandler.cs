@@ -1,4 +1,4 @@
-﻿using TeamUno.Mario.Entities.Player;
+using TeamUno.Mario.Entities.Player;
 using TeamUno.Mario.Entities.Blocks;
 using TeamUno.Mario.Interfaces;
 
@@ -16,12 +16,12 @@ namespace TeamUno.Mario.Collision.Handlers
         public void Handle(MarioPlayer first, IProjectile second, CollisionInfo info)
         {
             // NOTE: this receives ALL projectiles. Ignore enemy-owned projectiles.
-            if (!second.IsEnemyProjectile || second.IsDead || first.IsDead)
+            if (!second.IsEnemyProjectile || second.IsDead || first.IsDead || first.IsStarActive)
             {
                 return;
             }
 
-            // TODO: Starman state: not affected by any projectiles. Mario takes damage, dead after certain amount of hits.
+            // TODO: Mario takes damage, dead after certain amount of hits.
             // TODO: Projectile disappears (Kill).
 
             // Delete return upon implementing Handle(), just a placeholder for the build to run.
