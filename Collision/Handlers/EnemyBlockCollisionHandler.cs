@@ -19,7 +19,8 @@ namespace TeamUno.Mario.Collision.Handlers
         {
             // TODO: Enemy update (turn around on side hit, deleted upon falling thru floor).
             // TODO: Block update.
-            if (second.IsDeleted
+            if (first.IsDead
+                || second.IsDeleted
                 || second.Type == BlockType.Empty
                 || second.Type == BlockType.Vine)
             {
