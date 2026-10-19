@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using TeamUno.Mario.Entities.Projectiles;
 using TeamUno.Mario.Entities.Sprites;
 using TeamUno.Mario.Interfaces;
 
@@ -11,6 +13,7 @@ namespace TeamUno.Mario.Entities.Enemies
         public const int KoopaHeight = 48;
         private const float WalkSpeed = 45f;
         private const float PatrolDistance = 150f;
+        private readonly Func<Vector2, KoopaShell> _createShell;
 
         private readonly float _leftBound;
         private readonly float _rightBound;
@@ -32,13 +35,14 @@ namespace TeamUno.Mario.Entities.Enemies
             }
         }
 
-        public Koopa(ISprite sprite, Vector2 position)
+        public Koopa(ISprite sprite, Vector2 position, Func<Vector2, KoopaShell> createShell)
             : base(sprite, position)
         {
             _koopaAnimations = KoopaSpriteFactory.CreateKoopaAnimations();
             _leftBound = position.X - PatrolDistance;
             _rightBound = position.X + PatrolDistance;
             Velocity.X = -WalkSpeed;
+            _createShell = createShell;
 
             UpdateMovementAnimation(new GameTime(), _koopaAnimations);
         }
@@ -66,6 +70,22 @@ namespace TeamUno.Mario.Entities.Enemies
             }
 
             UpdateMovementAnimation(gameTime, _koopaAnimations);
+        }
+
+        // when Mario stomps on Koopa, Koopa becomes KoopaShell
+        public KoopaShell Stomp()
+        {
+            if (IsDead)
+            {
+                return null;
+            }
+
+            Kill();
+
+            float shellX = Position.X + (Width - KoopaShell.ShellWidth) / 2f;
+            float shellY = Position.Y + Height - KoopaShell.ShellHeight;
+
+            return _createShell(new Vector2(shellX, shellY));
         }
     }
 }

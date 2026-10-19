@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TeamUno.Mario.Entities.Projectiles;
 using TeamUno.Mario.Entities.Sprites;
 using TeamUno.Mario.Interfaces;
 
@@ -26,7 +27,7 @@ namespace TeamUno.Mario.Entities.Enemies
                 case EnemyType.Goomba:
                     return new Goomba(sprite, position);
                 case EnemyType.Koopa:
-                    return new Koopa(sprite, position);
+                    return new Koopa(sprite, position, CreateKoopaShell);
                 case EnemyType.PiranhaPlant:
                     return new PiranhaPlant(sprite, position);
                 case EnemyType.HammerBro:
@@ -36,6 +37,14 @@ namespace TeamUno.Mario.Entities.Enemies
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type));
             }
+        }
+
+        private static KoopaShell CreateKoopaShell(Vector2 shellPos)
+        {
+            ISprite shellSprite = ProjectileSpriteFactory.Create(
+        ProjectileType.KoopaShell, _enemyTexture, null);
+
+            return new KoopaShell(shellSprite, shellPos, Vector2.Zero, isEnemyProjectile: false);
         }
     }
 }

@@ -18,6 +18,8 @@ namespace TeamUno.Mario.Entities.Projectiles
                     return new SpriteSheetSprite(enemyTexture, 2f, useSpriteEffects: true);
                 case ProjectileType.Hammer:
                     return new SpriteSheetSprite(enemyTexture, 2f);
+                case ProjectileType.KoopaShell:
+                    return new SpriteSheetSprite(enemyTexture, 2f);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type));
             }
@@ -42,6 +44,11 @@ namespace TeamUno.Mario.Entities.Projectiles
         internal static SpriteAnimation CreateHammerAnimation()
         {
             return new SpriteAnimation(0.28f, CreateFrame(412, 1327, 8, 16));
+        }
+
+        internal static SpriteAnimation CreateShellAnimation()
+        {
+            return new SpriteAnimation(0.1f, CreateFrame(214, 174, 20, 16));
         }
 
         private static SpriteFrame CreateFrame(int x, int y, int width, int height)
