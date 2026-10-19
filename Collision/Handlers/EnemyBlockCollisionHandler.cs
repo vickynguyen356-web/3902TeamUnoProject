@@ -1,4 +1,6 @@
-﻿using TeamUno.Mario.Entities.Blocks;
+﻿using Microsoft.Xna.Framework;
+using TeamUno.Mario.Collision;
+using TeamUno.Mario.Entities.Blocks;
 using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Collision.Handlers
@@ -17,9 +19,50 @@ namespace TeamUno.Mario.Collision.Handlers
         {
             // TODO: Enemy update (turn around on side hit, deleted upon falling thru floor).
             // TODO: Block update.
+            if (second.IsDeleted
+                || second.Type == BlockType.Empty
+                || second.Type == BlockType.Vine)
+            {
+                return;
+            }
 
-            // Delete return upon implementing Handle(), just a placeholder for the build to run.
-            return;
+            if (info.Side == CollisionSide.Top && second.Type == BlockType.Platform)
+            {
+                return;
+            }
+
+            Rectangle blockBounds = second.Bounds;
+            Rectangle enemyBounds = first.Bounds;
+            Vector2 position = first.Position;
+            Vector2 velocity = first.Velocity;
+
+            switch (info.Side)
+            {
+                case CollisionSide.Right:
+                    position.X = blockBounds.Left - enemyBounds.Width;
+                    velocity.X = -velocity.X;
+                    break;
+                case CollisionSide.Left:
+                    position.X = blockBounds.Right;
+                    velocity.X = -velocity.X;
+                    break;
+                case CollisionSide.Bottom:
+                    position.Y = blockBounds.Top - enemyBounds.Height;
+                    break;
+                case CollisionSide.Top:
+                    position.Y = blockBounds.Bottom;
+                    break;
+                default:
+                    return;
+            }
+
+            first.Position = position;
+            first.Velocity = velocity;
+
+            if (info.Side == CollisionSide.Top)
+            {
+                second.HitFromBelow(canBreak: false);
+            }
         }
     }
 }
