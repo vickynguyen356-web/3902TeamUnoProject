@@ -65,6 +65,19 @@ namespace TeamUno.Mario.Entities.Enemies
                 return;
             }
 
+            // follow the new direction after hitting a block
+            if (!_isThrowing)
+            {
+                if (Velocity.X < 0f)
+                {
+                    _patrolDirection = FacingDirection.Left;
+                }
+                else if (Velocity.X > 0f)
+                {
+                    _patrolDirection = FacingDirection.Right;
+                }
+            }
+
             if (_isThrowing)
             {
                 // Stop moving while throwing.

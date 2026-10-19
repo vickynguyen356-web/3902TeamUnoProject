@@ -63,10 +63,12 @@ namespace TeamUno.Mario.World
 
             EnemySpawnDefinition[] enemies = new EnemySpawnDefinition[]
             {
-                new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(720, floorY - Goomba.GoombaHeight)),
+                // this patrol reaches the first pipe before its normal turn point
+                new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(840, floorY - Goomba.GoombaHeight)),
                 new EnemySpawnDefinition(EnemyType.Koopa, new Vector2(1680, floorY - Koopa.KoopaHeight)),
                 new EnemySpawnDefinition(EnemyType.HammerBro, new Vector2(2208, floorY - HammerBro.HammerBroHeight)),
-                new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(2880, floorY - Goomba.GoombaHeight)),
+                // this patrol reaches the gap before its normal turn point
+                new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(2944, floorY - Goomba.GoombaHeight)),
                 new EnemySpawnDefinition(EnemyType.Bowser, new Vector2(3264, floorY - Bowser.BowserHeight))
             };
 

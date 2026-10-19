@@ -9,7 +9,7 @@ namespace TeamUno.Mario.Collision.Handlers
     {
         public void Handle(IItem item, Block block, CollisionInfo info)
         {
-            if (item.IsExpired || (item.Type != ItemType.Mushroom
+            if (item.IsExpired || block.IsDeleted || (item.Type != ItemType.Mushroom
                 && item.Type != ItemType.OneUpMushroom && item.Type != ItemType.Star))
             {
                 return;

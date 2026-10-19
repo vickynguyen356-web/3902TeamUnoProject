@@ -100,6 +100,11 @@ namespace TeamUno.Mario.World
                 }
 
                 enemy.Update(gameTime);
+                Enemy movingEnemy = enemy as Enemy;
+                if (movingEnemy != null)
+                {
+                    movingEnemy.UpdateGravity(gameTime);
+                }
                 if (enemy.Bounds.Top >= Definition.Height)
                 {
                     enemy.Kill();

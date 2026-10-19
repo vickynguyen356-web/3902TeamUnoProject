@@ -16,6 +16,21 @@ namespace TeamUno.Mario.Entities.Enemies
         protected readonly ISprite Sprite;
         protected Vector2 Velocity;
         private IReadOnlyList<Block> _worldBlocks;
+        private const float Gravity = 1500f;
+        private const float MaximumFallSpeed = 700f;
+
+        public void UpdateGravity(GameTime gameTime)
+        {
+            if (IsDead || this is PiranhaPlant)
+            {
+                return;
+            }
+
+            float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            elapsedSeconds = Math.Min(elapsedSeconds, 1f / 30f);
+            Velocity.Y = Math.Min(Velocity.Y + Gravity * elapsedSeconds, MaximumFallSpeed);
+            Position = new Vector2(Position.X, Position.Y + Velocity.Y * elapsedSeconds);
+        }
 
         public void SetWorldBlocks(IReadOnlyList<Block> blocks)
         {
@@ -56,7 +71,7 @@ namespace TeamUno.Mario.Entities.Enemies
 
             foreach (Block block in _worldBlocks)
             {
-                if (block.Type == BlockType.Empty || block.Type == BlockType.Vine
+                if (block.IsDeleted || block.Type == BlockType.Empty || block.Type == BlockType.Vine
                     || block.Type == BlockType.FlagPole)
                 {
                     continue;
