@@ -100,9 +100,17 @@ namespace TeamUno.Mario.World
                 }
             }
 
-            foreach (Block block in _blocks)
+            for (int index = _blocks.Count - 1; index >= 0; index = index - 1)
             {
-                block.Update(gameTime);
+                Block block = _blocks[index];
+                if (block.IsDeleted)
+                {
+                    _blocks.RemoveAt(index);
+                }
+                else
+                {
+                    block.Update(gameTime);
+                }
             }
 
             for (int index = _projectiles.Count - 1; index >= 0; index = index - 1)
@@ -141,6 +149,17 @@ namespace TeamUno.Mario.World
             }
 
             emitter.ClearProjectiles();
+        }
+
+        internal void RemoveDeletedBlocks()
+        {
+            for (int index = _blocks.Count - 1; index >= 0; index = index - 1)
+            {
+                if (_blocks[index].IsDeleted)
+                {
+                    _blocks.RemoveAt(index);
+                }
+            }
         }
 
         public void Reset()
