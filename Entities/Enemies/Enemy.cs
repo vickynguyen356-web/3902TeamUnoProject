@@ -100,7 +100,7 @@ namespace TeamUno.Mario.Entities.Enemies
             {
                 return _position;
             }
-            protected set
+            set
             {
                 _position = value;
             }
@@ -145,6 +145,18 @@ namespace TeamUno.Mario.Entities.Enemies
             get
             {
                 return StateMachine.IsDead;
+            }
+        }
+
+        Vector2 IEnemy.Velocity
+        {
+            get
+            {
+                return Velocity;
+            }
+            set
+            {
+                Velocity = value;
             }
         }
 
