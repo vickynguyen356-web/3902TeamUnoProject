@@ -4,6 +4,7 @@ namespace TeamUno.Mario.Entities.Projectiles
     {
         Fireball,
         Hammer,
-        BowserFire
+        BowserFire,
+        KoopaShell
     }
 }
