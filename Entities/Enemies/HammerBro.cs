@@ -56,12 +56,26 @@ namespace TeamUno.Mario.Entities.Enemies
         public override void Update(GameTime gameTime)
         {
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            elapsedSeconds = System.Math.Min(elapsedSeconds, 1f / 30f);
 
             if (IsDead)
             {
                 Velocity.X = 0f;
                 UpdateAnimation(gameTime);
                 return;
+            }
+
+            // follow the new direction after hitting a block
+            if (!_isThrowing)
+            {
+                if (Velocity.X < 0f)
+                {
+                    _patrolDirection = FacingDirection.Left;
+                }
+                else if (Velocity.X > 0f)
+                {
+                    _patrolDirection = FacingDirection.Right;
+                }
             }
 
             if (_isThrowing)
@@ -100,10 +114,12 @@ namespace TeamUno.Mario.Entities.Enemies
             {
                 // Walk in the current direction.
                 Velocity.X = GetPatrolVelocity();
-                Position = Position + Velocity * elapsedSeconds;
-
-                // Reached the left boundary.
-                if (Position.X <= _leftBound)
+                // stop and throw before turning away from a wall or edge
+                if (!TryWalk(elapsedSeconds))
+                {
+                    StartThrowing();
+                }
+                else if (Position.X <= _leftBound)
                 {
                     Position = new Vector2(_leftBound, Position.Y);
                     StartThrowing();

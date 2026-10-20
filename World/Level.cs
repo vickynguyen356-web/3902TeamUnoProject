@@ -90,9 +90,32 @@ namespace TeamUno.Mario.World
                 }
             }
 
-            foreach (IEnemy enemy in _enemies)
+            for (int index = _enemies.Count - 1; index >= 0; index = index - 1)
             {
+                IEnemy enemy = _enemies[index];
+                if (enemy.IsDead)
+                {
+                    _enemies.RemoveAt(index);
+                    continue;
+                }
+
                 enemy.Update(gameTime);
+                Enemy movingEnemy = enemy as Enemy;
+                if (movingEnemy != null)
+                {
+                    movingEnemy.UpdateGravity(gameTime);
+                }
+                if (enemy.Bounds.Top >= Definition.Height)
+                {
+                    enemy.Kill();
+                }
+
+                if (enemy.IsDead)
+                {
+                    _enemies.RemoveAt(index);
+                    continue;
+                }
+
                 IProjectileEmitter emitter = enemy as IProjectileEmitter;
                 if (emitter != null)
                 {
@@ -100,9 +123,17 @@ namespace TeamUno.Mario.World
                 }
             }
 
-            foreach (Block block in _blocks)
+            for (int index = _blocks.Count - 1; index >= 0; index = index - 1)
             {
-                block.Update(gameTime);
+                Block block = _blocks[index];
+                if (block.IsDeleted)
+                {
+                    _blocks.RemoveAt(index);
+                }
+                else
+                {
+                    block.Update(gameTime);
+                }
             }
 
             for (int index = _projectiles.Count - 1; index >= 0; index = index - 1)
@@ -143,6 +174,17 @@ namespace TeamUno.Mario.World
             emitter.ClearProjectiles();
         }
 
+        internal void RemoveDeletedBlocks()
+        {
+            for (int index = _blocks.Count - 1; index >= 0; index = index - 1)
+            {
+                if (_blocks[index].IsDeleted)
+                {
+                    _blocks.RemoveAt(index);
+                }
+            }
+        }
+
         public void Reset()
         {
             LoadDefinition();
@@ -172,7 +214,13 @@ namespace TeamUno.Mario.World
 
             foreach (EnemySpawnDefinition enemy in Definition.Enemies)
             {
-                _enemies.Add(EnemyFactory.Create(enemy.Type, enemy.Position));
+                IEnemy newEnemy = EnemyFactory.Create(enemy.Type, enemy.Position);
+                Enemy walkingEnemy = newEnemy as Enemy;
+                if (walkingEnemy != null)
+                {
+                    walkingEnemy.SetWorldBlocks(_readOnlyBlocks);
+                }
+                _enemies.Add(newEnemy);
             }
         }
     }

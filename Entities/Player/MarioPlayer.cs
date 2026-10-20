@@ -20,6 +20,7 @@ namespace TeamUno.Mario.Entities.Player
         private const float HorizontalFriction = 1800f;
         private const float Gravity = 1500f;
         private const float JumpVelocity = -700f;
+        private const float FlagpoleClimbSpeed = 180f;
         private const float FireballSpeed = 200f;
         private const float FireballVerticalVelocity = -100f;
 
@@ -39,6 +40,10 @@ namespace TeamUno.Mario.Entities.Player
         private float _movementDirection;
         private bool _jumpRequested;
         private bool _fireballRequested;
+        private bool _isSlidingOnFlagpole;
+        private bool _isClimbingFlagpole;
+        private float _flagpoleTopPositionY;
+        private float _flagpoleBottomPositionY;
 
         public IReadOnlyList<IProjectile> Projectiles
         {
@@ -120,6 +125,14 @@ namespace TeamUno.Mario.Entities.Player
             }
         }
 
+        public bool IsSlidingOnFlagpole
+        {
+            get
+            {
+                return _isSlidingOnFlagpole;
+            }
+        }
+
         public EntityAnimationState AnimationState
         {
             get
@@ -193,6 +206,16 @@ namespace TeamUno.Mario.Entities.Player
             _projectiles.Clear();
         }
 
+        public bool IsStarActive
+        {
+            get { return _stateMachine.IsStarActive; }
+        }
+
+        public void ActivateStar()
+        {
+            _stateMachine.ActivateStar();
+        }
+
         public void BeginFormTransition(PlayerForm targetForm)
         {
             int previousHeight = Bounds.Height;
@@ -212,6 +235,7 @@ namespace TeamUno.Mario.Entities.Player
                 ClearInputRequests();
             }
 
+            _stateMachine.UpdateStar(elapsedSeconds);
             _stateMachine.UpdateThrowTimer(elapsedSeconds);
             _stateMachine.UpdateFormTransition(elapsedSeconds);
             if (wasChangingForm && !IsChangingForm)
@@ -243,6 +267,14 @@ namespace TeamUno.Mario.Entities.Player
             if (_fireballRequested && _stateMachine.TryThrowFireball())
             {
                 EmitFireball();
+            }
+
+            if (IsSlidingOnFlagpole)
+            {
+                float verticalDirection = _isClimbingFlagpole ? -1f : 1f;
+                _velocity = new Vector2(0, verticalDirection * FlagpoleClimbSpeed);
+                ClearInputRequests();
+                return;
             }
 
             _velocity.Y = _velocity.Y + Gravity * elapsedSeconds;
@@ -314,6 +346,12 @@ namespace TeamUno.Mario.Entities.Player
                 return;
             }
 
+            if (IsSlidingOnFlagpole)
+            {
+                UpdateFlagpolePosition(elapsedSeconds);
+                return;
+            }
+
             Position = Position + _velocity * elapsedSeconds;
             IsGrounded = false;
         }
@@ -325,9 +363,61 @@ namespace TeamUno.Mario.Entities.Player
             IsGrounded = isGrounded;
         }
 
+        internal void StartFlagpoleSlide(float flagpoleCenterX, float flagpoleTopY, float flagpoleBottomY)
+        {
+            _isSlidingOnFlagpole = true;
+            _isClimbingFlagpole = true;
+            _flagpoleTopPositionY = flagpoleTopY;
+            _flagpoleBottomPositionY = flagpoleBottomY - Bounds.Height;
+            Position = new Vector2(flagpoleCenterX - Bounds.Width / 2f, Position.Y);
+            _velocity = new Vector2(0, -FlagpoleClimbSpeed);
+            IsGrounded = false;
+            ClearInputRequests();
+        }
+
+        private void UpdateFlagpolePosition(float elapsedSeconds)
+        {
+            float nextPositionY = Position.Y + _velocity.Y * elapsedSeconds;
+            if (_isClimbingFlagpole && nextPositionY <= _flagpoleTopPositionY)
+            {
+                nextPositionY = _flagpoleTopPositionY;
+                _isClimbingFlagpole = false;
+            }
+            else if (!_isClimbingFlagpole && nextPositionY >= _flagpoleBottomPositionY)
+            {
+                nextPositionY = _flagpoleBottomPositionY;
+                _isSlidingOnFlagpole = false;
+                IsGrounded = true;
+            }
+
+            Position = new Vector2(Position.X, nextPositionY);
+            if (!IsSlidingOnFlagpole)
+            {
+                _velocity = Vector2.Zero;
+            }
+        }
+
+        internal void StopFlagpoleSlide()
+        {
+            _isSlidingOnFlagpole = false;
+            _isClimbingFlagpole = false;
+        }
+
+        internal void DieFromFall()
+        {
+            if (IsDead)
+            {
+                return;
+            }
+
+            _stateMachine.Die();
+            _velocity = Vector2.Zero;
+            ClearInputRequests();
+        }
+
         internal void UpdateAnimation(GameTime gameTime)
         {
-            _stateMachine.UpdateAnimationState(IsGrounded, _velocity);
+            _stateMachine.UpdateAnimationState(IsGrounded, _velocity, IsSlidingOnFlagpole);
             _sprite.Update(gameTime, GetAnimation());
         }
 
@@ -369,6 +459,8 @@ namespace TeamUno.Mario.Entities.Player
             ClearProjectiles();
             _formTransitionAnimation = null;
             IsGrounded = false;
+            _isSlidingOnFlagpole = false;
+            _isClimbingFlagpole = false;
             FacingDirection = FacingDirection.Left;
             _stateMachine.Reset();
             _sprite.Reset();
@@ -377,7 +469,7 @@ namespace TeamUno.Mario.Entities.Player
 
         public void TakeDamage()
         {
-            if (IsDead || IsChangingForm)
+            if (IsDead || IsChangingForm || IsStarActive)
             {
                 return;
             }

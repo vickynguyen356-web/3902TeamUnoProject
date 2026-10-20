@@ -21,6 +21,10 @@ namespace TeamUno.Mario.Interfaces
             get;
         }
 
+        Vector2 CurrentVelocity { get; }
+        void ApplyMotion(Vector2 position, Vector2 velocity);
+        void Expire();
+
         void Update(GameTime gameTime);
         void Draw(SpriteBatch spriteBatch);
     }

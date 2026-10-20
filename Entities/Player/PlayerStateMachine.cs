@@ -7,6 +7,27 @@ namespace TeamUno.Mario.Entities.Player
     internal class PlayerStateMachine
     {
         public const float FormTransitionDurationSeconds = 0.7f;
+        private const float StarDuration = 10f;
+        private float _starTimeRemaining;
+
+        public bool IsStarActive
+        {
+            get { return _starTimeRemaining > 0f; }
+        }
+
+        public void ActivateStar()
+        {
+            if (!IsDead)
+            {
+                _starTimeRemaining = StarDuration;
+            }
+        }
+
+        public void UpdateStar(float elapsedSeconds)
+        {
+            _starTimeRemaining = Math.Max(0f, _starTimeRemaining - elapsedSeconds);
+        }
+
         private const float MinimumRunningSpeed = 15f;
         private const float FireballPoseDurationSeconds = 0.12f;
 
@@ -167,7 +188,7 @@ namespace TeamUno.Mario.Entities.Player
             return true;
         }
 
-        public void UpdateAnimationState(bool isGrounded, Vector2 velocity)
+        public void UpdateAnimationState(bool isGrounded, Vector2 velocity, bool isClimbing = false)
         {
             if (IsDead)
             {
@@ -176,6 +197,10 @@ namespace TeamUno.Mario.Entities.Player
             else if (IsChangingForm)
             {
                 AnimationState = EntityAnimationState.Transform;
+            }
+            else if (isClimbing)
+            {
+                AnimationState = EntityAnimationState.Climb;
             }
             else if (IsCrouching)
             {
@@ -208,6 +233,7 @@ namespace TeamUno.Mario.Entities.Player
 
         public void Reset()
         {
+            _starTimeRemaining = 0f;
             AnimationState = EntityAnimationState.Idle;
             Form = _startingForm;
             IsCrouching = false;
@@ -240,6 +266,15 @@ namespace TeamUno.Mario.Entities.Player
             }
 
             BeginFormTransition(PlayerForm.Small);
+        }
+
+        public void Die()
+        {
+            IsDead = true;
+            IsCrouching = false;
+            _throwTimeRemaining = 0;
+            _transitionTimeRemaining = 0;
+            AnimationState = EntityAnimationState.Dead;
         }
 
         public void SetCrouching(bool crouching)
