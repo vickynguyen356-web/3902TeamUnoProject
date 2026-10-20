@@ -15,19 +15,27 @@ namespace TeamUno.Mario.World
             const int width = 3840;
             const int height = 720;
             const int floorY = 528;
+            const int fallTestGapStartX = 3024;
+            const int fallTestGapEndX = 3072;
 
             List<BlockSpawnDefinition> blocks = new List<BlockSpawnDefinition>();
             for (int y = floorY; y < height; y = y + tileSize)
             {
                 for (int x = 0; x < width; x = x + tileSize)
                 {
-                    blocks.Add(new BlockSpawnDefinition(new Vector2(x, y), BlockType.Ground));
+                    if (x < fallTestGapStartX || x >= fallTestGapEndX)
+                    {
+                        blocks.Add(new BlockSpawnDefinition(new Vector2(x, y), BlockType.Ground));
+                    }
                 }
             }
 
             blocks.Add(new BlockSpawnDefinition(new Vector2(384, 336), BlockType.Brick));
             blocks.Add(new BlockSpawnDefinition(new Vector2(432, 336), BlockType.Question));
             blocks.Add(new BlockSpawnDefinition(new Vector2(480, 336), BlockType.Brick));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(336, floorY - 96), BlockType.Brick));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(384, floorY - 96), BlockType.Question));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(432, floorY - 96), BlockType.Brick));
             blocks.Add(new BlockSpawnDefinition(new Vector2(912, floorY - 130), BlockType.Pipe, 64, 130));
             blocks.Add(new BlockSpawnDefinition(new Vector2(1392, 336), BlockType.Question));
             blocks.Add(new BlockSpawnDefinition(new Vector2(1440, 336), BlockType.Brick));
@@ -41,6 +49,9 @@ namespace TeamUno.Mario.World
             ItemSpawnDefinition[] items = new ItemSpawnDefinition[]
             {
                 new ItemSpawnDefinition(ItemType.Mushroom, new Vector2(224, floorY - 32)),
+                // test placements until question blocks spawn these items
+                new ItemSpawnDefinition(ItemType.OneUpMushroom, new Vector2(304, floorY - 32)),
+                new ItemSpawnDefinition(ItemType.Star, new Vector2(560, floorY - 32)),
                 new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(400, 256)),
                 new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(448, 256)),
                 new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(496, 256)),
@@ -52,10 +63,12 @@ namespace TeamUno.Mario.World
 
             EnemySpawnDefinition[] enemies = new EnemySpawnDefinition[]
             {
-                new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(720, floorY - Goomba.GoombaHeight)),
+                // this patrol reaches the first pipe before its normal turn point
+                new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(840, floorY - Goomba.GoombaHeight)),
                 new EnemySpawnDefinition(EnemyType.Koopa, new Vector2(1680, floorY - Koopa.KoopaHeight)),
                 new EnemySpawnDefinition(EnemyType.HammerBro, new Vector2(2208, floorY - HammerBro.HammerBroHeight)),
-                new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(2880, floorY - Goomba.GoombaHeight)),
+                // this patrol reaches the gap before its normal turn point
+                new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(2944, floorY - Goomba.GoombaHeight)),
                 new EnemySpawnDefinition(EnemyType.Bowser, new Vector2(3264, floorY - Bowser.BowserHeight))
             };
 

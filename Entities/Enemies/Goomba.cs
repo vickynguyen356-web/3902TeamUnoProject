@@ -46,10 +46,14 @@ namespace TeamUno.Mario.Entities.Enemies
         public override void Update(GameTime gameTime)
         {
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            elapsedSeconds = System.Math.Min(elapsedSeconds, 1f / 30f);
 
             if (!IsDead)
             {
-                Position = Position + Velocity * elapsedSeconds;
+                if (!TryWalk(elapsedSeconds))
+                {
+                    Velocity.X = -Velocity.X;
+                }
 
                 if (Position.X <= _leftBound)
                 {

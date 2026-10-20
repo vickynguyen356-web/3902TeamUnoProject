@@ -1,4 +1,5 @@
-﻿using TeamUno.Mario.Entities.Blocks;
+using TeamUno.Mario.Entities.Blocks;
+using TeamUno.Mario.Entities.Enemies;
 using TeamUno.Mario.Entities.Player;
 using TeamUno.Mario.Interfaces;
 
@@ -15,9 +16,23 @@ namespace TeamUno.Mario.Collision.Handlers
     {
         public void Handle(MarioPlayer first, IEnemy second, CollisionInfo info)
         {
+            if (first.IsDead)
+            {
+                return;
+            }
+
+            if (first.IsStarActive)
+            {
+                Enemy enemy = second as Enemy;
+                if (enemy != null && !enemy.IsDead)
+                {
+                    enemy.Kill();
+                }
+                return;
+            }
+
             // TODO: Stomp (info.Side == Bottom while falling): enemy defeated/stomped, player bounces.
             // TODO: Any other side: player takes damage.
-            // TODO: Starman Mario behaves differently than other states.
             // TODO: Per-enemy differences (Koopa bounces, Goomba slight velocity decrease).
 
             // Delete return upon implementing Handle(), just a placeholder for the build to run.

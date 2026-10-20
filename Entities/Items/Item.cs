@@ -24,6 +24,23 @@ namespace TeamUno.Mario.Entities.Items
         // not readonly because moving items need to change it
         private Vector2 _position;
         private bool _isExpired;
+        protected Vector2 Velocity;
+
+        public Vector2 CurrentVelocity
+        {
+            get { return Velocity; }
+        }
+
+        public void ApplyMotion(Vector2 position, Vector2 velocity)
+        {
+            Position = position;
+            Velocity = velocity;
+        }
+
+        public void Expire()
+        {
+            IsExpired = true;
+        }
 
         public abstract ItemType Type
         {
