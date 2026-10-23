@@ -99,6 +99,12 @@ namespace TeamUno.Mario.Entities.Projectiles
             IsDead = true;
         }
 
+        internal void ApplyMotion(Vector2 position, Vector2 velocity)
+        {
+            Position = position;
+            Velocity = velocity;
+        }
+
         public virtual float Rotation
         {
             get
