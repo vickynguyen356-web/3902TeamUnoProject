@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Sprites;
 using TeamUno.Mario.Interfaces;
@@ -9,6 +10,7 @@ namespace TeamUno.Mario.Entities.Projectiles
         public const int FireballWidth = 16;
         public const int FireballHeight = 16;
         private const float Gravity = 500f;
+        private const float BlockBounceSpeed = 200f;
         private readonly SpriteAnimation _fireballAnimation;
 
         public override int Width
@@ -61,6 +63,11 @@ namespace TeamUno.Mario.Entities.Projectiles
         public void OnCollision()
         {
             Kill();
+        }
+
+        internal void Bounce()
+        {
+            Velocity.Y = -Math.Max(Math.Abs(Velocity.Y), BlockBounceSpeed);
         }
     }
 }

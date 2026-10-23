@@ -52,5 +52,10 @@ namespace TeamUno.Mario.Entities.Projectiles
             Position = Position + Velocity * elapsedSeconds;
             Sprite.Update(gameTime, _shellAnimation);
         }
+
+        internal void Bounce()
+        {
+            Velocity.X = -Velocity.X;
+        }
     }
 }
