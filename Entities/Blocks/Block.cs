@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TeamUno.Mario.Interfaces;
@@ -29,6 +30,7 @@ namespace TeamUno.Mario.Entities.Blocks
         private readonly Vector2 _position;
         private readonly int _width;
         private readonly int _height;
+        private Block _pipeDestination;
 
         public BlockType Type
         {
@@ -82,6 +84,14 @@ namespace TeamUno.Mario.Entities.Blocks
             }
         }
 
+        internal Block PipeDestination
+        {
+            get
+            {
+                return _pipeDestination;
+            }
+        }
+
         public Block(Vector2 position, BlockType type, int width = DefaultWidth, int height = DefaultHeight)
         {
             _position = position;
@@ -94,6 +104,17 @@ namespace TeamUno.Mario.Entities.Blocks
         public void Update(GameTime gameTime)
         {
             _sprite.Update(gameTime);
+        }
+
+        internal void SetPipeDestination(Block destination)
+        {
+            if (Type != BlockType.Pipe)
+            {
+                throw new InvalidOperationException("Only pipe blocks can have pipe destinations.");
+            }
+
+            ArgumentNullException.ThrowIfNull(destination);
+            _pipeDestination = destination;
         }
 
         internal void HitFromBelow(bool canBreak)

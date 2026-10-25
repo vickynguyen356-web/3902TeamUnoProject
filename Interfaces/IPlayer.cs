@@ -6,5 +6,6 @@ namespace TeamUno.Mario.Interfaces
         void Jump();
         void SetCrouching(bool crouching);
         void ThrowFireball();
+        void RequestPipeEntry();
     }
 }
