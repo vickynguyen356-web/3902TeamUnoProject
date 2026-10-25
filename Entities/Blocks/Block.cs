@@ -13,6 +13,7 @@ namespace TeamUno.Mario.Entities.Blocks
         Ground,
         Pipe,
         Solid,
+        Invisible,
         FlagPole,
         Empty,
         Platform,
@@ -119,7 +120,7 @@ namespace TeamUno.Mario.Entities.Blocks
 
         internal void HitFromBelow(bool canBreak)
         {
-            if (Type == BlockType.Question)
+            if (Type == BlockType.Question || Type == BlockType.Invisible)
             {
                 Type = BlockType.Used;
                 _sprite = BlockSpriteFactory.Create(Type);
