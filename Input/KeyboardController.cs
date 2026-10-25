@@ -13,6 +13,7 @@ namespace TeamUno.Mario.Input
         private readonly Dictionary<Keys, ICommand> _heldCommands;
         private readonly Dictionary<Keys, ICommand> _pressedCommands;
         private readonly List<ICommand> _pendingCommands = new List<ICommand>();
+        private readonly IGameActions _gameActions;
         private readonly ICommand _moveLeftCommand;
         private readonly ICommand _moveRightCommand;
         private readonly ICommand _crouchCommand;
@@ -34,6 +35,7 @@ namespace TeamUno.Mario.Input
             ArgumentNullException.ThrowIfNull(player);
             ArgumentNullException.ThrowIfNull(gameActions);
 
+            _gameActions = gameActions;
             _moveLeftCommand = new MoveCommand(player, -1);
             _moveRightCommand = new MoveCommand(player, 1);
             _crouchCommand = new CrouchCommand(player, true);
@@ -41,6 +43,7 @@ namespace TeamUno.Mario.Input
             _quitCommand = new QuitCommand(gameActions);
             _resetCommand = new ResetCommand(gameActions);
             _jumpCommand = new JumpCommand(player);
+            ICommand enterPipeCommand = new EnterPipeCommand(player);
             ICommand throwFireballCommand = new ThrowFireballCommand(player);
 
             _heldCommands = new Dictionary<Keys, ICommand>
@@ -58,6 +61,7 @@ namespace TeamUno.Mario.Input
                 { Keys.Q, _quitCommand },
                 { Keys.Escape, _quitCommand },
                 { Keys.R, _resetCommand },
+                { Keys.Down, enterPipeCommand },
                 { Keys.W, _jumpCommand },
                 { Keys.Up, _jumpCommand },
                 { Keys.Space, _jumpCommand },
