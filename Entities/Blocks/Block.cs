@@ -24,10 +24,23 @@ namespace TeamUno.Mario.Entities.Blocks
     {
         private const int DefaultWidth = 48;
         private const int DefaultHeight = 48;
+        private const float BreakAnimationDurationSeconds = 0.55f;
+        private const float DebrisGravity = 720f;
+        private static readonly Rectangle BrickSource = new Rectangle(17, 0, 16, 16);
 
         private BlockSprite _sprite;
         private BlockType _type;
         private bool _isDeleted;
+        private bool _isBreaking;
+        private float _breakAnimationElapsed;
+        private readonly Vector2[] _debrisPositions = new Vector2[4];
+        private readonly Vector2[] _debrisVelocities =
+        {
+            new Vector2(-150f, -260f),
+            new Vector2(150f, -320f),
+            new Vector2(-120f, -100f),
+            new Vector2(120f, -160f)
+        };
         private readonly Vector2 _position;
         private readonly int _width;
         private readonly int _height;
@@ -85,6 +98,15 @@ namespace TeamUno.Mario.Entities.Blocks
             }
         }
 
+        internal bool IsRemovalReady
+        {
+            get
+            {
+                return _isDeleted && (!_isBreaking
+                    || _breakAnimationElapsed >= BreakAnimationDurationSeconds);
+            }
+        }
+
         internal Block PipeDestination
         {
             get
@@ -104,6 +126,21 @@ namespace TeamUno.Mario.Entities.Blocks
 
         public void Update(GameTime gameTime)
         {
+            if (_isBreaking)
+            {
+                float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+                float remainingSeconds = BreakAnimationDurationSeconds - _breakAnimationElapsed;
+                float animationStep = Math.Min(Math.Max(0, elapsedSeconds), remainingSeconds);
+                _breakAnimationElapsed += animationStep;
+                for (int index = 0; index < _debrisPositions.Length; index++)
+                {
+                    _debrisPositions[index] += _debrisVelocities[index] * animationStep;
+                    _debrisVelocities[index] += new Vector2(0, DebrisGravity * animationStep);
+                }
+
+                return;
+            }
+
             _sprite.Update(gameTime);
         }
 
@@ -128,6 +165,17 @@ namespace TeamUno.Mario.Entities.Blocks
             else if (Type == BlockType.Brick && canBreak)
             {
                 _isDeleted = true;
+                _isBreaking = true;
+                int fragmentWidth = Width / 2;
+                int fragmentHeight = Height / 2;
+                for (int index = 0; index < _debrisPositions.Length; index++)
+                {
+                    int column = index % 2;
+                    int row = index / 2;
+                    _debrisPositions[index] = new Vector2(
+                        Position.X + column * fragmentWidth,
+                        Position.Y + row * fragmentHeight);
+                }
             }
         }
 
@@ -135,6 +183,12 @@ namespace TeamUno.Mario.Entities.Blocks
         {
             if (blockTexture == null)
             {
+                return;
+            }
+
+            if (_isBreaking)
+            {
+                DrawBrickDebris(spriteBatch, blockTexture);
                 return;
             }
 
@@ -151,6 +205,30 @@ namespace TeamUno.Mario.Entities.Blocks
             }
 
             spriteBatch.Draw(blockTexture, Bounds, sourceRectangle, Color.White);
+        }
+
+        private void DrawBrickDebris(SpriteBatch spriteBatch, Texture2D blockTexture)
+        {
+            int fragmentWidth = Width / 2;
+            int fragmentHeight = Height / 2;
+            float opacity = 1f - _breakAnimationElapsed / BreakAnimationDurationSeconds;
+
+            for (int index = 0; index < _debrisPositions.Length; index++)
+            {
+                int column = index % 2;
+                int row = index / 2;
+                Rectangle source = new Rectangle(
+                    BrickSource.X + column * 8,
+                    BrickSource.Y + row * 8,
+                    8,
+                    8);
+                Rectangle destination = new Rectangle(
+                    (int)_debrisPositions[index].X,
+                    (int)_debrisPositions[index].Y,
+                    fragmentWidth,
+                    fragmentHeight);
+                spriteBatch.Draw(blockTexture, destination, source, Color.White * opacity);
+            }
         }
 
         private void DrawVine(SpriteBatch spriteBatch, Texture2D blockTexture)
