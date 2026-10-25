@@ -73,6 +73,8 @@ namespace TeamUno.Mario.Entities.Blocks
                     return new StaticBlockSprite(new Rectangle(51, 78, 16, 16));
                 case BlockType.Solid:
                     return new StaticBlockSprite(new Rectangle(51, 0, 16, 16));
+                case BlockType.Invisible:
+                    return new StaticBlockSprite(Rectangle.Empty);
                 case BlockType.FlagPole:
                     return new StaticBlockSprite(new Rectangle(139, 0, 16, 166));
                 case BlockType.Ground:
