@@ -126,7 +126,7 @@ namespace TeamUno.Mario.World
             for (int index = _blocks.Count - 1; index >= 0; index = index - 1)
             {
                 Block block = _blocks[index];
-                if (block.IsDeleted)
+                if (block.IsRemovalReady)
                 {
                     _blocks.RemoveAt(index);
                 }
@@ -178,7 +178,7 @@ namespace TeamUno.Mario.World
         {
             for (int index = _blocks.Count - 1; index >= 0; index = index - 1)
             {
-                if (_blocks[index].IsDeleted)
+                if (_blocks[index].IsRemovalReady)
                 {
                     _blocks.RemoveAt(index);
                 }
