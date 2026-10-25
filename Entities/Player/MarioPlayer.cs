@@ -12,6 +12,13 @@ namespace TeamUno.Mario.Entities.Player
     internal class MarioPlayer : IPlayer, IProjectileEmitter, ICollidable
     {
         public const int StandingHeight = 64;
+        private const float StarColorDuration = 0.12f;
+        private static readonly Color[] StarColors =
+        {
+            Color.White, Color.Red, Color.Green, Color.Blue
+        };
+        private float _starColorTime;
+
         private const int SmallHeight = 32;
         private const int BodyWidth = 32;
         private const int CrouchingHeight = 44;
@@ -214,6 +221,7 @@ namespace TeamUno.Mario.Entities.Player
         public void ActivateStar()
         {
             _stateMachine.ActivateStar();
+            _starColorTime = 0f;
         }
 
         public void BeginFormTransition(PlayerForm targetForm)
@@ -236,6 +244,14 @@ namespace TeamUno.Mario.Entities.Player
             }
 
             _stateMachine.UpdateStar(elapsedSeconds);
+            if (IsStarActive && !IsDead)
+            {
+                _starColorTime = _starColorTime + elapsedSeconds;
+            }
+            else
+            {
+                _starColorTime = 0f;
+            }
             _stateMachine.UpdateThrowTimer(elapsedSeconds);
             _stateMachine.UpdateFormTransition(elapsedSeconds);
             if (wasChangingForm && !IsChangingForm)
@@ -453,6 +469,7 @@ namespace TeamUno.Mario.Entities.Player
 
         public void Reset()
         {
+            _starColorTime = 0f;
             Position = _startingPosition;
             _velocity = Vector2.Zero;
             ClearInputRequests();
@@ -523,7 +540,14 @@ namespace TeamUno.Mario.Entities.Player
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            _sprite.Draw(spriteBatch, Bounds, FacingDirection);
+            Color tint = Color.White;
+            if (IsStarActive && !IsDead)
+            {
+                // change colors while the star timer is running
+                int colorIndex = (int)(_starColorTime / StarColorDuration) % StarColors.Length;
+                tint = StarColors[colorIndex];
+            }
+            _sprite.Draw(spriteBatch, Bounds, FacingDirection, tint);
         }
     }
 }
