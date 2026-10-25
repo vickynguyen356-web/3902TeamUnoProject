@@ -47,6 +47,7 @@ namespace TeamUno.Mario.Entities.Player
         private float _movementDirection;
         private bool _jumpRequested;
         private bool _fireballRequested;
+        private bool _pipeEntryRequested;
         private bool _isSlidingOnFlagpole;
         private bool _isClimbingFlagpole;
         private float _flagpoleTopPositionY;
@@ -206,6 +207,24 @@ namespace TeamUno.Mario.Entities.Player
         public void ThrowFireball()
         {
             _fireballRequested = true;
+        }
+
+        public void RequestPipeEntry()
+        {
+            _pipeEntryRequested = true;
+        }
+
+        internal bool IsPipeEntryRequested
+        {
+            get
+            {
+                return _pipeEntryRequested;
+            }
+        }
+
+        internal void ClearPipeEntryRequest()
+        {
+            _pipeEntryRequested = false;
         }
 
         public void ClearProjectiles()
@@ -379,6 +398,16 @@ namespace TeamUno.Mario.Entities.Player
             IsGrounded = isGrounded;
         }
 
+        internal void EnterPipe(Vector2 destination)
+        {
+            Position = destination;
+            _velocity = Vector2.Zero;
+            IsGrounded = true;
+            _pipeEntryRequested = false;
+            StopFlagpoleSlide();
+            ClearInputRequests();
+        }
+
         internal void StartFlagpoleSlide(float flagpoleCenterX, float flagpoleTopY, float flagpoleBottomY)
         {
             _isSlidingOnFlagpole = true;
@@ -474,6 +503,7 @@ namespace TeamUno.Mario.Entities.Player
             _velocity = Vector2.Zero;
             ClearInputRequests();
             ClearProjectiles();
+            ClearPipeEntryRequest();
             _formTransitionAnimation = null;
             IsGrounded = false;
             _isSlidingOnFlagpole = false;
