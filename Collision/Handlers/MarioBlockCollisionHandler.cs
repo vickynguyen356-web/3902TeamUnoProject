@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Blocks;
 using TeamUno.Mario.Entities.Player;
 
@@ -20,14 +21,18 @@ namespace TeamUno.Mario.Collision.Handlers
                 return;
             }
 
-            // TODO: other block types (brick, question, pipe, flagpole, vine...)
-            // and head/side hits go here. For now only the floor is handled.
+            // TODO: add vine climbing and pipe-entry animations.
             if (block.Type == BlockType.Vine || block.Type == BlockType.Empty)
             {
                 return;
             }
 
             Rectangle blockBounds = block.Bounds;
+            if (block.Type == BlockType.Pipe && TryEnterPipe(player, block, info))
+            {
+                return;
+            }
+
             if (block.Type == BlockType.FlagPole)
             {
                 TryStartFlagpoleSlide(player, blockBounds, info.Side);
@@ -59,6 +64,33 @@ namespace TeamUno.Mario.Collision.Handlers
                 || block.IsDeleted
                 || player.IsChangingForm
                 || (player.IsSlidingOnFlagpole && block.Type != BlockType.Ground);
+        }
+
+        private static bool TryEnterPipe(MarioPlayer player, Block pipe, CollisionInfo info)
+        {
+            if (!player.IsPipeEntryRequested || pipe.PipeDestination == null)
+            {
+                return false;
+            }
+
+            Rectangle playerBounds = player.Bounds;
+            Rectangle pipeBounds = pipe.Bounds;
+            if (Math.Abs(info.FirstPreviousBounds.Bottom - pipeBounds.Top) > 2
+                || playerBounds.Bottom < pipeBounds.Top
+                || playerBounds.Center.X < pipeBounds.Left
+                || playerBounds.Center.X > pipeBounds.Right)
+            {
+                return false;
+            }
+
+            player.SetCrouching(false);
+            playerBounds = player.Bounds;
+            Rectangle destinationBounds = pipe.PipeDestination.Bounds;
+            Vector2 destination = new Vector2(
+                destinationBounds.Center.X - playerBounds.Width / 2f,
+                destinationBounds.Top - playerBounds.Height);
+            player.EnterPipe(destination);
+            return true;
         }
 
         private static void TryStartFlagpoleSlide(
