@@ -21,8 +21,13 @@ namespace TeamUno.Mario.Collision.Handlers
                 return;
             }
 
-            // TODO: add vine climbing and pipe-entry animations.
-            if (block.Type == BlockType.Vine || block.Type == BlockType.Empty)
+            if (block.Type == BlockType.Vine)
+            {
+                HandleVineCollision(player, block);
+                return;
+            }
+
+            if (block.Type == BlockType.Empty)
             {
                 return;
             }
@@ -64,6 +69,11 @@ namespace TeamUno.Mario.Collision.Handlers
                 || block.IsDeleted
                 || player.IsChangingForm
                 || (player.IsSlidingOnFlagpole && block.Type != BlockType.Ground);
+        }
+
+        private static void HandleVineCollision(MarioPlayer player, Block vine)
+        {
+            player.TryClimbVine(vine.Bounds);
         }
 
         private static bool TryEnterPipe(MarioPlayer player, Block pipe, CollisionInfo info)
