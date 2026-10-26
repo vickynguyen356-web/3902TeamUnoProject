@@ -14,17 +14,23 @@ namespace TeamUno.Mario.Collision.Handlers
     {
         public void Handle(IEnemy first, IProjectile second, CollisionInfo info)
         {
-            // NOTE: this handler receives ALL projectiles. Ignore enemy-owned projectiles.
+            // this handler receives ALL projectiles. Ignore enemy-owned projectiles.
             if (second.IsEnemyProjectile || second.IsDead)
             {
                 return;
             }
 
-            // TODO: Enemy update: most enemies die in 1 hit, Bowser takes multiple hits.
-            // TODO: Projectile disappears (Kill).
+            // enemy is already dead
+            if (first.IsDead)
+            {
+                return;
+            }
 
-            // Delete return upon implementing Handle(), just a placeholder for the build to run.
-            return;
+            // projectile disappears (Kill).
+            second.Kill();
+
+            // enemy is hit
+            first.TakeDamage();
         }
     }
 }
