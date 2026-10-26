@@ -441,15 +441,19 @@ namespace TeamUno.Mario.Entities.Player
             IsGrounded = isGrounded;
         }
 
-        internal void EnterPipe(Vector2 destination)
+        internal void EnterArea(Vector2 spawnFeet)
         {
             StopVineClimb();
-            Position = destination;
+            SetCrouching(false);
+            Position = new Vector2(spawnFeet.X, spawnFeet.Y - Bounds.Height);
             _velocity = Vector2.Zero;
-            IsGrounded = true;
-            _pipeEntryRequested = false;
+            IsGrounded = false;
+            _climbDirection = 0;
+            ClearPipeEntryRequest();
             StopFlagpoleSlide();
             ClearInputRequests();
+            ClearProjectiles();
+            UpdateAnimation(new GameTime());
         }
 
         internal void StartFlagpoleSlide(float flagpoleCenterX, float flagpoleTopY, float flagpoleBottomY)
@@ -592,6 +596,13 @@ namespace TeamUno.Mario.Entities.Player
             UpdateAnimation(new GameTime());
         }
 
+        internal void Respawn()
+        {
+            Reset();
+            _stateMachine.Reset(PlayerForm.Small);
+            UpdateAnimation(new GameTime());
+        }
+
         public void TakeDamage()
         {
             if (IsDead
@@ -646,6 +657,13 @@ namespace TeamUno.Mario.Entities.Player
                 _stateMachine.TransitionStartForm, _stateMachine.TransitionTargetForm);
             ClearInputRequests();
             _sprite.Update(new GameTime(), _formTransitionAnimation);
+        }
+
+        internal void ClearControls()
+        {
+            ClearInputRequests();
+            ClearPipeEntryRequest();
+            _climbDirection = 0;
         }
 
         private void ClearInputRequests()

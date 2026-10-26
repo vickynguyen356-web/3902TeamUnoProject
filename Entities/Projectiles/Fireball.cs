@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Sprites;
 using TeamUno.Mario.Interfaces;
@@ -67,7 +66,7 @@ namespace TeamUno.Mario.Entities.Projectiles
 
         internal void Bounce()
         {
-            Velocity.Y = -Math.Max(Math.Abs(Velocity.Y), BlockBounceSpeed);
+            Velocity.Y = -BlockBounceSpeed;
         }
     }
 }

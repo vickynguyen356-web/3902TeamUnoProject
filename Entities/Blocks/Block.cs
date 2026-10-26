@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TeamUno.Mario.Entities.Items;
 using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Entities.Blocks
@@ -44,7 +45,11 @@ namespace TeamUno.Mario.Entities.Blocks
         private readonly Vector2 _position;
         private readonly int _width;
         private readonly int _height;
-        private Block _pipeDestination;
+        private readonly ItemType? _contents;
+        private ItemType? _pendingItem;
+        private bool _isTravelRequested;
+        private readonly string _destinationArea;
+        private readonly string _destinationSpawn;
 
         public BlockType Type
         {
@@ -107,20 +112,55 @@ namespace TeamUno.Mario.Entities.Blocks
             }
         }
 
-        internal Block PipeDestination
+        public string DestinationArea
         {
             get
             {
-                return _pipeDestination;
+                return _destinationArea;
             }
         }
 
-        public Block(Vector2 position, BlockType type, int width = DefaultWidth, int height = DefaultHeight)
+        public string DestinationSpawn
+        {
+            get
+            {
+                return _destinationSpawn;
+            }
+        }
+
+        public bool IsTravelRequested
+        {
+            get
+            {
+                return _isTravelRequested;
+            }
+            private set
+            {
+                _isTravelRequested = value;
+            }
+        }
+
+        public Block(
+            Vector2 position,
+            BlockType type,
+            int width = DefaultWidth,
+            int height = DefaultHeight,
+            ItemType? contents = null,
+            string destinationArea = null,
+            string destinationSpawn = null)
         {
             _position = position;
             Type = type;
             _width = width;
             _height = height;
+            _contents = contents;
+            if (_contents == null && (type == BlockType.Question || type == BlockType.Invisible))
+            {
+                _contents = ItemType.BlockCoin;
+            }
+
+            _destinationArea = destinationArea;
+            _destinationSpawn = destinationSpawn;
             _sprite = BlockSpriteFactory.Create(type);
         }
 
@@ -144,15 +184,21 @@ namespace TeamUno.Mario.Entities.Blocks
             _sprite.Update(gameTime);
         }
 
-        internal void SetPipeDestination(Block destination)
+        internal void RequestTravel()
         {
-            if (Type != BlockType.Pipe)
-            {
-                throw new InvalidOperationException("Only pipe blocks can have pipe destinations.");
-            }
+            IsTravelRequested = true;
+        }
 
-            ArgumentNullException.ThrowIfNull(destination);
-            _pipeDestination = destination;
+        internal void ClearTravelRequest()
+        {
+            IsTravelRequested = false;
+        }
+
+        internal ItemType? CollectItem()
+        {
+            ItemType? item = _pendingItem;
+            _pendingItem = null;
+            return item;
         }
 
         internal void HitFromBelow(bool canBreak)
@@ -161,6 +207,7 @@ namespace TeamUno.Mario.Entities.Blocks
             {
                 Type = BlockType.Used;
                 _sprite = BlockSpriteFactory.Create(Type);
+                _pendingItem = _contents;
             }
             else if (Type == BlockType.Brick && canBreak)
             {
