@@ -29,8 +29,7 @@ namespace TeamUno.Mario.Entities.Enemies
         private float _spitFireTimer;
         private float _fireTimer;
         // health fields
-        private const int MaxHealth = 5;
-        private int _health = MaxHealth;
+        private int _health = MaximumHealth;
 
         public int Health { get; private set; } = MaximumHealth;
 
