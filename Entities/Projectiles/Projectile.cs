@@ -43,6 +43,7 @@ namespace TeamUno.Mario.Entities.Projectiles
         public bool IsEnemyProjectile
         {
             get;
+            protected set;
         }
 
         public Rectangle Bounds
