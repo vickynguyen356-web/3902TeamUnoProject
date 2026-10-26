@@ -126,7 +126,7 @@ namespace TeamUno.Mario.World
             for (int index = _blocks.Count - 1; index >= 0; index = index - 1)
             {
                 Block block = _blocks[index];
-                if (block.IsDeleted)
+                if (block.IsRemovalReady)
                 {
                     _blocks.RemoveAt(index);
                 }
@@ -178,7 +178,7 @@ namespace TeamUno.Mario.World
         {
             for (int index = _blocks.Count - 1; index >= 0; index = index - 1)
             {
-                if (_blocks[index].IsDeleted)
+                if (_blocks[index].IsRemovalReady)
                 {
                     _blocks.RemoveAt(index);
                 }
@@ -207,6 +207,8 @@ namespace TeamUno.Mario.World
                 _blocks.Add(block);
             }
 
+            PairPipes();
+
             foreach (ItemSpawnDefinition item in Definition.Items)
             {
                 _items.Add(ItemFactory.Create(item.Type, item.Position));
@@ -221,6 +223,28 @@ namespace TeamUno.Mario.World
                     walkingEnemy.SetWorldBlocks(_readOnlyBlocks);
                 }
                 _enemies.Add(newEnemy);
+            }
+        }
+
+        private void PairPipes()
+        {
+            List<Block> pipes = new List<Block>();
+            foreach (Block block in _blocks)
+            {
+                if (block.Type == BlockType.Pipe)
+                {
+                    pipes.Add(block);
+                }
+            }
+
+            pipes.Sort((first, second) => first.Position.X.CompareTo(second.Position.X));
+            if (pipes.Count >= 2)
+            {
+                for (int index = 0; index < pipes.Count; index++)
+                {
+                    int destinationIndex = index == 0 ? pipes.Count - 1 : 0;
+                    pipes[index].SetPipeDestination(pipes[destinationIndex]);
+                }
             }
         }
     }

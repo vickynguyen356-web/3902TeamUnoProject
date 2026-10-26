@@ -12,5 +12,8 @@ namespace TeamUno.Mario.Interfaces
         void Update(GameTime gameTime, SpriteAnimation animation);
 
         void Draw(SpriteBatch spriteBatch, Rectangle bounds, FacingDirection facingDirection, float rotation = 0f, bool rotateAroundCenter = false);
+        
+        // lets Mario change colors without changing other draw calls
+        void Draw(SpriteBatch spriteBatch, Rectangle bounds, FacingDirection facingDirection, Color tint, float rotation = 0f, bool rotateAroundCenter = false);
     }
 }

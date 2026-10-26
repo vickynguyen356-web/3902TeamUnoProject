@@ -70,6 +70,11 @@ namespace TeamUno.Mario.Entities.Sprites
 
         public void Draw(SpriteBatch spriteBatch, Rectangle bounds, FacingDirection facingDirection, float rotation = 0f, bool rotateAroundCenter = false)
         {
+            Draw(spriteBatch, bounds, facingDirection, Color.White, rotation, rotateAroundCenter);
+        }
+
+        public void Draw(SpriteBatch spriteBatch, Rectangle bounds, FacingDirection facingDirection, Color tint, float rotation = 0f, bool rotateAroundCenter = false)
+        {
             if (_currentAnimation == null)
             {
                 return;
@@ -108,7 +113,7 @@ namespace TeamUno.Mario.Entities.Sprites
                 _spriteSheetTexture,
                 drawingPosition + frameOffset,
                 sourceRectangle,
-                Color.White,
+                tint,
                 rotation,
                 drawingOrigin,
                 _spriteScale,

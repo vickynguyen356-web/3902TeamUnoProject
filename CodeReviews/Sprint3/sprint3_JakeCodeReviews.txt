@@ -1,0 +1,35 @@
+READABILITY REVIEW
+
+Author of code review: Jake Hanna
+Date of code review: 10/21/2026
+Sprint number: 3
+Name of .cs file reviewed: Entities/Player/PlayerStateMachine.cs
+Author of .cs file: Shared team file; reviewing Adithi's star additions
+Minutes taken to complete review: 30 minutes in total for both
+
+Comments:
+The star code itself is easy to follow. Names like ActivateStar and IsStarActive make it clear what each part does.
+
+The placement feels out of order, though. The star property and methods appear before the rest of the constants and fields. Moving them into the same groups as the other fields, properties, and methods would make the class easier to read. The star property's getter should also use the same formatting as the other getters.
+
+
+CODE QUALITY REVIEW
+
+Author of code review: Jake Hanna
+Date of code review: 10/21/2026
+Sprint number: 3
+Name of .cs file reviewed: World/GameProgress.cs
+Author of .cs file: Adithi
+
+Comments:
+The class is straightforward, and the method names make it clear how coins and lives are updated. Since that is currently all it handles, I think those values could just live in GameSession instead of having another object to pass through the collision setup.
+
+We could add these methods to the existing IGameActions interface:
+
+void AddCoin();
+void AddLife();
+
+GameSession would implement them, and MarioItemCollisionHandler would call them through IGameActions. This would let collision code update coins and lives without needing access to everything else in GameSession.
+
+Hypothetical change:
+Give Mario an extra life after collecting 100 coins. The current code could handle that in GameProgress.AddCoin. With the proposed change, the same rule would go in GameSession.AddCoin, and the collision handler would still just call AddCoin.

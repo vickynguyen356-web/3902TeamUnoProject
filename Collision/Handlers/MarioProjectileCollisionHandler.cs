@@ -1,5 +1,6 @@
+using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Player;
-using TeamUno.Mario.Entities.Blocks;
+using TeamUno.Mario.Entities.Projectiles;
 using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Collision.Handlers
@@ -15,17 +16,102 @@ namespace TeamUno.Mario.Collision.Handlers
     {
         public void Handle(MarioPlayer first, IProjectile second, CollisionInfo info)
         {
-            // NOTE: this receives ALL projectiles. Ignore enemy-owned projectiles.
-            if (!second.IsEnemyProjectile || second.IsDead || first.IsDead || first.IsStarActive)
+            if (second.IsDead || first.IsDead || first.IsChangingForm)
             {
                 return;
             }
 
-            // TODO: Mario takes damage, dead after certain amount of hits.
-            // TODO: Projectile disappears (Kill).
+            KoopaShell shell = second as KoopaShell;
+            if (shell != null)
+            {
+                if (shell.IsEnemyProjectile && first.IsStarActive)
+                {
+                    second.Kill();
+                    return;
+                }
 
-            // Delete return upon implementing Handle(), just a placeholder for the build to run.
-            return;
+                HandleShellCollision(first, shell, info);
+                return;
+            }
+
+            if (!second.IsEnemyProjectile || first.IsStarActive)
+            {
+                return;
+            }
+
+            first.TakeDamage();
+            second.Kill();
+        }
+
+        private static void HandleShellCollision(MarioPlayer player, KoopaShell shell, CollisionInfo info)
+        {
+            Rectangle shellBounds = shell.Bounds;
+            bool isStomping = info.Side == CollisionSide.Bottom
+                && player.Velocity.Y > 0f
+                && info.FirstPreviousBounds.Bottom <= shellBounds.Top
+                && player.Bounds.Bottom >= shellBounds.Top;
+
+            if (isStomping)
+            {
+                if (shell.IsMoving)
+                {
+                    shell.Stop();
+                }
+                else
+                {
+                    float kickDirection;
+                    if (player.Bounds.Center.X < shellBounds.Center.X)
+                    {
+                        kickDirection = 1f;
+                    }
+                    else
+                    {
+                        kickDirection = -1f;
+                    }
+
+                        shell.Kick(kickDirection);
+                }
+
+                BouncePlayer(player, shellBounds);
+                return;
+            }
+
+            if (info.Side != CollisionSide.Left && info.Side != CollisionSide.Right)
+            {
+                return;
+            }
+
+            if (shell.IsMoving)
+            {
+                if (!shell.IsEnemyProjectile)
+                {
+                    return;
+                }
+
+                player.TakeDamage();
+                return;
+            }
+
+            float direction;
+            if (info.Side == CollisionSide.Right)
+            {
+                direction = 1f;
+            }
+            else
+            {
+                direction = -1f;
+            }
+
+            shell.Kick(direction);
+        }
+
+        private static void BouncePlayer(MarioPlayer player, Rectangle shellBounds)
+        {
+            Vector2 position = player.Position;
+            position.Y = shellBounds.Top - player.Bounds.Height;
+            Vector2 velocity = player.Velocity;
+            velocity.Y = -350f;
+            player.ApplyMotion(position, velocity, isGrounded: false);
         }
     }
 }
