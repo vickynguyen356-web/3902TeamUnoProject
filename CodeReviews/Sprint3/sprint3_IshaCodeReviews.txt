@@ -1,0 +1,24 @@
+READABILITY REVIEW
+
+Author of code review: Isha Roy
+Date of code review: 10/26/2026
+Sprint number: 3
+Name of .cs file reviewed: Collision/Handlers/MarioBlockCollisionHandler.cs
+Author of .cs file: Ishika
+Minutes taken to complete review: 30 minutes total
+
+Comments:
+
+The code is easy to follow, featuring the main Handle method and several private methods to handle specific scenarios. Naming conventions allow for easy readability, and code is highly cohesive. Optimization may need to occur in the future in order to minimize number of collision detections needed.
+
+CODE QUALITY REVIEW
+
+Author of code review: Isha Roy
+Date of code review: 10/26/2026
+Sprint number: 3
+Name of .cs file reviewed: 
+Author of .cs file: 
+
+Comments:
+
+The design is very efficient, as it actively checks the right conditions without duplicate code. While multiple conditions do lead to the same outcome, this is to maintain readability.
