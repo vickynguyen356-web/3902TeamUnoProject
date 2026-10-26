@@ -46,7 +46,7 @@ namespace TeamUno.Mario.World
             }
         }
 
-        public void DrawHud(SpriteBatch spriteBatch, GameSession session, SpriteFont font, Rectangle viewport)
+        public static void DrawHud(SpriteBatch spriteBatch, GameSession session, SpriteFont font, Rectangle viewport)
         {
             string progress = "Area: " + session.Level.Definition.Id
                 + "     Coins: " + session.Progress.Coins

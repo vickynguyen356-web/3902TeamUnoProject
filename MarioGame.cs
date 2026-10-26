@@ -98,7 +98,7 @@ namespace TeamUno.Mario
             _spriteBatch.End();
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            _gameRenderer.DrawHud(_spriteBatch, _gameSession, _font, GraphicsDevice.Viewport.Bounds);
+            GameRenderer.DrawHud(_spriteBatch, _gameSession, _font, GraphicsDevice.Viewport.Bounds);
             _spriteBatch.End();
 
             base.Draw(gameTime);
