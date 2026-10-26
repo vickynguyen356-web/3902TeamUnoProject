@@ -12,6 +12,13 @@ namespace TeamUno.Mario.Entities.Player
     internal class MarioPlayer : IPlayer, IProjectileEmitter, ICollidable
     {
         public const int StandingHeight = 64;
+        private const float StarColorDuration = 0.12f;
+        private static readonly Color[] StarColors =
+        {
+            Color.White, Color.Red, Color.Green, Color.Blue
+        };
+        private float _starColorTime;
+
         private const int SmallHeight = 32;
         private const int BodyWidth = 32;
         private const int CrouchingHeight = 44;
@@ -21,6 +28,7 @@ namespace TeamUno.Mario.Entities.Player
         private const float Gravity = 1500f;
         private const float JumpVelocity = -700f;
         private const float FlagpoleClimbSpeed = 180f;
+        private const float VineClimbSpeed = 180f;
         private const float FireballSpeed = 200f;
         private const float FireballVerticalVelocity = -100f;
 
@@ -40,8 +48,11 @@ namespace TeamUno.Mario.Entities.Player
         private float _movementDirection;
         private bool _jumpRequested;
         private bool _fireballRequested;
+        private bool _pipeEntryRequested;
         private bool _isSlidingOnFlagpole;
         private bool _isClimbingFlagpole;
+        private bool _isClimbingVine;
+        private float _climbDirection;
         private float _flagpoleTopPositionY;
         private float _flagpoleBottomPositionY;
 
@@ -133,6 +144,14 @@ namespace TeamUno.Mario.Entities.Player
             }
         }
 
+        internal bool IsClimbingVine
+        {
+            get
+            {
+                return _isClimbingVine;
+            }
+        }
+
         public EntityAnimationState AnimationState
         {
             get
@@ -193,12 +212,40 @@ namespace TeamUno.Mario.Entities.Player
 
         public void Jump()
         {
+            if (_isClimbingVine)
+            {
+                StopVineClimb();
+            }
+
             _jumpRequested = true;
+        }
+
+        public void Climb(float direction)
+        {
+            _climbDirection = MathHelper.Clamp(direction, -1, 1);
         }
 
         public void ThrowFireball()
         {
             _fireballRequested = true;
+        }
+
+        public void RequestPipeEntry()
+        {
+            _pipeEntryRequested = true;
+        }
+
+        internal bool IsPipeEntryRequested
+        {
+            get
+            {
+                return _pipeEntryRequested;
+            }
+        }
+
+        internal void ClearPipeEntryRequest()
+        {
+            _pipeEntryRequested = false;
         }
 
         public void ClearProjectiles()
@@ -214,6 +261,7 @@ namespace TeamUno.Mario.Entities.Player
         public void ActivateStar()
         {
             _stateMachine.ActivateStar();
+            _starColorTime = 0f;
         }
 
         public void BeginFormTransition(PlayerForm targetForm)
@@ -221,6 +269,7 @@ namespace TeamUno.Mario.Entities.Player
             int previousHeight = Bounds.Height;
             if (_stateMachine.BeginFormTransition(targetForm))
             {
+                StopVineClimb();
                 PreserveFeetPosition(previousHeight);
                 StartFormTransitionAnimation();
             }
@@ -236,6 +285,14 @@ namespace TeamUno.Mario.Entities.Player
             }
 
             _stateMachine.UpdateStar(elapsedSeconds);
+            if (IsStarActive && !IsDead)
+            {
+                _starColorTime = _starColorTime + elapsedSeconds;
+            }
+            else
+            {
+                _starColorTime = 0f;
+            }
             _stateMachine.UpdateThrowTimer(elapsedSeconds);
             _stateMachine.UpdateFormTransition(elapsedSeconds);
             if (wasChangingForm && !IsChangingForm)
@@ -275,6 +332,17 @@ namespace TeamUno.Mario.Entities.Player
                 _velocity = new Vector2(0, verticalDirection * FlagpoleClimbSpeed);
                 ClearInputRequests();
                 return;
+            }
+
+            if (_isClimbingVine && _movementDirection == 0)
+            {
+                _velocity = new Vector2(0, _climbDirection * VineClimbSpeed);
+                ClearInputRequests();
+                return;
+            }
+            else if (_isClimbingVine)
+            {
+                StopVineClimb();
             }
 
             _velocity.Y = _velocity.Y + Gravity * elapsedSeconds;
@@ -363,8 +431,20 @@ namespace TeamUno.Mario.Entities.Player
             IsGrounded = isGrounded;
         }
 
+        internal void EnterPipe(Vector2 destination)
+        {
+            StopVineClimb();
+            Position = destination;
+            _velocity = Vector2.Zero;
+            IsGrounded = true;
+            _pipeEntryRequested = false;
+            StopFlagpoleSlide();
+            ClearInputRequests();
+        }
+
         internal void StartFlagpoleSlide(float flagpoleCenterX, float flagpoleTopY, float flagpoleBottomY)
         {
+            StopVineClimb();
             _isSlidingOnFlagpole = true;
             _isClimbingFlagpole = true;
             _flagpoleTopPositionY = flagpoleTopY;
@@ -373,6 +453,35 @@ namespace TeamUno.Mario.Entities.Player
             _velocity = new Vector2(0, -FlagpoleClimbSpeed);
             IsGrounded = false;
             ClearInputRequests();
+        }
+
+        internal void TryClimbVine(Rectangle vineBounds)
+        {
+            if (IsDead || IsChangingForm || (_climbDirection == 0 && !_isClimbingVine))
+            {
+                return;
+            }
+
+            _isClimbingVine = true;
+            SetCrouching(false);
+
+            Rectangle playerBounds = Bounds;
+            float minimumY = vineBounds.Top;
+            float maximumY = vineBounds.Bottom - playerBounds.Height;
+            float positionY = MathHelper.Clamp(Position.Y, minimumY, Math.Max(minimumY, maximumY));
+            Position = new Vector2(vineBounds.Center.X - playerBounds.Width / 2f, positionY);
+            bool reachedBottom = positionY >= maximumY && _climbDirection >= 0;
+            bool reachedLimit = (positionY <= minimumY && _climbDirection < 0)
+                || (positionY >= maximumY && _climbDirection > 0);
+            float verticalVelocity = reachedLimit ? 0 : _climbDirection * VineClimbSpeed;
+            _velocity = new Vector2(0, verticalVelocity);
+            IsGrounded = reachedBottom;
+        }
+
+        private void StopVineClimb()
+        {
+            _isClimbingVine = false;
+            _velocity = new Vector2(_velocity.X, 0);
         }
 
         private void UpdateFlagpolePosition(float elapsedSeconds)
@@ -411,13 +520,14 @@ namespace TeamUno.Mario.Entities.Player
             }
 
             _stateMachine.Die();
+            StopVineClimb();
             _velocity = Vector2.Zero;
             ClearInputRequests();
         }
 
         internal void UpdateAnimation(GameTime gameTime)
         {
-            _stateMachine.UpdateAnimationState(IsGrounded, _velocity, IsSlidingOnFlagpole);
+            _stateMachine.UpdateAnimationState(IsGrounded, _velocity, IsSlidingOnFlagpole || _isClimbingVine);
             _sprite.Update(gameTime, GetAnimation());
         }
 
@@ -453,14 +563,18 @@ namespace TeamUno.Mario.Entities.Player
 
         public void Reset()
         {
+            _starColorTime = 0f;
             Position = _startingPosition;
             _velocity = Vector2.Zero;
             ClearInputRequests();
             ClearProjectiles();
+            ClearPipeEntryRequest();
             _formTransitionAnimation = null;
             IsGrounded = false;
             _isSlidingOnFlagpole = false;
             _isClimbingFlagpole = false;
+            _isClimbingVine = false;
+            _climbDirection = 0;
             FacingDirection = FacingDirection.Left;
             _stateMachine.Reset();
             _sprite.Reset();
@@ -487,6 +601,7 @@ namespace TeamUno.Mario.Entities.Player
 
             if (IsDead)
             {
+                StopVineClimb();
                 _velocity.X = 0;
                 _movementDirection = 0;
                 _jumpRequested = false;
@@ -495,6 +610,11 @@ namespace TeamUno.Mario.Entities.Player
 
         public void SetCrouching(bool crouching)
         {
+            if (crouching && _isClimbingVine)
+            {
+                return;
+            }
+
             int previousHeight = Bounds.Height;
             _stateMachine.SetCrouching(crouching);
             PreserveFeetPosition(previousHeight);
@@ -523,7 +643,14 @@ namespace TeamUno.Mario.Entities.Player
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            _sprite.Draw(spriteBatch, Bounds, FacingDirection);
+            Color tint = Color.White;
+            if (IsStarActive && !IsDead)
+            {
+                // change colors while the star timer is running
+                int colorIndex = (int)(_starColorTime / StarColorDuration) % StarColors.Length;
+                tint = StarColors[colorIndex];
+            }
+            _sprite.Draw(spriteBatch, Bounds, FacingDirection, tint);
         }
     }
 }

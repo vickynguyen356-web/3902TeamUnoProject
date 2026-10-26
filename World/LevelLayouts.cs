@@ -33,6 +33,8 @@ namespace TeamUno.Mario.World
             blocks.Add(new BlockSpawnDefinition(new Vector2(384, 336), BlockType.Brick));
             blocks.Add(new BlockSpawnDefinition(new Vector2(432, 336), BlockType.Question));
             blocks.Add(new BlockSpawnDefinition(new Vector2(480, 336), BlockType.Brick));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(528, 336), BlockType.Invisible));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(720, 240), BlockType.Vine, 48, floorY - 240));
             blocks.Add(new BlockSpawnDefinition(new Vector2(336, floorY - 96), BlockType.Brick));
             blocks.Add(new BlockSpawnDefinition(new Vector2(384, floorY - 96), BlockType.Question));
             blocks.Add(new BlockSpawnDefinition(new Vector2(432, floorY - 96), BlockType.Brick));
