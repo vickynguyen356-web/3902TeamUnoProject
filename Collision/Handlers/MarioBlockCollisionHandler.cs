@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Blocks;
 using TeamUno.Mario.Entities.Player;
@@ -33,6 +33,12 @@ namespace TeamUno.Mario.Collision.Handlers
             }
 
             Rectangle blockBounds = block.Bounds;
+            if (block.Type == BlockType.Invisible)
+            {
+                ResolveHitFromBelow(player, block, blockBounds, info.FirstPreviousBounds);
+                return;
+            }
+
             if (block.Type == BlockType.Pipe && TryEnterPipe(player, block, info))
             {
                 return;
@@ -78,7 +84,7 @@ namespace TeamUno.Mario.Collision.Handlers
 
         private static bool TryEnterPipe(MarioPlayer player, Block pipe, CollisionInfo info)
         {
-            if (!player.IsPipeEntryRequested || pipe.PipeDestination == null)
+            if (!player.IsPipeEntryRequested || pipe.DestinationArea == null)
             {
                 return false;
             }
@@ -93,13 +99,8 @@ namespace TeamUno.Mario.Collision.Handlers
                 return false;
             }
 
-            player.SetCrouching(false);
-            playerBounds = player.Bounds;
-            Rectangle destinationBounds = pipe.PipeDestination.Bounds;
-            Vector2 destination = new Vector2(
-                destinationBounds.Center.X - playerBounds.Width / 2f,
-                destinationBounds.Top - playerBounds.Height);
-            player.EnterPipe(destination);
+            pipe.RequestTravel();
+            player.ClearPipeEntryRequest();
             return true;
         }
 

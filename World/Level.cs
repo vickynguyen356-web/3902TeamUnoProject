@@ -10,7 +10,7 @@ namespace TeamUno.Mario.World
 {
     internal class Level
     {
-        private readonly LevelDefinition _definition;
+        private LevelDefinition _definition;
         // lists for the blocks, items, enemies, and projectiles in the level
         private readonly List<Block> _blocks = new List<Block>();
         private readonly List<IItem> _items = new List<IItem>();
@@ -82,6 +82,12 @@ namespace TeamUno.Mario.World
                 if (!item.IsExpired)
                 {
                     item.Update(gameTime);
+                }
+
+                if (item.Bounds.Top > Definition.Height
+                    || item.Bounds.Right < 0 || item.Bounds.Left > Definition.Width)
+                {
+                    item.Expire();
                 }
 
                 if (item.IsExpired)
@@ -190,6 +196,53 @@ namespace TeamUno.Mario.World
             LoadDefinition();
         }
 
+        public void LoadArea(LevelDefinition definition)
+        {
+            ArgumentNullException.ThrowIfNull(definition);
+            _definition = definition;
+            LoadDefinition();
+        }
+
+        public int CollectBlockItems()
+        {
+            int coinsCollected = 0;
+            foreach (Block block in _blocks)
+            {
+                ItemType? contents = block.CollectItem();
+                if (!contents.HasValue)
+                {
+                    continue;
+                }
+
+                IItem item = ItemFactory.Create(contents.Value, block.Position);
+                Vector2 position = new Vector2(
+                    block.Bounds.Center.X - item.Bounds.Width / 2f,
+                    block.Bounds.Top - item.Bounds.Height);
+                item.ApplyMotion(position, item.CurrentVelocity);
+                _items.Add(item);
+                if (contents.Value == ItemType.BlockCoin)
+                {
+                    coinsCollected = coinsCollected + 1;
+                }
+            }
+
+            return coinsCollected;
+        }
+
+        public Block GetPipeTravelRequest()
+        {
+            foreach (Block block in _blocks)
+            {
+                if (block.IsTravelRequested)
+                {
+                    block.ClearTravelRequest();
+                    return block;
+                }
+            }
+
+            return null;
+        }
+
         private void LoadDefinition()
         {
             _blocks.Clear();
@@ -203,11 +256,12 @@ namespace TeamUno.Mario.World
                     blockDefinition.Position,
                     blockDefinition.Type,
                     blockDefinition.Width,
-                    blockDefinition.Height);
+                    blockDefinition.Height,
+                    blockDefinition.Contents,
+                    blockDefinition.DestinationArea,
+                    blockDefinition.DestinationSpawn);
                 _blocks.Add(block);
             }
-
-            PairPipes();
 
             foreach (ItemSpawnDefinition item in Definition.Items)
             {
@@ -223,28 +277,6 @@ namespace TeamUno.Mario.World
                     walkingEnemy.SetWorldBlocks(_readOnlyBlocks);
                 }
                 _enemies.Add(newEnemy);
-            }
-        }
-
-        private void PairPipes()
-        {
-            List<Block> pipes = new List<Block>();
-            foreach (Block block in _blocks)
-            {
-                if (block.Type == BlockType.Pipe)
-                {
-                    pipes.Add(block);
-                }
-            }
-
-            pipes.Sort((first, second) => first.Position.X.CompareTo(second.Position.X));
-            if (pipes.Count >= 2)
-            {
-                for (int index = 0; index < pipes.Count; index++)
-                {
-                    int destinationIndex = index == 0 ? pipes.Count - 1 : 0;
-                    pipes[index].SetPipeDestination(pipes[destinationIndex]);
-                }
             }
         }
     }

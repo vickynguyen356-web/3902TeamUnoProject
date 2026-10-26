@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Blocks;
 using TeamUno.Mario.Entities.Projectiles;
 using TeamUno.Mario.Interfaces;
@@ -20,6 +20,7 @@ namespace TeamUno.Mario.Collision.Handlers
             if (first.IsDead
                 || second.IsDeleted
                 || second.Type == BlockType.Empty
+                || second.Type == BlockType.Invisible
                 || second.Type == BlockType.Vine
                 || second.Type == BlockType.FlagPole)
             {
@@ -120,13 +121,32 @@ namespace TeamUno.Mario.Collision.Handlers
             Vector2 position,
             Vector2 velocity)
         {
-            if (velocity.X == 0f)
-            {
-                return;
-            }
-
             switch (side)
             {
+                case CollisionSide.Bottom:
+                    if (velocity.Y < 0f
+                        || projectileBounds.Right <= blockBounds.Left
+                        || projectileBounds.Left >= blockBounds.Right)
+                    {
+                        return;
+                    }
+
+                    position.Y = blockBounds.Top - projectileBounds.Height;
+                    velocity.Y = 0f;
+                    shell.ApplyMotion(position, velocity);
+                    return;
+                case CollisionSide.Top:
+                    if (velocity.Y >= 0f
+                        || projectileBounds.Right <= blockBounds.Left
+                        || projectileBounds.Left >= blockBounds.Right)
+                    {
+                        return;
+                    }
+
+                    position.Y = blockBounds.Bottom;
+                    velocity.Y = 0f;
+                    shell.ApplyMotion(position, velocity);
+                    return;
                 case CollisionSide.Right:
                     if (velocity.X <= 0f
                         || projectileBounds.Bottom <= blockBounds.Top
@@ -151,7 +171,7 @@ namespace TeamUno.Mario.Collision.Handlers
                     return;
             }
 
-            if (block.Type == BlockType.Brick)
+            if (block.Type == BlockType.Brick || block.Type == BlockType.Question)
             {
                 block.HitFromBelow(canBreak: true);
             }

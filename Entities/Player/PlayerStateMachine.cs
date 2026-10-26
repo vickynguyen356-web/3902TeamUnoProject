@@ -233,9 +233,14 @@ namespace TeamUno.Mario.Entities.Player
 
         public void Reset()
         {
+            Reset(_startingForm);
+        }
+
+        public void Reset(PlayerForm form)
+        {
             _starTimeRemaining = 0f;
             AnimationState = EntityAnimationState.Idle;
-            Form = _startingForm;
+            Form = form;
             IsCrouching = false;
             IsDead = false;
             _throwTimeRemaining = 0;

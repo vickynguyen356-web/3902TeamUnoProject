@@ -15,32 +15,26 @@ namespace TeamUno.Mario.Collision.Handlers
     {
         public void Handle(IEnemy first, IProjectile second, CollisionInfo info)
         {
-            if (first.IsDead || second.IsEnemyProjectile || second.IsDead)
+            if (first.IsDead || second.IsDead)
             {
                 return;
             }
 
-            bool isFireball = second.Type == ProjectileType.Fireball;
-            bool isKoopaShell = second.Type == ProjectileType.KoopaShell;
-            if (!isFireball && !isKoopaShell)
+            bool isMarioFireball = second.Type == ProjectileType.Fireball && !second.IsEnemyProjectile;
+            KoopaShell shell = second as KoopaShell;
+            bool isMovingShell = shell != null && shell.IsMoving;
+            if (!isMarioFireball && !isMovingShell)
             {
                 return;
             }
 
-            Bowser bowser = first as Bowser;
-            if (bowser != null)
+            if (first is Bowser && !isMarioFireball)
             {
-                if (isFireball)
-                {
-                    bowser.TakeFireballDamage();
-                    second.Kill();
-                }
-
                 return;
             }
 
-            first.Kill();
-            if (isFireball)
+            first.TakeDamage();
+            if (isMarioFireball)
             {
                 second.Kill();
             }

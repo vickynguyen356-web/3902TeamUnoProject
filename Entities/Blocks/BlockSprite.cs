@@ -81,8 +81,9 @@ namespace TeamUno.Mario.Entities.Blocks
                     return new StaticBlockSprite(new Rectangle(17, 17, 16, 16));
                 case BlockType.Pipe:
                     return new StaticBlockSprite(new Rectangle(0, 94, 32, 65));
-                case BlockType.Empty:
                 case BlockType.Platform:
+                    return new StaticBlockSprite(new Rectangle(51, 0, 16, 8));
+                case BlockType.Empty:
                 case BlockType.Vine:
                     return new StaticBlockSprite(Rectangle.Empty);
                 default:
