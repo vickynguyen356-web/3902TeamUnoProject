@@ -13,11 +13,15 @@ namespace TeamUno.Mario.Input
         private readonly Dictionary<Keys, ICommand> _heldCommands;
         private readonly Dictionary<Keys, ICommand> _pressedCommands;
         private readonly List<ICommand> _pendingCommands = new List<ICommand>();
+        private readonly IGameActions _gameActions;
         private readonly ICommand _moveLeftCommand;
         private readonly ICommand _moveRightCommand;
         private readonly ICommand _crouchCommand;
         private readonly ICommand _standCommand;
         private readonly ICommand _jumpCommand;
+        private readonly ICommand _climbUpCommand;
+        private readonly ICommand _climbDownCommand;
+        private readonly ICommand _stopClimbingCommand;
         private readonly ICommand _quitCommand;
         private readonly ICommand _resetCommand;
 
@@ -34,6 +38,7 @@ namespace TeamUno.Mario.Input
             ArgumentNullException.ThrowIfNull(player);
             ArgumentNullException.ThrowIfNull(gameActions);
 
+            _gameActions = gameActions;
             _moveLeftCommand = new MoveCommand(player, -1);
             _moveRightCommand = new MoveCommand(player, 1);
             _crouchCommand = new CrouchCommand(player, true);
@@ -41,6 +46,10 @@ namespace TeamUno.Mario.Input
             _quitCommand = new QuitCommand(gameActions);
             _resetCommand = new ResetCommand(gameActions);
             _jumpCommand = new JumpCommand(player);
+            _climbUpCommand = new ClimbCommand(player, -1);
+            _climbDownCommand = new ClimbCommand(player, 1);
+            _stopClimbingCommand = new ClimbCommand(player, 0);
+            ICommand enterPipeCommand = new EnterPipeCommand(player);
             ICommand throwFireballCommand = new ThrowFireballCommand(player);
 
             _heldCommands = new Dictionary<Keys, ICommand>
@@ -58,6 +67,7 @@ namespace TeamUno.Mario.Input
                 { Keys.Q, _quitCommand },
                 { Keys.Escape, _quitCommand },
                 { Keys.R, _resetCommand },
+                { Keys.Down, enterPipeCommand },
                 { Keys.W, _jumpCommand },
                 { Keys.Up, _jumpCommand },
                 { Keys.Space, _jumpCommand },
@@ -104,6 +114,24 @@ namespace TeamUno.Mario.Input
                         _pendingCommands.Add(command);
                     }
                 }
+
+                if (key == Keys.W || key == Keys.Up)
+                {
+                    _pendingCommands.Add(_climbUpCommand);
+                }
+                else if (key == Keys.S || key == Keys.Down)
+                {
+                    _pendingCommands.Add(_climbDownCommand);
+                }
+            }
+
+            bool opposingClimb = _pendingCommands.Contains(_climbUpCommand)
+                && _pendingCommands.Contains(_climbDownCommand);
+            if (!_pendingCommands.Contains(_climbUpCommand)
+                && !_pendingCommands.Contains(_climbDownCommand)
+                || opposingClimb)
+            {
+                _pendingCommands.Add(_stopClimbingCommand);
             }
         }
 
@@ -132,6 +160,13 @@ namespace TeamUno.Mario.Input
             foreach (ICommand command in _pendingCommands)
             {
                 if (opposingMovement && (command == _moveLeftCommand || command == _moveRightCommand))
+                {
+                    continue;
+                }
+
+                if (_pendingCommands.Contains(_climbUpCommand)
+                    && _pendingCommands.Contains(_climbDownCommand)
+                    && (command == _climbUpCommand || command == _climbDownCommand))
                 {
                     continue;
                 }
