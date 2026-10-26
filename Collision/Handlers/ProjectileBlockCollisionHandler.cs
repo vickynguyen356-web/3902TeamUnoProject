@@ -1,5 +1,6 @@
-﻿using TeamUno.Mario.Entities.Blocks;
-using TeamUno.Mario.Entities.Player;
+﻿using Microsoft.Xna.Framework;
+using TeamUno.Mario.Entities.Blocks;
+using TeamUno.Mario.Entities.Projectiles;
 using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Collision.Handlers
@@ -16,18 +17,147 @@ namespace TeamUno.Mario.Collision.Handlers
     {
         public void Handle(IProjectile first, Block second, CollisionInfo info)
         {
-            // This receives ALL projectiles, both Mario's and enemies'.
-            // Branch on first.IsEnemyProjectile and first.Type if they should behave differently.
-            if (first.IsDead)
+            if (first.IsDead
+                || second.IsDeleted
+                || second.Type == BlockType.Empty
+                || second.Type == BlockType.Vine
+                || second.Type == BlockType.FlagPole)
             {
                 return;
             }
 
-            // TODO: Player projectile update (bounce off or disappear, team to decide).
-            // TODO: Block update.
+            if (second.Type == BlockType.Platform && info.Side != CollisionSide.Bottom)
+            {
+                return;
+            }
 
-            // Delete return upon implementing Handle(), just a placeholder for the build to run.
-            return;
+            Projectile projectile = first as Projectile;
+            if (projectile == null)
+            {
+                return;
+            }
+
+            Rectangle projectileBounds = projectile.Bounds;
+            Rectangle blockBounds = second.Bounds;
+            Vector2 position = projectile.Position;
+            Vector2 velocity = projectile.CurrentVelocity;
+
+            if (projectile is Fireball fireball)
+            {
+                ResolveFireballCollision(fireball, second, info.Side, projectileBounds, blockBounds, position, velocity);
+            }
+            else if (projectile is KoopaShell shell)
+            {
+                ResolveShellCollision(shell, second, info.Side, projectileBounds, blockBounds, position, velocity);
+            }
+            else
+            {
+                projectile.Kill();
+            }
+        }
+
+        private static void ResolveFireballCollision(
+            Fireball fireball,
+            Block block,
+            CollisionSide side,
+            Rectangle projectileBounds,
+            Rectangle blockBounds,
+            Vector2 position,
+            Vector2 velocity)
+        {
+            switch (side)
+            {
+                case CollisionSide.Bottom:
+                    if (velocity.Y <= 0f
+                        || projectileBounds.Right <= blockBounds.Left
+                        || projectileBounds.Left >= blockBounds.Right)
+                    {
+                        return;
+                    }
+
+                    position.Y = blockBounds.Top - projectileBounds.Height;
+                    fireball.Bounce();
+                    fireball.ApplyMotion(position, fireball.CurrentVelocity);
+                    break;
+                case CollisionSide.Top:
+                    if (velocity.Y >= 0f
+                        || block.Type == BlockType.Platform
+                        || projectileBounds.Right <= blockBounds.Left
+                        || projectileBounds.Left >= blockBounds.Right)
+                    {
+                        return;
+                    }
+
+                    fireball.Kill();
+                    break;
+                case CollisionSide.Left:
+                    if (velocity.X >= 0f
+                        || projectileBounds.Bottom <= blockBounds.Top
+                        || projectileBounds.Top >= blockBounds.Bottom)
+                    {
+                        return;
+                    }
+                    fireball.Kill();
+                    break;
+                case CollisionSide.Right:
+                    if (velocity.X <= 0f
+                        || projectileBounds.Bottom <= blockBounds.Top
+                        || projectileBounds.Top >= blockBounds.Bottom)
+                    {
+                        return;
+                    }
+                    fireball.Kill();
+                    break;
+            }
+        }
+
+        private static void ResolveShellCollision(
+            KoopaShell shell,
+            Block block,
+            CollisionSide side,
+            Rectangle projectileBounds,
+            Rectangle blockBounds,
+            Vector2 position,
+            Vector2 velocity)
+        {
+            if (velocity.X == 0f)
+            {
+                return;
+            }
+
+            switch (side)
+            {
+                case CollisionSide.Right:
+                    if (velocity.X <= 0f
+                        || projectileBounds.Bottom <= blockBounds.Top
+                        || projectileBounds.Top >= blockBounds.Bottom)
+                    {
+                        return;
+                    }
+
+                    position.X = blockBounds.Left - projectileBounds.Width;
+                    break;
+                case CollisionSide.Left:
+                    if (velocity.X >= 0f
+                        || projectileBounds.Bottom <= blockBounds.Top
+                        || projectileBounds.Top >= blockBounds.Bottom)
+                    {
+                        return;
+                    }
+
+                    position.X = blockBounds.Right;
+                    break;
+                default:
+                    return;
+            }
+
+            if (block.Type == BlockType.Brick)
+            {
+                block.HitFromBelow(canBreak: true);
+            }
+
+            shell.Bounce();
+            shell.ApplyMotion(position, shell.CurrentVelocity);
         }
     }
 }

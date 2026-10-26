@@ -1,4 +1,5 @@
-﻿using TeamUno.Mario.Entities.Blocks;
+using TeamUno.Mario.Entities.Enemies;
+using TeamUno.Mario.Entities.Projectiles;
 using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Collision.Handlers
@@ -14,23 +15,35 @@ namespace TeamUno.Mario.Collision.Handlers
     {
         public void Handle(IEnemy first, IProjectile second, CollisionInfo info)
         {
-            // this handler receives ALL projectiles. Ignore enemy-owned projectiles.
-            if (second.IsEnemyProjectile || second.IsDead)
+            if (first.IsDead || second.IsEnemyProjectile || second.IsDead)
             {
                 return;
             }
 
-            // enemy is already dead
-            if (first.IsDead)
+            bool isFireball = second.Type == ProjectileType.Fireball;
+            bool isKoopaShell = second.Type == ProjectileType.KoopaShell;
+            if (!isFireball && !isKoopaShell)
             {
                 return;
             }
 
-            // projectile disappears (Kill).
-            second.Kill();
+            Bowser bowser = first as Bowser;
+            if (bowser != null)
+            {
+                if (isFireball)
+                {
+                    bowser.TakeFireballDamage();
+                    second.Kill();
+                }
 
-            // enemy is hit
-            first.TakeDamage();
+                return;
+            }
+
+            first.Kill();
+            if (isFireball)
+            {
+                second.Kill();
+            }
         }
     }
 }

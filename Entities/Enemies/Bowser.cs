@@ -12,7 +12,7 @@ namespace TeamUno.Mario.Entities.Enemies
         // sprite fields
         public const int BowserWidth = 64;
         public const int BowserHeight = 64;
-        // animation fields
+        public const int MaximumHealth = 3;
         private const float WalkSpeed = 45f;
         private const float PatrolDistance = 150f;
         private readonly float _leftBound;
@@ -31,6 +31,8 @@ namespace TeamUno.Mario.Entities.Enemies
         // health fields
         private const int MaxHealth = 5;
         private int _health = MaxHealth;
+
+        public int Health { get; private set; } = MaximumHealth;
 
         public override int Width
         {
@@ -103,6 +105,20 @@ namespace TeamUno.Mario.Entities.Enemies
             _fireTimer = 0f;
             StateMachine.Update(Velocity);
             Velocity.X = 0f;
+        }
+
+        public void TakeFireballDamage()
+        {
+            if (IsDead)
+            {
+                return;
+            }
+
+            Health = System.Math.Max(0, Health - 1);
+            if (Health == 0)
+            {
+                Kill();
+            }
         }
 
         private void UpdatePatrol(float elapsedSeconds)

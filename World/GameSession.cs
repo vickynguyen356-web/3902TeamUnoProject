@@ -85,6 +85,7 @@ namespace TeamUno.Mario.World
 
             Player.UpdateAnimation(gameTime);
             Camera.Follow(Player.Bounds);
+            Player.ClearPipeEntryRequest();
         }
 
         public void Quit()

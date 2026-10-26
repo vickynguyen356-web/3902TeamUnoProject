@@ -43,6 +43,7 @@ namespace TeamUno.Mario.Entities.Projectiles
         public bool IsEnemyProjectile
         {
             get;
+            protected set;
         }
 
         public Rectangle Bounds
@@ -97,6 +98,12 @@ namespace TeamUno.Mario.Entities.Projectiles
         public void Kill()
         {
             IsDead = true;
+        }
+
+        internal void ApplyMotion(Vector2 position, Vector2 velocity)
+        {
+            Position = position;
+            Velocity = velocity;
         }
 
         public virtual float Rotation
