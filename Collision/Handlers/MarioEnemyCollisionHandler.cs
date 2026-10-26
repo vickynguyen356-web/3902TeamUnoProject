@@ -1,7 +1,8 @@
-using TeamUno.Mario.Entities.Blocks;
 using TeamUno.Mario.Entities.Enemies;
 using TeamUno.Mario.Entities.Player;
 using TeamUno.Mario.Interfaces;
+using Microsoft.Xna.Framework;
+using TeamUno.Mario.Entities.Projectiles;
 
 namespace TeamUno.Mario.Collision.Handlers
 {
@@ -14,9 +15,11 @@ namespace TeamUno.Mario.Collision.Handlers
     /// OverlapWidth and OverlapHeight can be 0.</summary>
     internal class MarioEnemyCollisionHandler : ICollisionHandler<MarioPlayer, IEnemy>
     {
+        private const float StompBounceVelocity = -350f;
+
         public void Handle(MarioPlayer first, IEnemy second, CollisionInfo info)
         {
-            if (first.IsDead)
+            if (first.IsDead || first.IsChangingForm || second.IsDead)
             {
                 return;
             }
@@ -31,12 +34,37 @@ namespace TeamUno.Mario.Collision.Handlers
                 return;
             }
 
-            // TODO: Stomp (info.Side == Bottom while falling): enemy defeated/stomped, player bounces.
-            // TODO: Any other side: player takes damage.
-            // TODO: Per-enemy differences (Koopa bounces, Goomba slight velocity decrease).
+            Rectangle enemyBounds = second.Bounds;
+            bool isStomping = info.Side == CollisionSide.Bottom
+                && first.Velocity.Y > 0f
+                && info.FirstPreviousBounds.Bottom <= enemyBounds.Top
+                && first.Bounds.Bottom >= enemyBounds.Top;
 
-            // Delete return upon implementing Handle(), just a placeholder for the build to run.
-            return;
+            if (!isStomping || second is Bowser || second is PiranhaPlant) // Take damage if hitting enemy from the side/bottom, or enemy is Bowser/Piranha Plant
+            {
+                first.TakeDamage();
+                return;
+            }
+
+            Koopa koopa = second as Koopa;
+            if (koopa != null)
+            {
+                KoopaShell shell = koopa.Stomp();
+                if (shell != null)
+                {
+                    first.AddProjectile(shell);
+                }
+            }
+            else
+            {
+                second.Kill();
+            }
+
+            Vector2 position = first.Position;
+            position.Y = enemyBounds.Top - first.Bounds.Height;
+            Vector2 velocity = first.Velocity;
+            velocity.Y = StompBounceVelocity;
+            first.ApplyMotion(position, velocity, isGrounded: false);
         }
     }
 }
