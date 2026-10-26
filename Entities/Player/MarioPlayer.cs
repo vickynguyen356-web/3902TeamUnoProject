@@ -13,11 +13,13 @@ namespace TeamUno.Mario.Entities.Player
     {
         public const int StandingHeight = 64;
         private const float StarColorDuration = 0.12f;
+        private const float DamageInvulnerabilityDurationSeconds = 1.5f;
         private static readonly Color[] StarColors =
         {
             Color.White, Color.Red, Color.Green, Color.Blue
         };
         private float _starColorTime;
+        private float _damageInvulnerabilityTimeRemaining;
 
         private const int SmallHeight = 32;
         private const int BodyWidth = 32;
@@ -253,6 +255,12 @@ namespace TeamUno.Mario.Entities.Player
             _projectiles.Clear();
         }
 
+        internal void AddProjectile(IProjectile projectile)
+        {
+            ArgumentNullException.ThrowIfNull(projectile);
+            _projectiles.Add(projectile);
+        }
+
         public bool IsStarActive
         {
             get { return _stateMachine.IsStarActive; }
@@ -279,6 +287,8 @@ namespace TeamUno.Mario.Entities.Player
         {
             int previousHeight = Bounds.Height;
             bool wasChangingForm = IsChangingForm;
+            _damageInvulnerabilityTimeRemaining = Math.Max(
+                0f, _damageInvulnerabilityTimeRemaining - elapsedSeconds);
             if (wasChangingForm)
             {
                 ClearInputRequests();
@@ -564,6 +574,7 @@ namespace TeamUno.Mario.Entities.Player
         public void Reset()
         {
             _starColorTime = 0f;
+            _damageInvulnerabilityTimeRemaining = 0f;
             Position = _startingPosition;
             _velocity = Vector2.Zero;
             ClearInputRequests();
@@ -583,11 +594,15 @@ namespace TeamUno.Mario.Entities.Player
 
         public void TakeDamage()
         {
-            if (IsDead || IsChangingForm || IsStarActive)
+            if (IsDead
+                || IsChangingForm
+                || IsStarActive
+                || _damageInvulnerabilityTimeRemaining > 0f)
             {
                 return;
             }
 
+            StartInvulnerabilityFrames();
             int previousHeight = Bounds.Height;
             _stateMachine.TakeDamage();
             PreserveFeetPosition(previousHeight);
@@ -606,6 +621,11 @@ namespace TeamUno.Mario.Entities.Player
                 _movementDirection = 0;
                 _jumpRequested = false;
             }
+        }
+
+        private void StartInvulnerabilityFrames()
+        {
+            _damageInvulnerabilityTimeRemaining = DamageInvulnerabilityDurationSeconds;
         }
 
         public void SetCrouching(bool crouching)
