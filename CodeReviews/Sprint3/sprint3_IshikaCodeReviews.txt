@@ -1,0 +1,25 @@
+Author of code review: Ishika
+Date of code review: 10/11/26
+Sprint number: 3
+Name of .cs file reviewed: CollisionInfo.cs
+Author of .cs file: Vy
+Minutes taken for review: 16
+Readability:
+The clear names make it easy to understand what information is stored.
+Code quality:
+Read only data makes sure that values aren't changed.
+Hypothetical change:
+Previous bounds of collision direction can be added for further improvement in enemy collision.
+
+Author of code review: Ishika
+Date of code review: 10/25/26
+Sprint number: 3
+Name of .cs file reviewed: MarioItemCollisionHandler.cs
+Author of .cs file: Adithi
+Minutes taken for review: 17
+Readability:
+The switch makes each item behavior easy to find.
+Code quality:
+Collected items are expired so they can’t be collected repeatedly.
+Hypothetical change:
+Adding a speed boost item and expire it after Mario collects it will be helpful.
