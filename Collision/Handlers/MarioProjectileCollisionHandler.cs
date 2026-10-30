@@ -7,7 +7,7 @@ namespace TeamUno.Mario.Collision.Handlers
 {
     /// <summary>Marioplayer vs IProjectile. 
     /// CHECKLIST:
-    /// info.Side is relative to the IEnemy. (ex: in MarioEnemyCollisionHandler,
+    /// info.Side is relative to Mario. (ex: in MarioEnemyCollisionHandler,
     /// Side == Bottom means a stomp.
     /// Mark dead entities dead/expired at the top of Handle() because Level.Update()
     /// takes care of that (cleans it up). TryDetect() in CollisionSystem makes handlers fire for objects that touch so
@@ -16,7 +16,7 @@ namespace TeamUno.Mario.Collision.Handlers
     {
         public void Handle(MarioPlayer first, IProjectile second, CollisionInfo info)
         {
-            if (second.IsDead || first.IsDead || first.IsChangingForm)
+            if (second.IsDead || first.IsDead || first.IsChangingForm || first.IsSlidingOnFlagpole)
             {
                 return;
             }
@@ -24,7 +24,7 @@ namespace TeamUno.Mario.Collision.Handlers
             KoopaShell shell = second as KoopaShell;
             if (shell != null)
             {
-                if (shell.IsEnemyProjectile && first.IsStarActive)
+                if (first.IsStarActive)
                 {
                     second.Kill();
                     return;
@@ -69,26 +69,25 @@ namespace TeamUno.Mario.Collision.Handlers
                         kickDirection = -1f;
                     }
 
-                        shell.Kick(kickDirection);
+                    shell.Kick(kickDirection);
                 }
 
                 BouncePlayer(player, shellBounds);
                 return;
             }
 
-            if (info.Side != CollisionSide.Left && info.Side != CollisionSide.Right)
+            if (shell.IsMoving)
             {
+                if (shell.CanDamageMario)
+                {
+                    player.TakeDamage();
+                }
+
                 return;
             }
 
-            if (shell.IsMoving)
+            if (info.Side != CollisionSide.Left && info.Side != CollisionSide.Right)
             {
-                if (!shell.IsEnemyProjectile)
-                {
-                    return;
-                }
-
-                player.TakeDamage();
                 return;
             }
 

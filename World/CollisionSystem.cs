@@ -22,6 +22,8 @@ namespace TeamUno.Mario.World
         private readonly ICollisionHandler<IItem, Block> _itemBlockHandler;
         private readonly ICollisionHandler<IEnemy, IProjectile> _enemyProjectileHandler;
         private readonly ICollisionHandler<IProjectile, Block> _projectileBlockHandler;
+        private readonly ICollisionHandler<IEnemy, IEnemy> _enemyEnemyHandler;
+        private readonly ICollisionHandler<IProjectile, IProjectile> _projectileProjectileHandler;
 
         public CollisionSystem(
             ICollisionHandler<MarioPlayer, Block> marioBlockHandler,
@@ -31,7 +33,9 @@ namespace TeamUno.Mario.World
             ICollisionHandler<IEnemy, Block> enemyBlockHandler,
             ICollisionHandler<IItem, Block> itemBlockHandler,
             ICollisionHandler<IEnemy, IProjectile> enemyProjectileHandler,
-            ICollisionHandler<IProjectile, Block> projectileBlockHandler)
+            ICollisionHandler<IProjectile, Block> projectileBlockHandler,
+            ICollisionHandler<IEnemy, IEnemy> enemyEnemyHandler,
+            ICollisionHandler<IProjectile, IProjectile> projectileProjectileHandler)
         {
             ArgumentNullException.ThrowIfNull(marioBlockHandler);
             ArgumentNullException.ThrowIfNull(marioEnemyHandler);
@@ -41,6 +45,8 @@ namespace TeamUno.Mario.World
             ArgumentNullException.ThrowIfNull(itemBlockHandler);
             ArgumentNullException.ThrowIfNull(enemyProjectileHandler);
             ArgumentNullException.ThrowIfNull(projectileBlockHandler);
+            ArgumentNullException.ThrowIfNull(enemyEnemyHandler);
+            ArgumentNullException.ThrowIfNull(projectileProjectileHandler);
 
             _marioBlockHandler = marioBlockHandler;
             _marioEnemyHandler = marioEnemyHandler;
@@ -50,6 +56,8 @@ namespace TeamUno.Mario.World
             _itemBlockHandler = itemBlockHandler;
             _enemyProjectileHandler = enemyProjectileHandler;
             _projectileBlockHandler = projectileBlockHandler;
+            _enemyEnemyHandler = enemyEnemyHandler;
+            _projectileProjectileHandler = projectileProjectileHandler;
         }
 
         // Default, add or swap handlers here.
@@ -63,7 +71,9 @@ namespace TeamUno.Mario.World
                 new EnemyBlockCollisionHandler(),
                 new ItemBlockCollisionHandler(),
                 new EnemyProjectileCollisionHandler(),
-                new ProjectileBlockCollisionHandler());
+                new ProjectileBlockCollisionHandler(),
+                new EnemyEnemyCollisionHandler(),
+                new ProjectileProjectileCollisionHandler());
         }
 
         /* Lists which entity types can collide. Each pairing calls Process to resolve the collision. 
@@ -81,17 +91,17 @@ namespace TeamUno.Mario.World
             Level level = session.Level;
             MarioPlayer[] players = new MarioPlayer[] { session.Player };
 
-            // Collisions involving Mario (previous bounds are only tracked for him)
+            ProcessDistinctPairs(level.Enemies, _enemyEnemyHandler);
+            Process(level.Enemies, level.Blocks, Rectangle.Empty, _enemyBlockHandler);
+            Process(level.Items, level.Blocks, Rectangle.Empty, _itemBlockHandler);
+            Process(level.Projectiles, level.Blocks, Rectangle.Empty, _projectileBlockHandler);
+            ProcessDistinctPairs(level.Projectiles, _projectileProjectileHandler);
+
             Process(players, level.Blocks, previousPlayerBounds, _marioBlockHandler);
+            Process(level.Enemies, level.Projectiles, Rectangle.Empty, _enemyProjectileHandler);
             Process(players, level.Enemies, previousPlayerBounds, _marioEnemyHandler);
             Process(players, level.Items, previousPlayerBounds, _marioItemHandler);
             Process(players, level.Projectiles, previousPlayerBounds, _marioProjectileHandler);
-
-            // Everything else
-            Process(level.Enemies, level.Blocks, Rectangle.Empty, _enemyBlockHandler);
-            Process(level.Items, level.Blocks, Rectangle.Empty, _itemBlockHandler);
-            Process(level.Enemies, level.Projectiles, Rectangle.Empty, _enemyProjectileHandler);
-            Process(level.Projectiles, level.Blocks, Rectangle.Empty, _projectileBlockHandler);
         }
 
         /// <summary>
@@ -113,8 +123,8 @@ namespace TeamUno.Mario.World
             where TFirst : ICollidable
             where TSecond : ICollidable
         {
-            List<(TFirst First, TSecond Second, CollisionInfo Info)> pairs =
-                new List<(TFirst, TSecond, CollisionInfo)>();
+            List<(TFirst First, TSecond Second)> pairs =
+                new List<(TFirst, TSecond)>();
 
             foreach (TFirst first in firsts)
             {
@@ -123,14 +133,37 @@ namespace TeamUno.Mario.World
                     CollisionInfo info;
                     if (TryDetect(first.Bounds, second.Bounds, firstPreviousBounds, out info))
                     {
-                        pairs.Add((first, second, info));
+                        pairs.Add((first, second));
                     }
                 }
             }
 
-            foreach ((TFirst First, TSecond Second, CollisionInfo Info) pair in pairs)
+            foreach ((TFirst First, TSecond Second) pair in pairs)
             {
-                handler.Handle(pair.First, pair.Second, pair.Info);
+                CollisionInfo currentInfo;
+                if (TryDetect(pair.First.Bounds, pair.Second.Bounds, firstPreviousBounds, out currentInfo))
+                {
+                    handler.Handle(pair.First, pair.Second, currentInfo);
+                }
+            }
+        }
+
+        private static void ProcessDistinctPairs<T>(
+            IReadOnlyList<T> objects, ICollisionHandler<T, T> handler)
+            where T : ICollidable
+        {
+            for (int firstIndex = 0; firstIndex < objects.Count; firstIndex = firstIndex + 1)
+            {
+                for (int secondIndex = firstIndex + 1; secondIndex < objects.Count; secondIndex = secondIndex + 1)
+                {
+                    T first = objects[firstIndex];
+                    T second = objects[secondIndex];
+                    CollisionInfo info;
+                    if (TryDetect(first.Bounds, second.Bounds, Rectangle.Empty, out info))
+                    {
+                        handler.Handle(first, second, info);
+                    }
+                }
             }
         }
 

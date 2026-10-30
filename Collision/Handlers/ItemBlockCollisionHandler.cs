@@ -16,7 +16,8 @@ namespace TeamUno.Mario.Collision.Handlers
             }
 
             // items can move through these blocks
-            if (block.Type == BlockType.Empty || block.Type == BlockType.Vine
+            if (block.Type == BlockType.Empty || block.Type == BlockType.Invisible
+                || block.Type == BlockType.Vine
                 || block.Type == BlockType.FlagPole)
             {
                 return;

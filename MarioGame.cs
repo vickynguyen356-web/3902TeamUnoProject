@@ -1,4 +1,5 @@
 // connects game components and runs them together
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TeamUno.Mario.Entities.Enemies;
@@ -15,16 +16,17 @@ namespace TeamUno.Mario
     {
         private const int WindowWidth = 1280;
         private const int WindowHeight = 720;
-        private readonly LevelDefinition _levelDefinition;
+        private readonly IReadOnlyDictionary<string, LevelDefinition> _areas;
         private readonly GraphicsDeviceManager _graphicsDeviceManager;
         private SpriteBatch _spriteBatch;
+        private SpriteFont _font;
         private GameSession _gameSession;
         private GameRenderer _gameRenderer;
         private IController _controller;
 
         public MarioGame()
         {
-            _levelDefinition = LevelLayouts.CreateFirstLevel();
+            _areas = LevelLayouts.CreateAreas();
             _graphicsDeviceManager = new GraphicsDeviceManager(this);
             _graphicsDeviceManager.PreferredBackBufferWidth = WindowWidth;
             _graphicsDeviceManager.PreferredBackBufferHeight = WindowHeight;
@@ -40,6 +42,7 @@ namespace TeamUno.Mario
         {
             base.LoadContent();
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _font = Content.Load<SpriteFont>("MyFont");
 
             Texture2D marioTexture = Content.Load<Texture2D>("mario");
             Texture2D enemyTexture = Content.Load<Texture2D>("enemiesSprites");
@@ -51,15 +54,17 @@ namespace TeamUno.Mario
             EnemyFactory.Initialize(enemyTexture);
             ItemFactory.Initialize(itemTexture);
 
+            LevelDefinition firstArea = _areas["overworld"];
+            Vector2 spawn = firstArea.GetSpawnPoint("start");
             MarioPlayer player = new MarioPlayer(
                 MarioSpriteFactory.Create(marioTexture),
-                _levelDefinition.PlayerSpawnPosition,
+                new Vector2(spawn.X, spawn.Y - MarioPlayer.StandingHeight),
                 PlayerForm.Fire);
 
-            Level level = new Level(_levelDefinition);
+            Level level = new Level(firstArea);
             Camera camera = new Camera(GraphicsDevice.Viewport.Width, level.Definition.Width);
             // the session updates and resets the level, including its items
-            _gameSession = new GameSession(player, level, camera);
+            _gameSession = new GameSession(player, level, camera, _areas);
 
             _controller = new KeyboardController(player, _gameSession);
             _gameRenderer = new GameRenderer(backgroundTexture, blockTexture);
@@ -75,6 +80,7 @@ namespace TeamUno.Mario
             }
 
             _gameSession.Update(gameTime, _controller.IsJumpHeld);
+            Window.Title = "Team Uno Mario - " + _gameSession.Level.Definition.Id;
 
             base.Update(gameTime);
         }
@@ -89,6 +95,10 @@ namespace TeamUno.Mario
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _gameSession.Camera.Transform);
             _gameRenderer.DrawWorld(_spriteBatch, _gameSession);
+            _spriteBatch.End();
+
+            _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            GameRenderer.DrawHud(_spriteBatch, _gameSession, _font, GraphicsDevice.Viewport.Bounds);
             _spriteBatch.End();
 
             base.Draw(gameTime);

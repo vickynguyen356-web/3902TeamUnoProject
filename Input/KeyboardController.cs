@@ -24,6 +24,7 @@ namespace TeamUno.Mario.Input
         private readonly ICommand _stopClimbingCommand;
         private readonly ICommand _quitCommand;
         private readonly ICommand _resetCommand;
+        private readonly ICommand _pauseCommand;
 
         public bool IsJumpHeld
         {
@@ -45,6 +46,7 @@ namespace TeamUno.Mario.Input
             _standCommand = new CrouchCommand(player, false);
             _quitCommand = new QuitCommand(gameActions);
             _resetCommand = new ResetCommand(gameActions);
+            _pauseCommand = new PauseCommand(gameActions);
             _jumpCommand = new JumpCommand(player);
             _climbUpCommand = new ClimbCommand(player, -1);
             _climbDownCommand = new ClimbCommand(player, 1);
@@ -67,12 +69,22 @@ namespace TeamUno.Mario.Input
                 { Keys.Q, _quitCommand },
                 { Keys.Escape, _quitCommand },
                 { Keys.R, _resetCommand },
+                { Keys.P, _pauseCommand },
                 { Keys.Down, enterPipeCommand },
+                { Keys.S, enterPipeCommand },
                 { Keys.W, _jumpCommand },
                 { Keys.Up, _jumpCommand },
                 { Keys.Space, _jumpCommand },
                 { Keys.Z, throwFireballCommand },
-                { Keys.N, throwFireballCommand }
+                { Keys.N, throwFireballCommand },
+                { Keys.F1, new LoadAreaCommand(gameActions, "overworld") },
+                { Keys.F2, new LoadAreaCommand(gameActions, "underground") },
+                { Keys.F3, new LoadAreaCommand(gameActions, "test") },
+                { Keys.F4, new LoadAreaCommand(gameActions, "test", "items") },
+                { Keys.F5, new LoadAreaCommand(gameActions, "test", "combat") },
+                { Keys.F6, new LoadAreaCommand(gameActions, "test", "bowser") },
+                { Keys.F7, new LoadAreaCommand(gameActions, "test", "pipes") },
+                { Keys.F8, new LoadAreaCommand(gameActions, "bowser-party") }
             };
         }
 
@@ -146,6 +158,26 @@ namespace TeamUno.Mario.Input
             if (_pendingCommands.Contains(_resetCommand))
             {
                 _resetCommand.Execute();
+                return;
+            }
+
+            foreach (ICommand command in _pendingCommands)
+            {
+                if (command is LoadAreaCommand)
+                {
+                    command.Execute();
+                    return;
+                }
+            }
+
+            if (_pendingCommands.Contains(_pauseCommand))
+            {
+                _pauseCommand.Execute();
+                return;
+            }
+
+            if (!_gameActions.CanControlPlayer)
+            {
                 return;
             }
 
