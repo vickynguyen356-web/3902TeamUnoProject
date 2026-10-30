@@ -23,6 +23,7 @@ namespace TeamUno.Mario.Collision.Handlers
             if (first.IsDead || first is PiranhaPlant
                 || second.IsDeleted
                 || second.Type == BlockType.Empty
+                || second.Type == BlockType.Invisible
                 || second.Type == BlockType.Vine
                 || second.Type == BlockType.FlagPole)
             {

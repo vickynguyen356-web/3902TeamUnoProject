@@ -124,20 +124,6 @@ namespace TeamUno.Mario.Entities.Enemies
             Velocity.X = 0f;
         }
 
-        public void TakeFireballDamage()
-        {
-            if (IsDead)
-            {
-                return;
-            }
-
-            Health = System.Math.Max(0, Health - 1);
-            if (Health == 0)
-            {
-                Kill();
-            }
-        }
-
         private void UpdatePatrol(float elapsedSeconds)
         {
             if (!TryWalk(elapsedSeconds))

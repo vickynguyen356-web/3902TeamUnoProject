@@ -1,0 +1,91 @@
+Author of code review: Adithi Math
+Date of code review: 10/16/2026
+Sprint number: 3
+Minutes taken to complete review: 25
+
+
+World/CollisionSystem.cs
+========================
+
+Name of .cs file reviewed: World/CollisionSystem.cs
+Author of .cs file: Vy Nguyen
+Commit reviewed: 6a46172, 10/11/2026 — Collision System Set Up. Vy's original detection and handler setup
+
+READABILITY REVIEW
+
+Comments:
+The handler names make it easy to tell which objects are being checked. CreateDefault lists the handlers together, so I can quickly find which one handles a collision.
+
+I would change the comment saying only the player needs previous bounds to say "previous bounds are currently tracked only for Mario." That explains what the code does without making it sound like other objects will never need them. I would also add short descriptions to the empty parameter comments, especially firstPreviousBounds, to explain that it is the object's rectangle before movement.
+
+CODE QUALITY REVIEW
+
+Comments:
+Keeping the responses in separate handlers makes it easier to change one collision without changing the whole system. Process also reuses the same detection steps for different object types.
+
+TryDetect gets the previous bounds, but it does not use them to choose the collision side. I would check those bounds first when they are available. For example, if Mario's feet were above the block and then crossed its top while overlapping it horizontally, that would help identify a landing. The overlap-size check could stay as a fallback when previous bounds are not available.
+
+Hypothetical change:
+Make Mario move faster. The current code only finds a collision if the rectangles overlap or touch after moving, so Mario could skip past a thin block. Checking previous bounds would help with the side of a detected collision, but would not solve a completely missed block. Splitting fast movement into smaller steps would be one possible change to test.
+
+---
+
+Author of code review: Adithi Math
+Date of code review: 10/26/2026
+Sprint number: 3
+Minutes taken to complete review: 25
+
+Collision/Handlers/EnemyProjectileCollisionHandler.cs
+=====================================================
+
+Name of .cs file reviewed: Collision/Handlers/EnemyProjectileCollisionHandler.cs
+Author of .cs file: Jake Hanna for the response changes reviewed here, original handler template by Vy Nguyen
+Commit reviewed: dab69f8, 10/25/2026 — Connect Gameplay, Levels, and Collision. Latest enemy/projectile response
+
+READABILITY REVIEW
+
+Comments:
+The method is short, and names like isMarioFireball and isMovingShell make it easy to understand. Checking for dead objects first also keeps the rest of the method focused on the actual hit.
+
+I would maybe rename first to enemy and second to projectile. Then calls like enemy.TakeDamage() and projectile.Kill() would be easier to read. I would also replace the stomp example in the header with a projectile example, and add "Bowser can only be damaged by Mario's fireballs here" above the Bowser check.
+
+CODE QUALITY REVIEW
+
+Comments:
+Calling TakeDamage is useful because the enemy handles its own health. This file does not need a separate hit counter for Bowser. It also handles the difference between a fireball disappearing and a shell continuing after a hit.
+
+If we add more projectile rules, I would move the checks for fireballs, moving shells, and Bowser into a small helper named CanDamageEnemy. Handle could call that helper before TakeDamage. This would give us one place to change which hits are allowed without mixing those checks with what happens after the hit.
+
+Hypothetical change:
+Let moving shells damage Bowser. We could change the check that currently rejects shells for Bowser and keep using his TakeDamage method. That would be a small change, but we would also need to decide what happens to the shell afterward. A test should check that one shell contact does not take several health points just because the rectangles overlap for several frames.
+
+---
+
+Author of code review: Adithi Math
+Date of code review: 10/26/2026
+Sprint number: 3
+Minutes taken to complete review: 25
+
+Collision/Handlers/MarioBlockCollisionHandler.cs
+================================================
+
+Name of .cs file reviewed: Collision/Handlers/MarioBlockCollisionHandler.cs
+Author of .cs file: Ishika Aahna
+Commit reviewed: e13bf54, 10/25/2026 — Mario Vine collision
+
+READABILITY REVIEW
+
+Comments:
+Names like ResolveLanding, ResolveHitFromBelow, and TryEnterPipe make it clear what each method handles. Splitting them up makes Handle easier to follow than putting every response in one long method.
+
+I would move the comment about putting Mario's feet on top into ResolveLanding. Above ResolveHitFromBelow, I would use "stop Mario when his head hits the block." I would also name the value 2 in TryEnterPipe something like PipeEntryTolerance and explain that it allows a small difference between Mario's feet and the pipe top.
+
+CODE QUALITY REVIEW
+
+Comments:
+The separate methods let us change landing without changing head hits or side hits. Calling block.HitFromBelow also lets the block handle whether it breaks or changes type.
+
+I would add a horizontal overlap check in ResolveLanding before setting Mario as grounded. Mario's right edge should be past the block's left edge, and his left edge should be before the block's right edge. That would stop just touching a side from counting as standing on top. This matters at the floor gap, where Mario can get stuck on an edge.
+
+Hypothetical change:
+Add more gaps or closer together platforms. ResolveLanding gives us one place to update the landing check, but the current edge behavior could cause the same problem in more places. I would test Mario partly over an edge, exactly touching its side and fully inside a gap, and landing on top. He should stay supported when his feet still overlap the top but then fall when they don't
