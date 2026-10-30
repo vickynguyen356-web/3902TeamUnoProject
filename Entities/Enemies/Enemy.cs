@@ -175,6 +175,13 @@ namespace TeamUno.Mario.Entities.Enemies
             }
         }
 
+        protected virtual Color TintColor
+        {
+            get
+            {
+                return Color.White;
+            }
+        }
         public abstract void Update(GameTime gameTime);
 
         public IReadOnlyList<IProjectile> Projectiles
@@ -216,7 +223,8 @@ namespace TeamUno.Mario.Entities.Enemies
             Sprite.Draw(
                 spriteBatch,
                 Bounds,
-                StateMachine.FacingDirection);
+                StateMachine.FacingDirection,
+                TintColor);
         }
 
         public virtual void TakeDamage()
