@@ -20,8 +20,13 @@ namespace TeamUno.Mario.Collision.Handlers
                 return;
             }
 
-            bool isMarioFireball = second.Type == ProjectileType.Fireball && !second.IsEnemyProjectile;
             KoopaShell shell = second as KoopaShell;
+            if ( shell != null && shell.IsKnockOff)
+            {
+                return;
+            }
+
+            bool isMarioFireball = second.Type == ProjectileType.Fireball && !second.IsEnemyProjectile;
             bool isMovingShell = shell != null && shell.IsMoving;
             if (!isMarioFireball && !isMovingShell)
             {
@@ -33,7 +38,14 @@ namespace TeamUno.Mario.Collision.Handlers
                 return;
             }
 
-            first.TakeDamage();
+            if (first is Bowser)
+            {
+                first.TakeDamage();
+            } else
+            {
+                first.Kill();
+            }
+
             if (isMarioFireball)
             {
                 second.Kill();

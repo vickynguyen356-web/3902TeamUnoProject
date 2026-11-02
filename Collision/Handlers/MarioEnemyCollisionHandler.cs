@@ -24,23 +24,31 @@ namespace TeamUno.Mario.Collision.Handlers
                 return;
             }
 
+            // all enemies die in mario star state, except for Bowser
             if (first.IsStarActive)
             {
+                if (second is Bowser)
+                {
+                    // passes through Bowser
+                    return;
+                }
+
                 Enemy enemy = second as Enemy;
                 if (enemy != null && !enemy.IsDead)
                 {
                     enemy.Kill();
                 }
+
                 return;
             }
-
+            
             Rectangle enemyBounds = second.Bounds;
             bool isStomping = info.Side == CollisionSide.Bottom
                 && first.Velocity.Y > 0f
                 && info.FirstPreviousBounds.Bottom <= enemyBounds.Top
                 && first.Bounds.Bottom >= enemyBounds.Top;
-
-            if (!isStomping || second is Bowser || second is PiranhaPlant) // Take damage if hitting enemy from the side/bottom, or enemy is Bowser/Piranha Plant
+            // take damage if hitting enemy from the side/bottom, or enemy is Bowser/Piranha Plant
+            if (!isStomping || second is Bowser || second is PiranhaPlant) 
             {
                 first.TakeDamage();
                 return;

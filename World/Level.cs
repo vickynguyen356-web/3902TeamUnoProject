@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Blocks;
 using TeamUno.Mario.Entities.Enemies;
 using TeamUno.Mario.Entities.Items;
+using TeamUno.Mario.Entities.Projectiles;
 using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.World
@@ -99,25 +100,32 @@ namespace TeamUno.Mario.World
             for (int index = _enemies.Count - 1; index >= 0; index = index - 1)
             {
                 IEnemy enemy = _enemies[index];
+                Enemy movingEnemy = enemy as Enemy;
+
                 if (enemy.IsDead)
                 {
-                    _enemies.RemoveAt(index);
-                    continue;
-                }
+                    if (movingEnemy != null)
+                    {
+                        movingEnemy.UpdateDeathFall(gameTime);
+                    }
 
-                enemy.Update(gameTime);
-                Enemy movingEnemy = enemy as Enemy;
+                    if (movingEnemy == null || enemy.Bounds.Top >= Definition.Height)
+                    {
+                        _enemies.RemoveAt(index);
+                        continue;
+                    }
+            }
+
+            enemy.Update(gameTime);
+
                 if (movingEnemy != null)
                 {
                     movingEnemy.UpdateGravity(gameTime);
                 }
+
                 if (enemy.Bounds.Top >= Definition.Height)
                 {
-                    enemy.Kill();
-                }
-
-                if (enemy.IsDead)
-                {
+                    // enemy fell off map while alive, remove directly
                     _enemies.RemoveAt(index);
                     continue;
                 }
@@ -156,11 +164,50 @@ namespace TeamUno.Mario.World
                     projectile.Kill();
                 }
 
+                KoopaShell shell = projectile as KoopaShell;
+                if (shell != null && shell.ShouldRevive)
+                {
+                    TryReviveShell(shell);
+                }
+
                 if (projectile.IsDead)
                 {
                     _projectiles.RemoveAt(index);
                 }
             }
+        }
+
+        private void TryReviveShell(KoopaShell shell)
+        {
+            float x = shell.Position.X + (KoopaShell.ShellWidth - Koopa.KoopaWidth) / 2f;
+            float y = shell.Position.Y + KoopaShell.ShellHeight - Koopa.KoopaHeight;
+            Rectangle spawnBounds = new Rectangle((int)x, (int)y, Koopa.KoopaWidth, Koopa.KoopaHeight);
+
+            // the Koopa is taller than the shell, so don't spawn it inside a ceiling or wall
+            foreach (Block block in _blocks)
+            {
+                if (block.IsDeleted || block.Type == BlockType.Empty || block.Type == BlockType.Invisible
+                    || block.Type == BlockType.Vine || block.Type == BlockType.FlagPole
+                    || block.Type == BlockType.Platform)
+                {
+                    continue;
+                }
+
+                if (spawnBounds.Intersects(block.Bounds))
+                {
+                    return;   // try again next frame
+                }
+            }
+
+            IEnemy newEnemy = EnemyFactory.Create(EnemyType.Koopa, new Vector2(x, y));   // match your enum name
+            Enemy walkingEnemy = newEnemy as Enemy;
+            if (walkingEnemy != null)
+            {
+                walkingEnemy.SetWorldBlocks(_readOnlyBlocks);
+            }
+
+            _enemies.Add(newEnemy);
+            shell.Kill();   // silent removal, then the loop above cleans it up
         }
 
         public void AddProjectile(IProjectile projectile)
@@ -278,6 +325,15 @@ namespace TeamUno.Mario.World
                 }
                 _enemies.Add(newEnemy);
             }
+        }
+
+        internal void ClearEnemies()
+        {
+            _enemies.Clear();
+
+            // remove any enemy projectiles
+            _projectiles.RemoveAll(projectile => projectile.IsEnemyProjectile ||
+            projectile is KoopaShell);
         }
     }
 }
