@@ -141,6 +141,7 @@ namespace TeamUno.Mario.World
             {
                 State = GameSessionState.FinishingLevel;
                 Player.ClearControls();
+                Level.ClearEnemies();
             }
             else if (pipe != null && !Player.IsChangingForm)
             {
