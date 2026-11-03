@@ -19,7 +19,7 @@ namespace TeamUno.Mario.Collision.Handlers
 
         public void Handle(MarioPlayer first, IEnemy second, CollisionInfo info)
         {
-            if (first.IsDead || first.IsChangingForm || second.IsDead)
+            if (first.IsDead || first.IsChangingForm || first.IsSlidingOnFlagpole || second.IsDead)
             {
                 return;
             }

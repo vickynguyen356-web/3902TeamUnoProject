@@ -71,7 +71,8 @@ namespace TeamUno.Mario.Entities.Enemies
 
             foreach (Block block in _worldBlocks)
             {
-                if (block.IsDeleted || block.Type == BlockType.Empty || block.Type == BlockType.Vine
+                if (block.IsDeleted || block.Type == BlockType.Empty || block.Type == BlockType.Invisible
+                    || block.Type == BlockType.Vine
                     || block.Type == BlockType.FlagPole)
                 {
                     continue;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Blocks;
 using TeamUno.Mario.Entities.Enemies;
@@ -11,7 +12,10 @@ namespace TeamUno.Mario.World
     {
         private readonly int _width;
         private readonly int _height;
-        private readonly Vector2 _playerSpawnPosition;
+        private readonly string _id;
+        private readonly string _nextAreaId;
+        private readonly string _levelStartAreaId;
+        private readonly IReadOnlyDictionary<string, Vector2> _spawnPoints;
         private readonly IReadOnlyList<BlockSpawnDefinition> _blocks;
         private readonly IReadOnlyList<ItemSpawnDefinition> _items;
         private readonly IReadOnlyList<EnemySpawnDefinition> _enemies;
@@ -32,11 +36,35 @@ namespace TeamUno.Mario.World
             }
         }
 
-        public Vector2 PlayerSpawnPosition
+        public string Id
         {
             get
             {
-                return _playerSpawnPosition;
+                return _id;
+            }
+        }
+
+        public string NextAreaId
+        {
+            get
+            {
+                return _nextAreaId;
+            }
+        }
+
+        public string LevelStartAreaId
+        {
+            get
+            {
+                return _levelStartAreaId;
+            }
+        }
+
+        public IReadOnlyDictionary<string, Vector2> SpawnPoints
+        {
+            get
+            {
+                return _spawnPoints;
             }
         }
 
@@ -65,13 +93,18 @@ namespace TeamUno.Mario.World
         }
 
         public LevelDefinition(
+            string id,
             int width,
             int height,
-            Vector2 playerSpawnPosition,
+            IReadOnlyDictionary<string, Vector2> spawnPoints,
             IReadOnlyList<BlockSpawnDefinition> blocks,
             IReadOnlyList<ItemSpawnDefinition> items,
-            IReadOnlyList<EnemySpawnDefinition> enemies)
+            IReadOnlyList<EnemySpawnDefinition> enemies,
+            string nextAreaId = null,
+            string levelStartAreaId = null)
         {
+            ArgumentException.ThrowIfNullOrWhiteSpace(id);
+            ArgumentNullException.ThrowIfNull(spawnPoints);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
             ArgumentNullException.ThrowIfNull(blocks);
@@ -80,7 +113,15 @@ namespace TeamUno.Mario.World
 
             _width = width;
             _height = height;
-            _playerSpawnPosition = playerSpawnPosition;
+            _id = id;
+            _nextAreaId = nextAreaId;
+            _levelStartAreaId = id;
+            if (levelStartAreaId != null)
+            {
+                _levelStartAreaId = levelStartAreaId;
+            }
+            _spawnPoints = new ReadOnlyDictionary<string, Vector2>(
+                new Dictionary<string, Vector2>(spawnPoints));
             _blocks = new List<BlockSpawnDefinition>(blocks).AsReadOnly();
             _items = new List<ItemSpawnDefinition>(items).AsReadOnly();
             _enemies = new List<EnemySpawnDefinition>(enemies).AsReadOnly();
@@ -108,6 +149,17 @@ namespace TeamUno.Mario.World
                     throw new ArgumentException("Enemy definitions cannot contain null entries", nameof(enemies));
                 }
             }
+        }
+
+        public Vector2 GetSpawnPoint(string id)
+        {
+            Vector2 position;
+            if (!_spawnPoints.TryGetValue(id, out position))
+            {
+                throw new KeyNotFoundException("Area '" + Id + "' has no spawn named '" + id + "'");
+            }
+
+            return position;
         }
     }
 }

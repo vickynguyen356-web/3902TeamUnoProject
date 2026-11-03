@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities;
 using TeamUno.Mario.Interfaces;
@@ -88,10 +87,9 @@ namespace TeamUno.Mario.Entities.Enemies
             FacingDirection = FacingDirection.Left;
         }
 
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Enemy damage will update this enemy's state")]
         public void TakeDamage()
         {
-            // TODO: implement enemy damage logic
+            Kill();
         }
 
         public void Kill()
