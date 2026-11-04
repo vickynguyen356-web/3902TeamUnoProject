@@ -1,7 +1,9 @@
 // connects game components and runs them together
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
+using TeamUno.Mario.Audio;
 using TeamUno.Mario.Entities.Enemies;
 using TeamUno.Mario.Entities.Items;
 using TeamUno.Mario.Entities.Player;
@@ -22,7 +24,9 @@ namespace TeamUno.Mario
         private SpriteFont _font;
         private GameSession _gameSession;
         private GameRenderer _gameRenderer;
-        private IController _controller;
+        private KeyboardController _controller;
+        private KeyboardState _previousKeys;
+        private MenuScreen _menu;
 
         public MarioGame()
         {
@@ -44,15 +48,16 @@ namespace TeamUno.Mario
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _font = Content.Load<SpriteFont>("MyFont");
 
-            Texture2D marioTexture = Content.Load<Texture2D>("mario");
-            Texture2D enemyTexture = Content.Load<Texture2D>("enemiesSprites");
-            Texture2D itemTexture = Content.Load<Texture2D>("items");
+            Texture2D marioTexture = Content.Load<Texture2D>("Sprites/mario");
+            Texture2D enemyTexture = Content.Load<Texture2D>("Sprites/enemiesSprites");
+            Texture2D itemTexture = Content.Load<Texture2D>("Sprites/items");
             Texture2D backgroundTexture = Content.Load<Texture2D>("background");
-            Texture2D blockTexture = Content.Load<Texture2D>("blocksspritesheetbg");
+            Texture2D blockTexture = Content.Load<Texture2D>("Sprites/blocksspritesheetbg");
 
             ProjectileFactory.Initialize(enemyTexture, itemTexture);
             EnemyFactory.Initialize(enemyTexture);
             ItemFactory.Initialize(itemTexture);
+            SoundPlayer.Initialize(Content);
 
             LevelDefinition firstArea = _areas["overworld"];
             Vector2 spawn = firstArea.GetSpawnPoint("start");
@@ -63,16 +68,39 @@ namespace TeamUno.Mario
 
             Level level = new Level(firstArea);
             Camera camera = new Camera(GraphicsDevice.Viewport.Width, level.Definition.Width);
+            MusicPlayer music = new MusicPlayer(Content);
             // the session updates and resets the level, including its items
-            _gameSession = new GameSession(player, level, camera, _areas);
+            _gameSession = new GameSession(player, level, camera, _areas, music);
 
-            _controller = new KeyboardController(player, _gameSession);
+            KeyBindings bindings = new KeyBindings();
+            _controller = new KeyboardController(player, _gameSession, bindings);
+            _menu = new MenuScreen(_gameSession, bindings, _gameSession.AreaIds);
             _gameRenderer = new GameRenderer(backgroundTexture, blockTexture);
         }
 
         protected override void Update(GameTime gameTime)
         {
-            _controller.Update();
+            KeyboardState keys = Keyboard.GetState();
+
+            if (_gameSession.State == GameSessionState.Menu)
+            {
+                _menu.Update();
+                if (_gameSession.State != GameSessionState.Menu)
+                {
+                    _controller.ResetInput();   // keys held in the menu aren't new presses
+                }
+            }
+            else if (keys.IsKeyDown(Keys.Escape) && _previousKeys.IsKeyUp(Keys.Escape))
+            {
+                _menu.Open();
+            }
+            else
+            {
+                _controller.Update();
+            }
+
+            _previousKeys = keys;
+
             if (_gameSession.ShouldExit)
             {
                 Exit();
@@ -98,7 +126,7 @@ namespace TeamUno.Mario
             _spriteBatch.End();
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            GameRenderer.DrawHud(_spriteBatch, _gameSession, _font, GraphicsDevice.Viewport.Bounds);
+            GameRenderer.DrawHud(_spriteBatch, _gameSession, _menu, _font, GraphicsDevice.Viewport.Bounds);
             _spriteBatch.End();
 
             base.Draw(gameTime);

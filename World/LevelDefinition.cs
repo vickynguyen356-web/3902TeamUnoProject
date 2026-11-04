@@ -19,6 +19,7 @@ namespace TeamUno.Mario.World
         private readonly IReadOnlyList<BlockSpawnDefinition> _blocks;
         private readonly IReadOnlyList<ItemSpawnDefinition> _items;
         private readonly IReadOnlyList<EnemySpawnDefinition> _enemies;
+        private readonly string _musicTrack;
 
         public int Width
         {
@@ -57,6 +58,14 @@ namespace TeamUno.Mario.World
             get
             {
                 return _levelStartAreaId;
+            }
+        }
+
+        public string MusicTrack
+        {
+            get
+            {
+                return _musicTrack;
             }
         }
 
@@ -101,7 +110,8 @@ namespace TeamUno.Mario.World
             IReadOnlyList<ItemSpawnDefinition> items,
             IReadOnlyList<EnemySpawnDefinition> enemies,
             string nextAreaId = null,
-            string levelStartAreaId = null)
+            string levelStartAreaId = null,
+            string musicTrack = null)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(id);
             ArgumentNullException.ThrowIfNull(spawnPoints);
@@ -116,6 +126,7 @@ namespace TeamUno.Mario.World
             _id = id;
             _nextAreaId = nextAreaId;
             _levelStartAreaId = id;
+            _musicTrack = musicTrack;
             if (levelStartAreaId != null)
             {
                 _levelStartAreaId = levelStartAreaId;

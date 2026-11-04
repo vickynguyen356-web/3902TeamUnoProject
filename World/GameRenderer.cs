@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 using TeamUno.Mario.Entities.Blocks;
 using TeamUno.Mario.Interfaces;
 
@@ -46,14 +47,20 @@ namespace TeamUno.Mario.World
             }
         }
 
-        public static void DrawHud(SpriteBatch spriteBatch, GameSession session, SpriteFont font, Rectangle viewport)
+        public static void DrawHud(SpriteBatch spriteBatch, GameSession session, MenuScreen menu, SpriteFont font, Rectangle viewport)
         {
             string progress = "Area: " + session.Level.Definition.Id
                 + "     Coins: " + session.Progress.Coins
                 + "     Lives: " + session.Progress.Lives;
-            string controls = "P: pause   R: restart   Q: quit   F1-F7: areas and tests   F8: Bowser Party";
+            string controls = "Esc: menu   Q: quit   F1-F7: areas and tests";
             DrawText(spriteBatch, font, progress, new Vector2(20, 16));
             DrawText(spriteBatch, font, controls, new Vector2(20, 44));
+
+            if (session.State == GameSessionState.Menu)
+            {
+                DrawMenu(spriteBatch, font, menu, viewport);
+                return;
+            }
 
             string message;
             switch (session.State)
@@ -88,6 +95,24 @@ namespace TeamUno.Mario.World
         {
             spriteBatch.DrawString(font, text, position + new Vector2(2, 2), Color.Black);
             spriteBatch.DrawString(font, text, position, Color.White);
+        }
+
+        private static void DrawMenu(SpriteBatch spriteBatch, SpriteFont font, MenuScreen menu, Rectangle viewport)
+        {
+            List<string> lines = menu.GetLines();
+            float y = viewport.Center.Y - lines.Count * font.LineSpacing / 2f;
+            for (int index = 0; index < lines.Count; index = index + 1)
+            {
+                string text = lines[index];
+                if (index == menu.SelectedIndex)
+                {
+                    text = "> " + text;
+                }
+
+                Vector2 size = font.MeasureString(text);
+                DrawText(spriteBatch, font, text, new Vector2(viewport.Center.X - size.X / 2f, y));
+                y = y + font.LineSpacing;
+            }
         }
     }
 }
