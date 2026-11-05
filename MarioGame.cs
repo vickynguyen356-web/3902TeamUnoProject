@@ -75,7 +75,7 @@ namespace TeamUno.Mario
             KeyBindings bindings = new KeyBindings();
             _controller = new KeyboardController(player, _gameSession, bindings);
             _menu = new MenuScreen(_gameSession, bindings, _gameSession.AreaIds);
-            _gameRenderer = new GameRenderer(backgroundTexture, blockTexture);
+            _gameRenderer = new GameRenderer(GraphicsDevice, backgroundTexture, blockTexture);
         }
 
         protected override void Update(GameTime gameTime)
@@ -118,7 +118,7 @@ namespace TeamUno.Mario
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            _gameRenderer.DrawBackground(_spriteBatch, GraphicsDevice.Viewport.Bounds);
+            _gameRenderer.DrawBackground(GraphicsDevice, _spriteBatch, GraphicsDevice.Viewport.Bounds);
             _spriteBatch.End();
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _gameSession.Camera.Transform);
@@ -126,7 +126,7 @@ namespace TeamUno.Mario
             _spriteBatch.End();
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            GameRenderer.DrawHud(_spriteBatch, _gameSession, _menu, _font, GraphicsDevice.Viewport.Bounds);
+            _gameRenderer.DrawHud(_spriteBatch, _gameSession, _menu, _font, GraphicsDevice.Viewport.Bounds);
             _spriteBatch.End();
 
             base.Draw(gameTime);
@@ -135,6 +135,7 @@ namespace TeamUno.Mario
         protected override void UnloadContent()
         {
             _spriteBatch.Dispose();
+            _gameRenderer?.Dispose(); // clean up the game renderer: its pixel texture, ? incase it was never initialized
             base.UnloadContent();
         }
     }

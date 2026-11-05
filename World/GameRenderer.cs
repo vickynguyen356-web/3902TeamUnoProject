@@ -3,21 +3,25 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using TeamUno.Mario.Entities.Blocks;
 using TeamUno.Mario.Interfaces;
+using System;
 
 namespace TeamUno.Mario.World
 {
-    internal class GameRenderer
+    internal class GameRenderer : IDisposable
     {
         private readonly Texture2D _backgroundTexture;
         private readonly Texture2D _blockTexture;
+        private readonly Texture2D _pixel;
 
-        public GameRenderer(Texture2D backgroundTexture, Texture2D blockTexture)
+        public GameRenderer(GraphicsDevice graphicsDevice, Texture2D backgroundTexture, Texture2D blockTexture)
         {
             _backgroundTexture = backgroundTexture;
             _blockTexture = blockTexture;
+            _pixel = new Texture2D(graphicsDevice, 1, 1);
+            _pixel.SetData(new Color[] { Color.White });
         }
 
-        public void DrawBackground(SpriteBatch spriteBatch, Rectangle viewport)
+        public void DrawBackground(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, Rectangle viewport)
         {
             spriteBatch.Draw(_backgroundTexture, viewport, Color.White * 0.45f);
         }
@@ -47,7 +51,7 @@ namespace TeamUno.Mario.World
             }
         }
 
-        public static void DrawHud(SpriteBatch spriteBatch, GameSession session, MenuScreen menu, SpriteFont font, Rectangle viewport)
+        public void DrawHud(SpriteBatch spriteBatch, GameSession session, MenuScreen menu, SpriteFont font, Rectangle viewport)
         {
             string progress = "Area: " + session.Level.Definition.Id
                 + "     Coins: " + session.Progress.Coins
@@ -97,10 +101,38 @@ namespace TeamUno.Mario.World
             spriteBatch.DrawString(font, text, position, Color.White);
         }
 
-        private static void DrawMenu(SpriteBatch spriteBatch, SpriteFont font, MenuScreen menu, Rectangle viewport)
+        private void DrawMenu(SpriteBatch spriteBatch, SpriteFont font, MenuScreen menu, Rectangle viewport)
         {
             List<string> lines = menu.GetLines();
-            float y = viewport.Center.Y - lines.Count * font.LineSpacing / 2f;
+
+            // measure the widest line, including "> " marker, so the panel fits every row
+            float widest = 0f;
+            for (int index = 0; index < lines.Count; index = index + 1)
+            {
+                float width = font.MeasureString("> " + lines[index]).X;
+                widest = System.Math.Max(widest, width);
+            }
+
+            const int padding = 24;
+            const int borderThickness = 4;
+            float height = lines.Count * font.LineSpacing;
+
+            Rectangle panel = new Rectangle(
+                (int)(viewport.Center.X - widest / 2f) - padding,
+                (int)(viewport.Center.Y - height / 2f) - padding,
+                (int)widest + padding * 2,
+                (int)height + padding * 2);
+
+            // semi transparent black background
+            spriteBatch.Draw(_pixel, panel, Color.Black * 0.7f);
+
+            // solid black border: top, bottom, left, right
+            spriteBatch.Draw(_pixel, new Rectangle(panel.X, panel.Y, panel.Width, borderThickness), Color.Black);
+            spriteBatch.Draw(_pixel, new Rectangle(panel.X, panel.Bottom - borderThickness, panel.Width, borderThickness), Color.Black);
+            spriteBatch.Draw(_pixel, new Rectangle(panel.X, panel.Y, borderThickness, panel.Height), Color.Black);
+            spriteBatch.Draw(_pixel, new Rectangle(panel.Right - borderThickness, panel.Y, borderThickness, panel.Height), Color.Black);
+
+            float y = panel.Y + padding;
             for (int index = 0; index < lines.Count; index = index + 1)
             {
                 string text = lines[index];
@@ -113,6 +145,13 @@ namespace TeamUno.Mario.World
                 DrawText(spriteBatch, font, text, new Vector2(viewport.Center.X - size.X / 2f, y));
                 y = y + font.LineSpacing;
             }
+        }
+
+        // clean up _pixel
+        public void Dispose()
+        {
+            // makes sure pixel isn't null before disposing if never initialized
+            _pixel?.Dispose();
         }
     }
 }

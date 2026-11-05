@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using TeamUno.Mario.Audio;
 using TeamUno.Mario.Input;
 
 namespace TeamUno.Mario.World
@@ -79,15 +80,18 @@ namespace TeamUno.Mario.World
             int count = GetLines().Count;
             if (Pressed(keys, Keys.Down))
             {
+                SoundPlayer.Play("Audio/SoundEffects/beep");
                 _selected = (_selected + 1) % count;
             }
             else if (Pressed(keys, Keys.Up))
             {
+                SoundPlayer.Play("Audio/SoundEffects/beep");
                 _selected = (_selected + count - 1) % count;
             }
 
             if (Pressed(keys, Keys.Escape))
             {
+                SoundPlayer.Play("Audio/SoundEffects/beep");
                 GoBack();
                 return;
             }
@@ -102,6 +106,7 @@ namespace TeamUno.Mario.World
 
             if (Pressed(keys, Keys.Enter))
             {
+                SoundPlayer.Play("Audio/SoundEffects/beep");
                 Activate();
             }
         }
