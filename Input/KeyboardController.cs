@@ -14,6 +14,7 @@ namespace TeamUno.Mario.Input
         private readonly Dictionary<Keys, ICommand> _pressedCommands;
         private readonly List<ICommand> _pendingCommands = new List<ICommand>();
         private readonly IGameActions _gameActions;
+        private readonly KeyBindings _bindings;
         private readonly ICommand _moveLeftCommand;
         private readonly ICommand _moveRightCommand;
         private readonly ICommand _crouchCommand;
@@ -25,6 +26,10 @@ namespace TeamUno.Mario.Input
         private readonly ICommand _quitCommand;
         private readonly ICommand _resetCommand;
         private readonly ICommand _pauseCommand;
+        private readonly ICommand _muteCommand;
+        private readonly ICommand _enterPipeCommand;
+        private readonly ICommand _throwFireballCommand;
+        private readonly IReadOnlyList<LoadAreaCommand> _areaCommands;
 
         public bool IsJumpHeld
         {
@@ -34,12 +39,15 @@ namespace TeamUno.Mario.Input
             }
         }
 
-        public KeyboardController(IPlayer player, IGameActions gameActions)
+        public KeyboardController(IPlayer player, IGameActions gameActions, KeyBindings bindings)
         {
             ArgumentNullException.ThrowIfNull(player);
             ArgumentNullException.ThrowIfNull(gameActions);
+            ArgumentNullException.ThrowIfNull(bindings);
 
             _gameActions = gameActions;
+            _bindings = bindings;
+
             _moveLeftCommand = new MoveCommand(player, -1);
             _moveRightCommand = new MoveCommand(player, 1);
             _crouchCommand = new CrouchCommand(player, true);
@@ -47,45 +55,32 @@ namespace TeamUno.Mario.Input
             _quitCommand = new QuitCommand(gameActions);
             _resetCommand = new ResetCommand(gameActions);
             _pauseCommand = new PauseCommand(gameActions);
+            _muteCommand = new MuteCommand(gameActions);
             _jumpCommand = new JumpCommand(player);
             _climbUpCommand = new ClimbCommand(player, -1);
             _climbDownCommand = new ClimbCommand(player, 1);
             _stopClimbingCommand = new ClimbCommand(player, 0);
-            ICommand enterPipeCommand = new EnterPipeCommand(player);
-            ICommand throwFireballCommand = new ThrowFireballCommand(player);
+            _enterPipeCommand = new EnterPipeCommand(player);
+            _throwFireballCommand = new ThrowFireballCommand(player);
 
-            _heldCommands = new Dictionary<Keys, ICommand>
+            _areaCommands = new List<LoadAreaCommand>
             {
-                { Keys.A, _moveLeftCommand },
-                { Keys.Left, _moveLeftCommand },
-                { Keys.D, _moveRightCommand },
-                { Keys.Right, _moveRightCommand },
-                { Keys.S, _crouchCommand },
-                { Keys.Down, _crouchCommand }
+                new LoadAreaCommand(gameActions, "overworld"),
+                new LoadAreaCommand(gameActions, "underground"),
+                new LoadAreaCommand(gameActions, "test"),
+                new LoadAreaCommand(gameActions, "test", "items"),
+                new LoadAreaCommand(gameActions, "test", "combat"),
+                new LoadAreaCommand(gameActions, "test", "bowser"),
+                new LoadAreaCommand(gameActions, "test", "pipes"),
+                new LoadAreaCommand(gameActions, "bowser-party")
             };
 
-            _pressedCommands = new Dictionary<Keys, ICommand>
-            {
-                { Keys.Q, _quitCommand },
-                { Keys.Escape, _quitCommand },
-                { Keys.R, _resetCommand },
-                { Keys.P, _pauseCommand },
-                { Keys.Down, enterPipeCommand },
-                { Keys.S, enterPipeCommand },
-                { Keys.W, _jumpCommand },
-                { Keys.Up, _jumpCommand },
-                { Keys.Space, _jumpCommand },
-                { Keys.Z, throwFireballCommand },
-                { Keys.N, throwFireballCommand },
-                { Keys.F1, new LoadAreaCommand(gameActions, "overworld") },
-                { Keys.F2, new LoadAreaCommand(gameActions, "underground") },
-                { Keys.F3, new LoadAreaCommand(gameActions, "test") },
-                { Keys.F4, new LoadAreaCommand(gameActions, "test", "items") },
-                { Keys.F5, new LoadAreaCommand(gameActions, "test", "combat") },
-                { Keys.F6, new LoadAreaCommand(gameActions, "test", "bowser") },
-                { Keys.F7, new LoadAreaCommand(gameActions, "test", "pipes") },
-                { Keys.F8, new LoadAreaCommand(gameActions, "bowser-party") }
-            };
+            _heldCommands = new Dictionary<Keys, ICommand>();
+            _pressedCommands = new Dictionary<Keys, ICommand>();
+
+            // must come after all the commands above exist
+            BuildMaps();
+            _bindings.Changed += BuildMaps;
         }
 
         public void Update()
@@ -98,6 +93,42 @@ namespace TeamUno.Mario.Input
             ReadBindings(keyboardState);
             _previousKeyState = keyboardState;
             ExecuteCommands();
+        }
+
+        // call after the menu closes so keys held in the menu don't count as new presses
+        public void ResetInput()
+        {
+            _previousKeyState = Keyboard.GetState();
+        }
+
+        private void BuildMaps()
+        {
+            _heldCommands.Clear();
+            _heldCommands[_bindings.Get(GameAction.MoveLeft)] = _moveLeftCommand;
+            _heldCommands[Keys.Left] = _moveLeftCommand;
+            _heldCommands[_bindings.Get(GameAction.MoveRight)] = _moveRightCommand;
+            _heldCommands[Keys.Right] = _moveRightCommand;
+            _heldCommands[_bindings.Get(GameAction.Crouch)] = _crouchCommand;
+            _heldCommands[Keys.Down] = _crouchCommand;
+
+            _pressedCommands.Clear();
+            _pressedCommands[Keys.Q] = _quitCommand;   // Escape now opens the menu
+            _pressedCommands[_bindings.Get(GameAction.Restart)] = _resetCommand;
+            _pressedCommands[_bindings.Get(GameAction.Pause)] = _pauseCommand;
+            _pressedCommands[_bindings.Get(GameAction.Mute)] = _muteCommand;
+            _pressedCommands[Keys.Down] = _enterPipeCommand;
+            _pressedCommands[_bindings.Get(GameAction.Crouch)] = _enterPipeCommand;
+            _pressedCommands[_bindings.Get(GameAction.Jump)] = _jumpCommand;
+            _pressedCommands[Keys.Up] = _jumpCommand;
+            _pressedCommands[Keys.Space] = _jumpCommand;
+            _pressedCommands[_bindings.Get(GameAction.Fireball)] = _throwFireballCommand;
+            _pressedCommands[Keys.N] = _throwFireballCommand;
+
+            Keys[] areaKeys = { Keys.F1, Keys.F2, Keys.F3, Keys.F4, Keys.F5, Keys.F6, Keys.F7, Keys.F8 };
+            for (int index = 0; index < areaKeys.Length; index = index + 1)
+            {
+                _pressedCommands[areaKeys[index]] = _areaCommands[index];
+            }
         }
 
         private void ReadBindings(KeyboardState keyboardState)
@@ -127,11 +158,11 @@ namespace TeamUno.Mario.Input
                     }
                 }
 
-                if (key == Keys.W || key == Keys.Up)
+                if (key == _bindings.Get(GameAction.Jump) || key == Keys.Up)
                 {
                     _pendingCommands.Add(_climbUpCommand);
                 }
-                else if (key == Keys.S || key == Keys.Down)
+                else if (key == _bindings.Get(GameAction.Crouch) || key == Keys.Down)
                 {
                     _pendingCommands.Add(_climbDownCommand);
                 }

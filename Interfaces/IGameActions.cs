@@ -4,6 +4,7 @@ namespace TeamUno.Mario.Interfaces
     {
         bool CanControlPlayer { get; }
         void TogglePause();
+        void ToggleMute();
         void Quit();
         void Reset();
         void LoadArea(string areaId, string spawnId = "start");

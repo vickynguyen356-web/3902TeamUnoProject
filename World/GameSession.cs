@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
+using TeamUno.Mario.Audio;
 using TeamUno.Mario.Collision;
 using TeamUno.Mario.Entities.Blocks;
 using TeamUno.Mario.Entities.Player;
@@ -10,7 +13,7 @@ namespace TeamUno.Mario.World
 {
     internal class GameSession : IGameActions
     {
-        private const float DeathDelaySeconds = 1.2f;
+        private const float DeathDelaySeconds = 4f;
         private readonly CollisionSystem _collisionSystem;
         private readonly MarioPlayer _player;
         private readonly Level _level;
@@ -18,6 +21,10 @@ namespace TeamUno.Mario.World
         private readonly IReadOnlyDictionary<string, LevelDefinition> _areas;
         private float _deathTimeRemaining;
         private bool _shouldExit;
+        private readonly MusicPlayer _music;
+        private const string StarTheme = "Audio/SoundEffects/invincibilityTheme";
+        private bool _isStarThemePlaying;
+        private bool _isMuted;
 
         public GameProgress Progress { get; } = new GameProgress();
         public GameSessionState State { get; private set; } = GameSessionState.Playing;
@@ -70,19 +77,23 @@ namespace TeamUno.Mario.World
             MarioPlayer player,
             Level level,
             Camera camera,
-            IReadOnlyDictionary<string, LevelDefinition> areas)
+            IReadOnlyDictionary<string, LevelDefinition> areas,
+            MusicPlayer music)
         {
             ArgumentNullException.ThrowIfNull(player);
             ArgumentNullException.ThrowIfNull(level);
             ArgumentNullException.ThrowIfNull(camera);
             ArgumentNullException.ThrowIfNull(areas);
+            ArgumentNullException.ThrowIfNull(music);
 
             _player = player;
             _level = level;
             _camera = camera;
             _areas = areas;
             _collisionSystem = CollisionSystem.CreateDefault(Progress);
+            _music = music;
             Camera.Follow(Player.Bounds);
+            _music.Play(level.Definition.MusicTrack);
         }
 
         public void Update(GameTime gameTime, bool isJumpHeld = false)
@@ -102,6 +113,22 @@ namespace TeamUno.Mario.World
             }
         }
 
+        private void UpdateStarMusic()
+        {
+            bool starActive = Player.IsStarActive && !Player.IsDead;
+
+            if (starActive && !_isStarThemePlaying)
+            {
+                _music.PlayInterrupt(StarTheme);
+                _isStarThemePlaying = true;
+            }
+            else if (!starActive && _isStarThemePlaying)
+            {
+                _music.StopInterrupt();
+                _isStarThemePlaying = false;
+            }
+        }
+
         private void UpdateGameplay(GameTime gameTime, float elapsedSeconds, bool isJumpHeld)
         {
             if (Player.IsDead)
@@ -116,6 +143,7 @@ namespace TeamUno.Mario.World
             Player.UpdateVelocity(elapsedSeconds);
             Player.UpdatePosition(elapsedSeconds);
             Level.CollectProjectiles(Player);
+            UpdateStarMusic();
             Level.Update(gameTime);
             _collisionSystem.Update(this, previousPlayerBounds, isJumpHeld);
             Level.CollectProjectiles(Player);
@@ -139,8 +167,13 @@ namespace TeamUno.Mario.World
             }
             else if (Player.IsSlidingOnFlagpole)
             {
+                _music.Stop();
+                _isStarThemePlaying = false;
+                SoundPlayer.Play("Audio/SoundEffects/flagpole");
                 State = GameSessionState.FinishingLevel;
                 Player.ClearControls();
+                Level.ClearEnemies();
+                _music.Stop();
             }
             else if (pipe != null && !Player.IsChangingForm)
             {
@@ -155,6 +188,9 @@ namespace TeamUno.Mario.World
 
         private void BeginDeath()
         {
+            _music.Stop();
+            _isStarThemePlaying = false;
+            SoundPlayer.Play("Audio/SoundEffects/death");
             Progress.LoseLife();
             State = GameSessionState.Dying;
             _deathTimeRemaining = DeathDelaySeconds;
@@ -209,20 +245,39 @@ namespace TeamUno.Mario.World
             {
                 State = GameSessionState.Paused;
                 Player.ClearControls();
+                _music.Pause();
             }
             else if (State == GameSessionState.Paused)
             {
                 State = GameSessionState.Playing;
+                _music.Resume();
+            }
+        }
+
+        public void ToggleMute()
+        {
+            _isMuted = !_isMuted;
+            if (_isMuted)
+            {
+                MediaPlayer.IsMuted = true;
+                SoundEffect.MasterVolume = 0f;
+            }
+            else
+            {
+                MediaPlayer.IsMuted = false;
+                SoundEffect.MasterVolume = 1f;
             }
         }
 
         public void Quit()
         {
             ShouldExit = true;
+            _music.Stop();
         }
 
         public void Reset()
         {
+            _music.Stop();
             ShouldExit = false;
             Progress.Reset();
             Player.Reset();
@@ -245,6 +300,7 @@ namespace TeamUno.Mario.World
 
             Level.LoadArea(definition);
             Player.EnterArea(spawn);
+            _music.Play(definition.MusicTrack);
             _deathTimeRemaining = 0;
             State = GameSessionState.Playing;
             Camera.SetLevelWidth(definition.Width);
@@ -257,6 +313,35 @@ namespace TeamUno.Mario.World
             const float maximumElapsedSeconds = 1f / 30f;
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             return Math.Min(elapsedSeconds, maximumElapsedSeconds);
+        }
+
+        public IEnumerable<string> AreaIds
+        {
+            get
+            {
+                return _areas.Keys;
+            }
+        }
+
+        public void OpenMenu()
+        {
+            if (State != GameSessionState.Playing)
+            {
+                return;
+            }
+
+            State = GameSessionState.Menu;
+            Player.ClearControls();
+            _music.Pause();
+        }
+
+        public void CloseMenu()
+        {
+            if (State == GameSessionState.Menu)
+            {
+                State = GameSessionState.Playing;
+                _music.Resume();
+            }
         }
     }
 }

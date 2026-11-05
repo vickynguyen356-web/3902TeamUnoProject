@@ -1,0 +1,12 @@
+Author of code review: Vy
+Date of code review: 10/25/26
+Sprint number: 3
+Name of .cs file reviewed: MarioItemCollisionHandler.cs
+Author of .cs file: Adithi
+Minutes taken for review: 15
+Readability:
+All methods are named after what their function is, which makes code easily readable. The first if statement in the Handle() method checks to exit the method early while keeping the main logic unaffected. 
+Code quality:
+The constructor verifies dependency with ThrowIfNull, so failures will show up right away, rather than later. The class has a single responsibility, which handles Mario and Item collision, keeping it small and testable.
+Hypothetical change:
+The unknown item types are ignored, so if we wanted to implement a new item, it would have to be added manually for collision to work with Mario. Adding a value of ItemType and adding this as a case in the switch statement would help ensure the new item gets collision features without changing the whole structure of the handler.

@@ -1,4 +1,3 @@
-
 #----------------------------- Global Properties ----------------------------#
 
 /outputDir:bin/$(Platform)
@@ -13,12 +12,208 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin MyFont.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:MyFont.spritefont
+#begin Audio/SoundEffects/1up.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/1up.wav
+
+#begin Audio/SoundEffects/beep.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/beep.wav
+
+#begin Audio/SoundEffects/billfirework.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/billfirework.wav
+
+#begin Audio/SoundEffects/bowserfall.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/bowserfall.wav
+
+#begin Audio/SoundEffects/brick.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/brick.wav
+
+#begin Audio/SoundEffects/bump.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/bump.wav
+
+#begin Audio/SoundEffects/coin.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/coin.wav
+
+#begin Audio/SoundEffects/death.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/death.wav
+
+#begin Audio/SoundEffects/fire.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/fire.wav
+
+#begin Audio/SoundEffects/fireball.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/fireball.wav
+
+#begin Audio/SoundEffects/flagpole.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/flagpole.wav
+
+#begin Audio/SoundEffects/gameover.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/gameover.wav
+
+#begin Audio/SoundEffects/gameoverunused.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/gameoverunused.wav
+
+#begin Audio/SoundEffects/hurryup.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/hurryup.wav
+
+#begin Audio/SoundEffects/item.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/item.wav
+
+#begin Audio/SoundEffects/jump.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/jump.wav
+
+#begin Audio/SoundEffects/jumpsmall.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/jumpsmall.wav
+
+#begin Audio/SoundEffects/kickkill.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/kickkill.wav
+
+#begin Audio/SoundEffects/pause.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/pause.wav
+
+#begin Audio/SoundEffects/pipepowerdown.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/pipepowerdown.wav
+
+#begin Audio/SoundEffects/powerup.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/powerup.wav
+
+#begin Audio/SoundEffects/stompswim.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/stompswim.wav
+
+#begin Audio/SoundEffects/vine.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/vine.wav
+
+#begin Audio/Tracks/castleTheme.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/Tracks/castleTheme.mp3
+
+#begin Audio/Tracks/gameOverTheme.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/Tracks/gameOverTheme.mp3
+
+#begin Audio/SoundEffects/invincibilityTheme.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/invincibilityTheme.mp3
+
+#begin Audio/Tracks/lostALifeTheme.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/Tracks/lostALifeTheme.mp3
+
+#begin Audio/Tracks/overworldMusic.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/Tracks/overworldMusic.mp3
+
+#begin Audio/Tracks/undergroundTheme.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/Tracks/undergroundTheme.mp3
 
 #begin background.png
 /importer:TextureImporter
@@ -33,7 +228,15 @@
 /processorParam:Version=3.8.5.1
 /build:background.png
 
-#begin blocksspritesheetbg.png
+#begin MyFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/processorParam:Version=3.8.6.0
+/build:MyFont.spritefont
+
+#begin Sprites/blocksspritesheetbg.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -43,10 +246,10 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/processorParam:Version=3.8.5.1
-/build:blocksspritesheetbg.png
+/processorParam:Version=3.8.6.0
+/build:Sprites/blocksspritesheetbg.png
 
-#begin enemiesSprites.png
+#begin Sprites/enemiesSprites.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -56,10 +259,10 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/processorParam:Version=3.8.5.1
-/build:enemiesSprites.png
+/processorParam:Version=3.8.6.0
+/build:Sprites/enemiesSprites.png
 
-#begin items.png
+#begin Sprites/items.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=146,144,255,255
@@ -69,19 +272,18 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/processorParam:Version=3.8.5.1
-/build:items.png
+/processorParam:Version=3.8.6.0
+/build:Sprites/items.png
 
-#begin mario.png
+#begin Sprites/mario.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=False
+/processorParam:ColorKeyEnabled=True
 /processorParam:GenerateMipmaps=False
 /processorParam:PremultiplyAlpha=True
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/processorParam:Version=3.8.5.1
-/build:mario.png
-
+/processorParam:Version=3.8.6.0
+/build:Sprites/mario.png

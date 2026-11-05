@@ -4,6 +4,7 @@ namespace TeamUno.Mario.World
     {
         Playing,
         Paused,
+        Menu,
         Dying,
         FinishingLevel,
         GameOver,

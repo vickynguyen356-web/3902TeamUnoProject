@@ -11,6 +11,9 @@ namespace TeamUno.Mario.World
         private const int TileSize = 48;
         private const int FloorY = 528;
         private const int AreaHeight = 720;
+        private const string OverworldMusic = "Audio/Tracks/overworldMusic";
+        private const string UndergroundMusic = "Audio/Tracks/undergroundTheme";
+        private const string BowserMusic = "Audio/Tracks/castleTheme";
 
         public static IReadOnlyDictionary<string, LevelDefinition> CreateAreas()
         {
@@ -81,7 +84,8 @@ namespace TeamUno.Mario.World
             };
 
             return new LevelDefinition("overworld", 3840, AreaHeight, spawnPoints, blocks, items, enemies,
-                nextAreaId: "bowser-party");
+                nextAreaId: "bowser-party", 
+                musicTrack: OverworldMusic);
         }
 
         private static LevelDefinition CreateUnderground()
@@ -125,7 +129,8 @@ namespace TeamUno.Mario.World
             };
 
             return new LevelDefinition("underground", 1920, AreaHeight, spawnPoints, blocks, items, enemies,
-                levelStartAreaId: "overworld");
+                levelStartAreaId: "overworld", 
+                musicTrack: UndergroundMusic);
         }
 
         private static LevelDefinition CreateTestArea()
@@ -180,7 +185,8 @@ namespace TeamUno.Mario.World
                 new EnemySpawnDefinition(EnemyType.Bowser, new Vector2(3456, FloorY - Bowser.BowserHeight))
             };
 
-            return new LevelDefinition("test", 4608, AreaHeight, spawnPoints, blocks, items, enemies);
+            return new LevelDefinition("test", 4608, AreaHeight, spawnPoints, blocks, items, enemies, 
+                musicTrack: OverworldMusic);
         }
 
         private static LevelDefinition CreateBowserParty()
@@ -219,7 +225,8 @@ namespace TeamUno.Mario.World
                 new ItemSpawnDefinition(ItemType.FireFlower, new Vector2(2016, FloorY - 32))
             };
 
-            return new LevelDefinition("bowser-party", 3168, AreaHeight, spawnPoints, blocks, items, enemies);
+            return new LevelDefinition("bowser-party", 3168, AreaHeight, spawnPoints, blocks, items, enemies, 
+                musicTrack: BowserMusic);
         }
 
         private static void AddBlockRows(

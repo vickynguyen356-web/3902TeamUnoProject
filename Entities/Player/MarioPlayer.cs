@@ -6,6 +6,7 @@ using TeamUno.Mario.Entities;
 using TeamUno.Mario.Entities.Projectiles;
 using TeamUno.Mario.Entities.Sprites;
 using TeamUno.Mario.Interfaces;
+using TeamUno.Mario.Audio;
 
 namespace TeamUno.Mario.Entities.Player
 {
@@ -280,6 +281,7 @@ namespace TeamUno.Mario.Entities.Player
                 StopVineClimb();
                 PreserveFeetPosition(previousHeight);
                 StartFormTransitionAnimation();
+                SoundPlayer.Play("Audio/SoundEffects/powerup");
             }
         }
 
@@ -328,6 +330,14 @@ namespace TeamUno.Mario.Entities.Player
                 {
                     _velocity.Y = JumpVelocity;
                     IsGrounded = false;
+                    if (IsSmall)
+                    {
+                        SoundPlayer.Play("Audio/SoundEffects/jumpsmall");
+                    }
+                    else
+                    {
+                        SoundPlayer.Play("Audio/SoundEffects/jump");
+                    }
                 }
             }
 
@@ -381,6 +391,7 @@ namespace TeamUno.Mario.Entities.Player
             IProjectile fireball = ProjectileFactory.Create(
                 ProjectileType.Fireball, position, velocity, isEnemyProjectile: false);
             _projectiles.Add(fireball);
+            SoundPlayer.Play("Audio/SoundEffects/fireball");
         }
 
         private void UpdateHorizontalVelocity(float elapsedSeconds)
@@ -622,6 +633,7 @@ namespace TeamUno.Mario.Entities.Player
             if (IsChangingForm)
             {
                 StartFormTransitionAnimation();
+                SoundPlayer.Play("Audio/SoundEffects/pipepowerdown");
                 return;
             }
 
