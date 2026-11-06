@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TeamUno.Mario.Entities.Items;
 using TeamUno.Mario.Interfaces;
+using TeamUno.Mario.Audio;
 
 namespace TeamUno.Mario.Entities.Blocks
 {
@@ -205,12 +206,22 @@ namespace TeamUno.Mario.Entities.Blocks
         {
             if (Type == BlockType.Question || Type == BlockType.Invisible)
             {
+                if (_contents == ItemType.BlockCoin)
+                {
+                    SoundPlayer.Play("Audio/SoundEffects/coin");
+                }
+                else
+                {
+                    SoundPlayer.Play("Audio/SoundEffects/item");
+                }
+
                 Type = BlockType.Used;
                 _sprite = BlockSpriteFactory.Create(Type);
                 _pendingItem = _contents;
             }
             else if (Type == BlockType.Brick && canBreak)
             {
+                SoundPlayer.Play("Audio/SoundEffects/brick");
                 _isDeleted = true;
                 _isBreaking = true;
                 int fragmentWidth = Width / 2;
@@ -223,6 +234,11 @@ namespace TeamUno.Mario.Entities.Blocks
                         Position.X + column * fragmentWidth,
                         Position.Y + row * fragmentHeight);
                 }
+            }
+            else if (Type == BlockType.Brick || Type == BlockType.Used || Type == BlockType.Solid)
+            {
+                // small Mario on a brick or empty/solid block
+                SoundPlayer.Play("Audio/SoundEffects/bump");
             }
         }
 

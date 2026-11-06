@@ -1,3 +1,4 @@
+
 #----------------------------- Global Properties ----------------------------#
 
 /outputDir:bin/$(Platform)
@@ -110,6 +111,13 @@
 /processorParam:Version=3.8.6.0
 /build:Audio/SoundEffects/hurryup.wav
 
+#begin Audio/SoundEffects/invincibilityTheme.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/invincibilityTheme.mp3
+
 #begin Audio/SoundEffects/item.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -173,6 +181,13 @@
 /processorParam:Version=3.8.6.0
 /build:Audio/SoundEffects/vine.wav
 
+#begin Audio/Tracks/castleComplete.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/Tracks/castleComplete.mp3
+
 #begin Audio/Tracks/castleTheme.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
@@ -187,12 +202,12 @@
 /processorParam:Version=3.8.6.0
 /build:Audio/Tracks/gameOverTheme.mp3
 
-#begin Audio/SoundEffects/invincibilityTheme.mp3
+#begin Audio/Tracks/levelComplete.mp3
 /importer:Mp3Importer
-/processor:SoundEffectProcessor
+/processor:SongProcessor
 /processorParam:Quality=Best
 /processorParam:Version=3.8.6.0
-/build:Audio/SoundEffects/invincibilityTheme.mp3
+/build:Audio/Tracks/levelComplete.mp3
 
 #begin Audio/Tracks/lostALifeTheme.mp3
 /importer:Mp3Importer
@@ -214,6 +229,13 @@
 /processorParam:Quality=Best
 /processorParam:Version=3.8.6.0
 /build:Audio/Tracks/undergroundTheme.mp3
+
+#begin Audio/Tracks/underwaterTheme.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/Tracks/underwaterTheme.mp3
 
 #begin background.png
 /importer:TextureImporter
@@ -287,3 +309,4 @@
 /processorParam:TextureFormat=Color
 /processorParam:Version=3.8.6.0
 /build:Sprites/mario.png
+

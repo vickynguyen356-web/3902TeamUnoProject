@@ -3,6 +3,7 @@ using TeamUno.Mario.Entities.Player;
 using TeamUno.Mario.Interfaces;
 using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Projectiles;
+using TeamUno.Mario.Audio;
 
 namespace TeamUno.Mario.Collision.Handlers
 {
@@ -67,6 +68,8 @@ namespace TeamUno.Mario.Collision.Handlers
             {
                 second.Kill();
             }
+
+            SoundPlayer.Play("Audio/SoundEffects/stompswim");
 
             Vector2 position = first.Position;
             position.Y = enemyBounds.Top - first.Bounds.Height;

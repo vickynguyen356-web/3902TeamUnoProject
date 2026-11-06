@@ -235,6 +235,7 @@ namespace TeamUno.Mario.Entities.Player
 
         public void RequestPipeEntry()
         {
+            SoundPlayer.Play("Audio/SoundEffects/vine");
             _pipeEntryRequested = true;
         }
 
@@ -281,7 +282,6 @@ namespace TeamUno.Mario.Entities.Player
                 StopVineClimb();
                 PreserveFeetPosition(previousHeight);
                 StartFormTransitionAnimation();
-                SoundPlayer.Play("Audio/SoundEffects/powerup");
             }
         }
 
@@ -485,6 +485,11 @@ namespace TeamUno.Mario.Entities.Player
             if (IsDead || IsChangingForm || (_climbDirection == 0 && !_isClimbingVine))
             {
                 return;
+            }
+
+            if (!_isClimbingVine)
+            {
+                SoundPlayer.Play("Audio/SoundEffects/vine");
             }
 
             _isClimbingVine = true;

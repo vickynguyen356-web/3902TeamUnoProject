@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using TeamUno.Mario.Audio;
 using TeamUno.Mario.Entities;
 using TeamUno.Mario.Entities.Projectiles;
 using TeamUno.Mario.Entities.Sprites;
@@ -27,6 +28,8 @@ namespace TeamUno.Mario.Entities.Enemies
         private bool _fireReleased;
         private float _spitFireTimer;
         private float _fireTimer;
+        private const float HearingDistance = 1000f;
+        public Vector2? ListenerPosition { get; set; }
         // health fields
         public const int MaximumHealth = 3;
         public int Health { get; private set; } = MaximumHealth;
@@ -60,6 +63,17 @@ namespace TeamUno.Mario.Entities.Enemies
 
                 return Color.White;
             }
+        }
+
+        private bool IsListenerInRange()
+        {
+            if (ListenerPosition == null)
+            {
+                return true; // always playing
+            }
+
+            Vector2 center = Position + new Vector2(Width / 2f, Height / 2f);
+            return Vector2.Distance(center, ListenerPosition.Value) <= HearingDistance;
         }
 
         public Bowser(ISprite sprite, Vector2 position)
@@ -149,6 +163,11 @@ namespace TeamUno.Mario.Entities.Enemies
 
             if (_spitFireTimer >= FireReleaseTime && !_fireReleased)
             {
+                if (IsListenerInRange())
+                {
+                    SoundPlayer.Play("Audio/SoundEffects/fire");
+                }
+
                 ReleaseFire();
                 _fireReleased = true;
             }
@@ -224,6 +243,7 @@ namespace TeamUno.Mario.Entities.Enemies
             // bowser has no more health
             if (Health <= 0)
             {
+                SoundPlayer.Play("Audio/SoundEffects/bowserfall");
                 Kill();
             }
         }

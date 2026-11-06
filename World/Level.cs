@@ -22,6 +22,7 @@ namespace TeamUno.Mario.World
         private readonly IReadOnlyList<IItem> _readOnlyItems;
         private readonly IReadOnlyList<IEnemy> _readOnlyEnemies;
         private readonly IReadOnlyList<IProjectile> _readOnlyProjectiles;
+        public Vector2? ListenerPosition { get; set; }
 
         public LevelDefinition Definition
         {
@@ -116,7 +117,13 @@ namespace TeamUno.Mario.World
                     }
             }
 
-            enemy.Update(gameTime);
+                Bowser bowser = enemy as Bowser;
+                if (bowser != null)
+                {
+                    bowser.ListenerPosition = ListenerPosition;
+                }
+
+                enemy.Update(gameTime);
 
                 if (movingEnemy != null)
                 {
