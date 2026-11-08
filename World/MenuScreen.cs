@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using TeamUno.Mario.Audio;
@@ -10,11 +11,13 @@ namespace TeamUno.Mario.World
     internal class MenuScreen
     {
         private enum Page { Main, Levels, Volume, Keys }
+        private static readonly string[] MainMenuLines = { "Resume", "Select level", "Volume", "Controls" };
 
         private readonly GameSession _session;
         private readonly KeyBindings _bindings;
         private readonly List<string> _areaIds;
         private KeyboardState _previous;
+        private GamePadState _previousGamePad;
         private Page _page = Page.Main;
         private int _selected;
         private bool _isRebinding;
@@ -32,10 +35,11 @@ namespace TeamUno.Mario.World
             _selected = 0;
             _isRebinding = false;
             _previous = Keyboard.GetState();
+            _previousGamePad = GamePad.GetState(PlayerIndex.One);
             _session.OpenMenu();
         }
 
-        public void Update()
+        public void Update(GamePadState gamePad)
         {
             KeyboardState keys = Keyboard.GetState();
             if (_isRebinding)
@@ -44,10 +48,11 @@ namespace TeamUno.Mario.World
             }
             else
             {
-                UpdateNavigation(keys);
+                UpdateNavigation(keys, gamePad);
             }
 
             _previous = keys;
+            _previousGamePad = gamePad;
         }
 
         private bool Pressed(KeyboardState keys, Keys key)
@@ -75,21 +80,27 @@ namespace TeamUno.Mario.World
             }
         }
 
-        private void UpdateNavigation(KeyboardState keys)
+        private void UpdateNavigation(KeyboardState keys, GamePadState gamePad)
         {
             int count = GetLines().Count;
-            if (Pressed(keys, Keys.Down))
+            bool downPressed = Pressed(keys, Keys.Down)
+                || ButtonPressed(gamePad, Buttons.DPadDown)
+                || AxisCrossed(gamePad.ThumbSticks.Left.Y, _previousGamePad.ThumbSticks.Left.Y, -0.5f);
+            bool upPressed = Pressed(keys, Keys.Up)
+                || ButtonPressed(gamePad, Buttons.DPadUp)
+                || AxisCrossed(gamePad.ThumbSticks.Left.Y, _previousGamePad.ThumbSticks.Left.Y, 0.5f);
+            if (downPressed)
             {
                 SoundPlayer.Play("Audio/SoundEffects/beep");
                 _selected = (_selected + 1) % count;
             }
-            else if (Pressed(keys, Keys.Up))
+            else if (upPressed)
             {
                 SoundPlayer.Play("Audio/SoundEffects/beep");
                 _selected = (_selected + count - 1) % count;
             }
 
-            if (Pressed(keys, Keys.Escape))
+            if (Pressed(keys, Keys.Escape) || ButtonPressed(gamePad, Buttons.B))
             {
                 SoundPlayer.Play("Audio/SoundEffects/beep");
                 GoBack();
@@ -97,18 +108,42 @@ namespace TeamUno.Mario.World
             }
 
             int adjust = 0;
-            if (Pressed(keys, Keys.Right)) { adjust = 1; }
-            if (Pressed(keys, Keys.Left)) { adjust = -1; }
+            if (Pressed(keys, Keys.Right) || ButtonPressed(gamePad, Buttons.DPadRight)
+                || AxisCrossed(gamePad.ThumbSticks.Left.X, _previousGamePad.ThumbSticks.Left.X, 0.5f))
+            {
+                adjust = 1;
+            }
+
+            if (Pressed(keys, Keys.Left) || ButtonPressed(gamePad, Buttons.DPadLeft)
+                || AxisCrossed(gamePad.ThumbSticks.Left.X, _previousGamePad.ThumbSticks.Left.X, -0.5f))
+            {
+                adjust = -1;
+            }
+
             if (adjust != 0 && _page == Page.Volume)
             {
                 AdjustVolume(adjust);
             }
 
-            if (Pressed(keys, Keys.Enter))
+            if (Pressed(keys, Keys.Enter) || ButtonPressed(gamePad, Buttons.A))
             {
                 SoundPlayer.Play("Audio/SoundEffects/beep");
                 Activate();
             }
+        }
+
+        private bool ButtonPressed(GamePadState gamePad, Buttons button)
+        {
+            return gamePad.IsConnected
+                && gamePad.IsButtonDown(button)
+                && (!_previousGamePad.IsConnected || _previousGamePad.IsButtonUp(button));
+        }
+
+        private static bool AxisCrossed(float current, float previous, float threshold)
+        {
+            return threshold > 0
+                ? current >= threshold && previous < threshold
+                : current <= threshold && previous > threshold;
         }
 
         private void GoBack()
@@ -173,7 +208,7 @@ namespace TeamUno.Mario.World
             switch (_page)
             {
                 case Page.Main:
-                    lines.AddRange(new[] { "Resume", "Select level", "Volume", "Controls" });
+                    lines.AddRange(MainMenuLines);
                     break;
                 case Page.Levels:
                     lines.AddRange(_areaIds);

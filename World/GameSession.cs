@@ -14,6 +14,9 @@ namespace TeamUno.Mario.World
     internal class GameSession : IGameActions
     {
         private const float DeathDelaySeconds = 4f;
+        private const float LevelTimerDurationSeconds = 300f;
+        private const float PipeTransitionDurationSeconds = 0.8f;
+        private const float PipeTransitionHalfDurationSeconds = PipeTransitionDurationSeconds / 2f;
         private readonly CollisionSystem _collisionSystem;
         private readonly MarioPlayer _player;
         private readonly Level _level;
@@ -25,9 +28,19 @@ namespace TeamUno.Mario.World
         private const string StarTheme = "Audio/SoundEffects/invincibilityTheme";
         private bool _isStarThemePlaying;
         private bool _isMuted;
+        private float _pipeTransitionElapsed;
+        private bool _pipeDestinationLoaded;
+        private string _pipeDestinationArea;
+        private string _pipeDestinationSpawn;
+        private float _timeRemaining = LevelTimerDurationSeconds;
 
         public GameProgress Progress { get; } = new GameProgress();
-        public GameSessionState State { get; private set; } = GameSessionState.Playing;
+        public GameSessionState State { get; private set; } = GameSessionState.Title;
+        public float PipeTransitionOpacity { get; private set; }
+        public int TimeRemaining
+        {
+            get { return (int)Math.Ceiling(_timeRemaining); }
+        }
 
         public MarioPlayer Player
         {
@@ -93,7 +106,6 @@ namespace TeamUno.Mario.World
             _collisionSystem = CollisionSystem.CreateDefault(Progress);
             _music = music;
             Camera.Follow(Player.Bounds);
-            _music.Play(level.Definition.MusicTrack);
         }
 
         public void Update(GameTime gameTime, bool isJumpHeld = false)
@@ -109,6 +121,9 @@ namespace TeamUno.Mario.World
                     break;
                 case GameSessionState.FinishingLevel:
                     UpdateLevelFinish(gameTime, elapsedSeconds);
+                    break;
+                case GameSessionState.PipeTransition:
+                    UpdatePipeTransition(elapsedSeconds);
                     break;
             }
         }
@@ -131,6 +146,12 @@ namespace TeamUno.Mario.World
 
         private void UpdateGameplay(GameTime gameTime, float elapsedSeconds, bool isJumpHeld)
         {
+            _timeRemaining = Math.Max(0f, _timeRemaining - elapsedSeconds);
+            if (_timeRemaining <= 0f)
+            {
+                Player.DieFromFall();
+            }
+
             if (Player.IsDead)
             {
                 BeginDeath();
@@ -177,13 +198,59 @@ namespace TeamUno.Mario.World
             }
             else if (pipe != null && !Player.IsChangingForm)
             {
-                LoadArea(pipe.DestinationArea, pipe.DestinationSpawn);
+                BeginPipeTransition(pipe);
                 return;
             }
 
             Player.UpdateAnimation(gameTime);
             Camera.Follow(Player.Bounds);
             Player.ClearPipeEntryRequest();
+        }
+
+        private void BeginPipeTransition(Block pipe)
+        {
+            _pipeDestinationArea = pipe.DestinationArea;
+            _pipeDestinationSpawn = pipe.DestinationSpawn;
+            _pipeTransitionElapsed = 0f;
+            _pipeDestinationLoaded = false;
+            PipeTransitionOpacity = 0f;
+            Player.ClearControls();
+            State = GameSessionState.PipeTransition;
+            SoundPlayer.Play("Audio/SoundEffects/pipepowerdown");
+        }
+
+        private void UpdatePipeTransition(float elapsedSeconds)
+        {
+            _pipeTransitionElapsed = Math.Min(
+                PipeTransitionDurationSeconds, _pipeTransitionElapsed + elapsedSeconds);
+
+            if (!_pipeDestinationLoaded
+                && _pipeTransitionElapsed >= PipeTransitionHalfDurationSeconds)
+            {
+                LoadArea(_pipeDestinationArea, _pipeDestinationSpawn);
+                State = GameSessionState.PipeTransition;
+                _pipeDestinationLoaded = true;
+            }
+
+            if (_pipeTransitionElapsed <= PipeTransitionHalfDurationSeconds)
+            {
+                PipeTransitionOpacity = _pipeTransitionElapsed / PipeTransitionHalfDurationSeconds;
+            }
+            else
+            {
+                PipeTransitionOpacity = 1f
+                    - (_pipeTransitionElapsed - PipeTransitionHalfDurationSeconds)
+                    / PipeTransitionHalfDurationSeconds;
+            }
+
+            if (_pipeTransitionElapsed >= PipeTransitionDurationSeconds)
+            {
+                PipeTransitionOpacity = 0f;
+                _pipeDestinationArea = null;
+                _pipeDestinationSpawn = null;
+                _pipeDestinationLoaded = false;
+                State = GameSessionState.Playing;
+            }
         }
 
         private void BeginDeath()
@@ -212,6 +279,7 @@ namespace TeamUno.Mario.World
                 return;
             }
 
+            _timeRemaining = LevelTimerDurationSeconds;
             Player.Respawn();
             LoadArea(Level.Definition.LevelStartAreaId);
         }
@@ -254,6 +322,18 @@ namespace TeamUno.Mario.World
             }
         }
 
+        public void StartGame()
+        {
+            if (State != GameSessionState.Title)
+            {
+                return;
+            }
+
+            State = GameSessionState.Playing;
+            _timeRemaining = LevelTimerDurationSeconds;
+            _music.Play(Level.Definition.MusicTrack);
+        }
+
         public void ToggleMute()
         {
             _isMuted = !_isMuted;
@@ -280,6 +360,7 @@ namespace TeamUno.Mario.World
             _music.Stop();
             ShouldExit = false;
             Progress.Reset();
+            _timeRemaining = LevelTimerDurationSeconds;
             Player.Reset();
             LoadArea(Level.Definition.Id);
         }

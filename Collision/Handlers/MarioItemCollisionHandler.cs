@@ -25,6 +25,7 @@ namespace TeamUno.Mario.Collision.Handlers
             switch (item.Type)
             {
                 case ItemType.Mushroom:
+                    _progress.AddScore(1000);
                     // only Small Mario needs to grow from a mushroom
                     if (player.IsSmall)
                     {
@@ -32,6 +33,7 @@ namespace TeamUno.Mario.Collision.Handlers
                     }
                     break;
                 case ItemType.FireFlower:
+                    _progress.AddScore(1000);
                     if (player.Form != PlayerForm.Fire)
                     {
                         player.BeginFormTransition(PlayerForm.Fire);
@@ -42,8 +44,10 @@ namespace TeamUno.Mario.Collision.Handlers
                     break;
                 case ItemType.OneUpMushroom:
                     _progress.AddLife();
+                    _progress.AddScore(10000);
                     break;
                 case ItemType.Star:
+                    _progress.AddScore(1000);
                     player.ActivateStar();
                     break;
                 default:

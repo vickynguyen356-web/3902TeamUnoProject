@@ -1,3 +1,4 @@
+
 #----------------------------- Global Properties ----------------------------#
 
 /outputDir:bin/$(Platform)
@@ -110,6 +111,13 @@
 /processorParam:Version=3.8.6.0
 /build:Audio/SoundEffects/hurryup.wav
 
+#begin Audio/SoundEffects/invincibilityTheme.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.6.0
+/build:Audio/SoundEffects/invincibilityTheme.mp3
+
 #begin Audio/SoundEffects/item.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -186,13 +194,6 @@
 /processorParam:Quality=Best
 /processorParam:Version=3.8.6.0
 /build:Audio/Tracks/gameOverTheme.mp3
-
-#begin Audio/SoundEffects/invincibilityTheme.mp3
-/importer:Mp3Importer
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/processorParam:Version=3.8.6.0
-/build:Audio/SoundEffects/invincibilityTheme.mp3
 
 #begin Audio/Tracks/lostALifeTheme.mp3
 /importer:Mp3Importer
@@ -287,3 +288,16 @@
 /processorParam:TextureFormat=Color
 /processorParam:Version=3.8.6.0
 /build:Sprites/mario.png
+
+#begin super-mario-bros-bg.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
+/build:super-mario-bros-bg.png
