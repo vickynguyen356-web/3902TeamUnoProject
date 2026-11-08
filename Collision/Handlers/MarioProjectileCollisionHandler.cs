@@ -21,9 +21,21 @@ namespace TeamUno.Mario.Collision.Handlers
                 return;
             }
 
+            // mario is in star mode, everything gets removed
+            if (first.IsStarActive)
+            {
+                second.Kill();
+                return;
+            }
+
             KoopaShell shell = second as KoopaShell;
             if (shell != null)
             {
+                if (shell.IsKnockOff)
+                {
+                    return;
+                }
+
                 if (first.IsStarActive)
                 {
                     second.Kill();
@@ -88,6 +100,7 @@ namespace TeamUno.Mario.Collision.Handlers
 
             if (info.Side != CollisionSide.Left && info.Side != CollisionSide.Right)
             {
+                shell.ResetIdleTImer();
                 return;
             }
 

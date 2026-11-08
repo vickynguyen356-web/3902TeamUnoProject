@@ -128,8 +128,10 @@ namespace TeamUno.Mario.Collision.Handlers
             Vector2 velocity = player.Velocity;
             bool crossedBlockTop = previousPlayerBounds.Bottom <= blockBounds.Top
                 && playerBounds.Bottom >= blockBounds.Top;
+            bool horizontalSupport = playerBounds.Right > blockBounds.Left
+                && playerBounds.Left < blockBounds.Right;
 
-            if (velocity.Y < 0 || !crossedBlockTop)
+            if (velocity.Y < 0 || !crossedBlockTop || !horizontalSupport)
             {
                 return false;
             }

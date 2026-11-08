@@ -65,12 +65,12 @@ namespace TeamUno.Mario.World
         {
             return new CollisionSystem(
                 new MarioBlockCollisionHandler(),
-                new MarioEnemyCollisionHandler(),
+                new MarioEnemyCollisionHandler(progress),
                 new MarioItemCollisionHandler(progress),
                 new MarioProjectileCollisionHandler(),
                 new EnemyBlockCollisionHandler(),
                 new ItemBlockCollisionHandler(),
-                new EnemyProjectileCollisionHandler(),
+                new EnemyProjectileCollisionHandler(progress),
                 new ProjectileBlockCollisionHandler(),
                 new EnemyEnemyCollisionHandler(),
                 new ProjectileProjectileCollisionHandler());

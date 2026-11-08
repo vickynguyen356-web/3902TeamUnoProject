@@ -18,6 +18,7 @@ namespace TeamUno.Mario.Entities.Enemies
         private IReadOnlyList<Block> _worldBlocks;
         private const float Gravity = 1500f;
         private const float MaximumFallSpeed = 700f;
+        private const float DeathFallSpeed = -250f;
 
         public void UpdateGravity(GameTime gameTime)
         {
@@ -28,6 +29,16 @@ namespace TeamUno.Mario.Entities.Enemies
 
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             elapsedSeconds = Math.Min(elapsedSeconds, 1f / 30f);
+            Velocity.Y = Math.Min(Velocity.Y + Gravity * elapsedSeconds, MaximumFallSpeed);
+            Position = new Vector2(Position.X, Position.Y + Velocity.Y * elapsedSeconds);
+        }
+
+        public void UpdateDeathFall(GameTime gameTime)
+        {
+            float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            elapsedSeconds = Math.Min(elapsedSeconds, 1f / 30f);
+
+            Velocity.X = 0f;
             Velocity.Y = Math.Min(Velocity.Y + Gravity * elapsedSeconds, MaximumFallSpeed);
             Position = new Vector2(Position.X, Position.Y + Velocity.Y * elapsedSeconds);
         }
@@ -176,6 +187,13 @@ namespace TeamUno.Mario.Entities.Enemies
             }
         }
 
+        protected virtual Color TintColor
+        {
+            get
+            {
+                return Color.White;
+            }
+        }
         public abstract void Update(GameTime gameTime);
 
         public IReadOnlyList<IProjectile> Projectiles
@@ -217,7 +235,8 @@ namespace TeamUno.Mario.Entities.Enemies
             Sprite.Draw(
                 spriteBatch,
                 Bounds,
-                StateMachine.FacingDirection);
+                StateMachine.FacingDirection,
+                TintColor);
         }
 
         public virtual void TakeDamage()
@@ -227,6 +246,12 @@ namespace TeamUno.Mario.Entities.Enemies
 
         public virtual void Kill()
         {
+            if (!IsDead)
+            {
+                // small hop before falling
+                Velocity = new Vector2(0f, DeathFallSpeed);
+            }
+
             StateMachine.Kill();
         }
     }
