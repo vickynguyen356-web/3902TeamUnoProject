@@ -52,6 +52,10 @@ namespace TeamUno.Mario.Collision.Handlers
                 SoundPlayer.Play("Audio/SoundEffects/kickkill");
                 second.Kill();
             }
+            else if (isMovingShell)
+            {
+                SoundPlayer.Play("Audio/SoundEffects/kickkill");
+            }
         }
     }
 }
