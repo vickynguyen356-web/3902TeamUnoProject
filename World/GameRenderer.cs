@@ -128,6 +128,7 @@ namespace TeamUno.Mario.World
             if (session.Level.Definition.IsUnderwater)
             {
                 DrawText(spriteBatch, font, "Underwater: press jump repeatedly to swim upward", new Vector2(24, 80));
+            }
             if (session.Level.Definition.Id == "test")
             {
                 string spots = "F3: blocks   F4: items   F5: shells   F6: Bowser   F7: pipes   F9: gap   |   Repeat a key to reload";
