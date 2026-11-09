@@ -114,8 +114,13 @@ namespace TeamUno.Mario.World
                 + "     Coins: " + session.Progress.Coins + " / 100"
                 + "     Lives: " + session.Progress.Lives
                 + "     Time: " + session.TimeRemaining.ToString("D3", CultureInfo.InvariantCulture);
-            string controls = "Move: A/D or arrows   Jump: W/Space or Pad A   Fire: Z/N or Pad X   Pipe: Down/B   Menu: Esc/Start";
-            Rectangle hudPanel = new Rectangle(12, 10, viewport.Width - 24, 66);
+            string controls = "Move: A/D or arrows   Jump: W/Space or Pad A   Fire: Z/N or Pad X   Pipe: Down/B   Pause: Esc/Start";
+            int panelHeight = 66;
+            if (session.Level.Definition.Id == "test")
+            {
+                panelHeight = 94;
+            }
+            Rectangle hudPanel = new Rectangle(12, 10, viewport.Width - 24, panelHeight);
             spriteBatch.Draw(_pixel, hudPanel, Color.Black * 0.62f);
             DrawText(spriteBatch, font, progress, new Vector2(24, 14));
             DrawText(spriteBatch, font, controls, new Vector2(24, 42));
@@ -123,6 +128,10 @@ namespace TeamUno.Mario.World
             if (session.Level.Definition.IsUnderwater)
             {
                 DrawText(spriteBatch, font, "Underwater: press jump repeatedly to swim upward", new Vector2(24, 80));
+            if (session.Level.Definition.Id == "test")
+            {
+                string spots = "F3: blocks   F4: items   F5: shells   F6: Bowser   F7: pipes   F9: gap   |   Repeat a key to reload";
+                DrawText(spriteBatch, font, spots, new Vector2(24, 70));
             }
 
             if (session.State == GameSessionState.Menu)
@@ -153,9 +162,6 @@ namespace TeamUno.Mario.World
             string message;
             switch (session.State)
             {
-                case GameSessionState.Paused:
-                    message = "Paused\nP or Start to resume";
-                    break;
                 case GameSessionState.Dying:
                     message = "You died";
                     break;
@@ -262,47 +268,44 @@ namespace TeamUno.Mario.World
         private void DrawMenu(SpriteBatch spriteBatch, SpriteFont font, MenuScreen menu, Rectangle viewport)
         {
             List<string> lines = menu.GetLines();
-
-            // measure the widest line, including "> " marker, so the panel fits every row
-            float widest = 0f;
-            for (int index = 0; index < lines.Count; index = index + 1)
+            float widest = Math.Max(
+                font.MeasureString(menu.Title).X,
+                font.MeasureString(menu.Instructions).X);
+            foreach (string line in lines)
             {
-                float width = font.MeasureString("> " + lines[index]).X;
-                widest = System.Math.Max(widest, width);
+                widest = Math.Max(widest, font.MeasureString("> " + line).X);
             }
 
             const int padding = 24;
-            const int borderThickness = 4;
-            float height = lines.Count * font.LineSpacing;
-
+            int rowHeight = font.LineSpacing + 6;
+            int height = (lines.Count + 2) * rowHeight + padding * 2;
             Rectangle panel = new Rectangle(
-                (int)(viewport.Center.X - widest / 2f) - padding,
-                (int)(viewport.Center.Y - height / 2f) - padding,
+                viewport.Center.X - (int)widest / 2 - padding,
+                viewport.Center.Y - height / 2,
                 (int)widest + padding * 2,
-                (int)height + padding * 2);
+                height);
 
-            // semi transparent black background
-            spriteBatch.Draw(_pixel, panel, Color.Black * 0.7f);
+            spriteBatch.Draw(_pixel, viewport, Color.Black * 0.4f);
+            spriteBatch.Draw(_pixel, panel, Color.Black * 0.85f);
+            DrawCenteredText(spriteBatch, font, menu.Title, viewport.Center.X, panel.Y + padding, Color.White);
 
-            // solid black border: top, bottom, left, right
-            spriteBatch.Draw(_pixel, new Rectangle(panel.X, panel.Y, panel.Width, borderThickness), Color.Black);
-            spriteBatch.Draw(_pixel, new Rectangle(panel.X, panel.Bottom - borderThickness, panel.Width, borderThickness), Color.Black);
-            spriteBatch.Draw(_pixel, new Rectangle(panel.X, panel.Y, borderThickness, panel.Height), Color.Black);
-            spriteBatch.Draw(_pixel, new Rectangle(panel.Right - borderThickness, panel.Y, borderThickness, panel.Height), Color.Black);
-
-            float y = panel.Y + padding;
+            int y = panel.Y + padding + rowHeight;
             for (int index = 0; index < lines.Count; index = index + 1)
             {
                 string text = lines[index];
+                Color color = Color.White;
                 if (index == menu.SelectedIndex)
                 {
                     text = "> " + text;
+                    color = Color.Yellow;
                 }
 
-                Vector2 size = font.MeasureString(text);
-                DrawText(spriteBatch, font, text, new Vector2(viewport.Center.X - size.X / 2f, y));
-                y = y + font.LineSpacing;
+                spriteBatch.DrawString(font, text, new Vector2(panel.X + padding, y), color);
+                y = y + rowHeight;
             }
+
+            DrawCenteredText(
+                spriteBatch, font, menu.Instructions, viewport.Center.X, y + 6, Color.LightGray);
         }
 
         // clean up _pixel

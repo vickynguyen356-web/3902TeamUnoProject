@@ -4,7 +4,6 @@ namespace TeamUno.Mario.World
     {
         Title,
         Playing,
-        Paused,
         Menu,
         PipeTransition,
         Dying,

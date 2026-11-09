@@ -74,7 +74,8 @@ namespace TeamUno.Mario.Input
                 new LoadAreaCommand(gameActions, "test", "combat"),
                 new LoadAreaCommand(gameActions, "test", "bowser"),
                 new LoadAreaCommand(gameActions, "test", "pipes"),
-                new LoadAreaCommand(gameActions, "bowser-party")
+                new LoadAreaCommand(gameActions, "bowser-party"),
+                new LoadAreaCommand(gameActions, "test", "ledge")
             };
 
             _heldCommands = new Dictionary<Keys, ICommand>();
@@ -126,7 +127,7 @@ namespace TeamUno.Mario.Input
             _pressedCommands[_bindings.Get(GameAction.Fireball)] = _throwFireballCommand;
             _pressedCommands[Keys.N] = _throwFireballCommand;
 
-            Keys[] areaKeys = { Keys.F1, Keys.F2, Keys.F3, Keys.F4, Keys.F5, Keys.F6, Keys.F7, Keys.F8 };
+            Keys[] areaKeys = { Keys.F1, Keys.F2, Keys.F3, Keys.F4, Keys.F5, Keys.F6, Keys.F7, Keys.F8, Keys.F9 };
             for (int index = 0; index < areaKeys.Length; index = index + 1)
             {
                 _pressedCommands[areaKeys[index]] = _areaCommands[index];

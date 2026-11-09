@@ -314,14 +314,11 @@ namespace TeamUno.Mario.World
         {
             if (State == GameSessionState.Playing)
             {
-                State = GameSessionState.Paused;
-                Player.ClearControls();
-                _music.Pause();
+                OpenMenu();
             }
-            else if (State == GameSessionState.Paused)
+            else if (State == GameSessionState.Menu)
             {
-                State = GameSessionState.Playing;
-                _music.Resume();
+                CloseMenu();
             }
         }
 
@@ -332,9 +329,15 @@ namespace TeamUno.Mario.World
                 return;
             }
 
-            State = GameSessionState.Playing;
-            _timeRemaining = LevelTimerDurationSeconds;
-            _music.Play(Level.Definition.MusicTrack);
+            Reset(_startingAreaId);
+        }
+
+        public void ReturnToTitle()
+        {
+            _music.Stop();
+            _isStarThemePlaying = false;
+            Player.ClearControls();
+            State = GameSessionState.Title;
         }
 
         public void ToggleMute()
@@ -360,25 +363,17 @@ namespace TeamUno.Mario.World
 
         public void Reset()
         {
-            bool restartingGame = State == GameSessionState.GameOver || State == GameSessionState.Won;
-            string areaId = Level.Definition.Id;
-            if (restartingGame)
-            {
-                areaId = _startingAreaId;
-            }
+            Reset(Level.Definition.Id);
+        }
+
+        private void Reset(string areaId)
+        {
             _music.Stop();
             _isStarThemePlaying = false;
             ShouldExit = false;
             Progress.Reset();
             _timeRemaining = LevelTimerDurationSeconds;
-            if (restartingGame)
-            {
-                Player.Respawn();
-            }
-            else
-            {
-                Player.Reset();
-            }
+            Player.Reset();
             LoadArea(areaId);
         }
 

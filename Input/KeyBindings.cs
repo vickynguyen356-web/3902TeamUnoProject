@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 
@@ -15,8 +15,8 @@ namespace TeamUno.Mario.Input
         private static readonly HashSet<Keys> Reserved = new HashSet<Keys>
         {
             Keys.Escape, Keys.Enter, Keys.Up, Keys.Down, Keys.Left, Keys.Right,
-            Keys.Space, Keys.Q, Keys.F1, Keys.F2, Keys.F3, Keys.F4,
-            Keys.F5, Keys.F6, Keys.F7, Keys.F8
+            Keys.Space, Keys.Q, Keys.N, Keys.F1, Keys.F2, Keys.F3, Keys.F4,
+            Keys.F5, Keys.F6, Keys.F7, Keys.F8, Keys.F9
         };
 
         private readonly Dictionary<GameAction, Keys> _keys = new Dictionary<GameAction, Keys>
