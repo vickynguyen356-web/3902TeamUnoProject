@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Blocks;
@@ -22,6 +23,7 @@ namespace TeamUno.Mario.World
             areas.Add("underground", CreateUnderground());
             areas.Add("test", CreateTestArea());
             areas.Add("bowser-party", CreateBowserParty());
+            areas.Add("underwater", CreateUnderwater());
             return areas;
         }
 
@@ -267,6 +269,34 @@ namespace TeamUno.Mario.World
 
             return new LevelDefinition("bowser-party", 3168, AreaHeight, spawnPoints, blocks, items, enemies, 
                 musicTrack: BowserMusic);
+        }
+
+        private static LevelDefinition CreateUnderwater()
+        {
+            const int columns = 32;
+            Dictionary<string, Vector2> spawnPoints = new Dictionary<string, Vector2>
+            {
+                { "start", new Vector2(TileSize * 2, FloorY) }
+            };
+            List<BlockSpawnDefinition> blocks = new List<BlockSpawnDefinition>();
+            AddBlockRows(blocks, BlockType.Ground, 0, FloorY, columns, rows: 4);
+            AddBlockRows(blocks, BlockType.Solid, 0, 0, columns: 1, rows: 11);
+            AddBlockRows(blocks, BlockType.Solid, (columns - 1) * TileSize, 0, columns: 1, rows: 11);
+            AddBlockRows(blocks, BlockType.Solid, TileSize * 8, FloorY - TileSize * 2, columns: 2, rows: 2);
+            AddBlockRows(blocks, BlockType.Solid, TileSize * 16, FloorY - TileSize * 4, columns: 2, rows: 4);
+            blocks.Add(new BlockSpawnDefinition(
+                new Vector2(TileSize * 24, FloorY - TileSize * 2), BlockType.Pipe,
+                width: TileSize * 2, height: TileSize * 2,
+                destinationArea: "test", destinationSpawn: "items"));
+            ItemSpawnDefinition[] items =
+            {
+                new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(TileSize * 6, TileSize * 6)),
+                new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(TileSize * 12, TileSize * 4)),
+                new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(TileSize * 20, TileSize * 5))
+            };
+            return new LevelDefinition("underwater", columns * TileSize, AreaHeight,
+                spawnPoints, blocks, items, Array.Empty<EnemySpawnDefinition>(),
+                musicTrack: UndergroundMusic, isUnderwater: true);
         }
 
         private static void AddBlockRows(

@@ -13,6 +13,8 @@ namespace TeamUno.Mario.Entities.Items
     // follows contract defined by IItem interface
     // items inherit from this class and provide their own item type
     {
+        protected const float MaximumElapsedSeconds = 1f / 30f;
+
         // stores sprite and animation used to display the item
         // readonly = field can be assigned during construction but cannot be reassigned after
         private readonly ISprite _sprite;
@@ -28,18 +30,10 @@ namespace TeamUno.Mario.Entities.Items
 
         public Vector2 CurrentVelocity
         {
-            get { return Velocity; }
-        }
-
-        public void ApplyMotion(Vector2 position, Vector2 velocity)
-        {
-            Position = position;
-            Velocity = velocity;
-        }
-
-        public void Expire()
-        {
-            IsExpired = true;
+            get
+            {
+                return Velocity;
+            }
         }
 
         public abstract ItemType Type
@@ -120,6 +114,17 @@ namespace TeamUno.Mario.Entities.Items
             _height = (int)(frame.Height * ItemSpriteFactory.SpriteScale);
             // set up sprite with its animation
             _sprite.Update(new GameTime(), _animation);
+        }
+
+        public void ApplyMotion(Vector2 position, Vector2 velocity)
+        {
+            Position = position;
+            Velocity = velocity;
+        }
+
+        public void Expire()
+        {
+            IsExpired = true;
         }
 
         // update the sprite using the item's animation

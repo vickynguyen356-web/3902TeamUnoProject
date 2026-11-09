@@ -10,6 +10,8 @@ namespace TeamUno.Mario.World
 {
     internal class GameRenderer : IDisposable
     {
+        private const float UnderwaterOpacity = 0.85f;
+
         private readonly Texture2D _titleBackgroundTexture;
         private readonly Texture2D _blockTexture;
         private readonly Texture2D _pixel;
@@ -70,6 +72,12 @@ namespace TeamUno.Mario.World
 
         public void DrawWorld(SpriteBatch spriteBatch, GameSession session)
         {
+            if (session.Level.Definition.IsUnderwater)
+            {
+                Rectangle water = new Rectangle(0, 0, session.Level.Definition.Width, session.Level.Definition.Height);
+                spriteBatch.Draw(_pixel, water, new Color(16, 64, 144) * UnderwaterOpacity);
+            }
+
             foreach (Block block in session.Level.Blocks)
             {
                 block.Draw(spriteBatch, _blockTexture);
@@ -117,6 +125,10 @@ namespace TeamUno.Mario.World
             DrawText(spriteBatch, font, progress, new Vector2(24, 14));
             DrawText(spriteBatch, font, controls, new Vector2(24, 42));
 
+            if (session.Level.Definition.IsUnderwater)
+            {
+                DrawText(spriteBatch, font, "Underwater: press jump repeatedly to swim upward", new Vector2(24, 80));
+            }
             if (session.Level.Definition.Id == "test")
             {
                 string spots = "F3: blocks   F4: items   F5: shells   F6: Bowser   F7: pipes   F9: gap   |   Repeat a key to reload";

@@ -278,6 +278,7 @@ namespace TeamUno.Mario.World
             if (Progress.Lives == 0)
             {
                 State = GameSessionState.GameOver;
+                SoundPlayer.Play("Audio/SoundEffects/gameover");
                 return;
             }
 
@@ -362,7 +363,12 @@ namespace TeamUno.Mario.World
 
         public void Reset()
         {
-            Reset(Level.Definition.Id);
+            string areaId = Level.Definition.Id;
+            if (State == GameSessionState.GameOver || State == GameSessionState.Won)
+            {
+                areaId = _startingAreaId;
+            }
+            Reset(areaId);
         }
 
         private void Reset(string areaId)
@@ -372,7 +378,14 @@ namespace TeamUno.Mario.World
             ShouldExit = false;
             Progress.Reset();
             _timeRemaining = LevelTimerDurationSeconds;
-            Player.Reset();
+            if (State == GameSessionState.GameOver || State == GameSessionState.Won)
+            {
+                Player.Respawn();
+            }
+            else
+            {
+                Player.Reset();
+            }
             LoadArea(areaId);
         }
 
@@ -391,7 +404,7 @@ namespace TeamUno.Mario.World
             }
 
             Level.LoadArea(definition);
-            Player.EnterArea(spawn);
+            Player.EnterArea(spawn, definition.IsUnderwater);
             _music.Play(definition.MusicTrack);
             _deathTimeRemaining = 0;
             State = GameSessionState.Playing;
