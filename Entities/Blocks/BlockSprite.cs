@@ -32,9 +32,9 @@ namespace TeamUno.Mario.Entities.Blocks
         private const float FrameDurationSeconds = 0.16f;
         private readonly Rectangle[] _frames =
         {
-            new Rectangle(0, 78, 16, 16),
-            new Rectangle(17, 78, 16, 16),
-            new Rectangle(34, 78, 16, 16)
+            new Rectangle(0, 78, 16, 15),
+            new Rectangle(17, 78, 16, 15),
+            new Rectangle(34, 78, 16, 15)
         };
         private float _elapsedSeconds;
         private int _frameIndex;

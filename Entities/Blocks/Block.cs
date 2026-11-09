@@ -25,8 +25,12 @@ namespace TeamUno.Mario.Entities.Blocks
     {
         private const int DefaultWidth = 48;
         private const int DefaultHeight = 48;
+        private const int FlagpoleSourceHeight = 153;
+        private const int FlagpoleBaseSize = 48;
         private const float BreakAnimationDurationSeconds = 0.55f;
         private const float DebrisGravity = 720f;
+        private static readonly Rectangle FlagpoleSource = new Rectangle(139, 0, 16, FlagpoleSourceHeight);
+        private static readonly Rectangle FlagpoleBaseSource = new Rectangle(51, 0, 16, 16);
         private static readonly Rectangle BrickSource = new Rectangle(17, 0, 16, 16);
 
         private BlockSprite _sprite;
@@ -245,6 +249,17 @@ namespace TeamUno.Mario.Entities.Blocks
                 return;
             }
 
+            if (Type == BlockType.FlagPole)
+            {
+                // keep the base one tile tall instead of stretching it with the pole
+                Rectangle pole = new Rectangle(Bounds.X, Bounds.Y, Width, Math.Max(0, Height - FlagpoleBaseSize));
+                Rectangle poleBase = new Rectangle(
+                    Bounds.Center.X - FlagpoleBaseSize / 2, Bounds.Bottom - FlagpoleBaseSize, FlagpoleBaseSize, FlagpoleBaseSize);
+                spriteBatch.Draw(blockTexture, pole, FlagpoleSource, Color.White);
+                spriteBatch.Draw(blockTexture, poleBase, FlagpoleBaseSource, Color.White);
+                return;
+            }
+
             Rectangle sourceRectangle = _sprite.GetSourceRectangle();
             if (sourceRectangle == Rectangle.Empty)
             {
@@ -278,25 +293,4 @@ namespace TeamUno.Mario.Entities.Blocks
             }
         }
 
-        private void DrawVine(SpriteBatch spriteBatch, Texture2D blockTexture)
-        {
-            Rectangle brightGreenPixel = new Rectangle(10, 150, 1, 1);
-            Rectangle darkGreenPixel = new Rectangle(20, 150, 1, 1);
-            int stemWidth = 6;
-            int stemX = Bounds.Center.X - stemWidth / 2;
-
-            spriteBatch.Draw(blockTexture,
-                new Rectangle(stemX, Bounds.Top, stemWidth, Bounds.Height),
-                brightGreenPixel, Color.White);
-
-            for (int y = Bounds.Top + 12, leafIndex = 0; y < Bounds.Bottom; y += 24, leafIndex++)
-            {
-                int leafY = Math.Min(y, Bounds.Bottom - 6);
-                int leafX = leafIndex % 2 == 0 ? stemX - 8 : stemX + stemWidth;
-                Rectangle leafSource = leafIndex % 2 == 0 ? brightGreenPixel : darkGreenPixel;
-                spriteBatch.Draw(blockTexture,
-                    new Rectangle(leafX, leafY, 10, 6), leafSource, Color.White);
-            }
-        }
-    }
-}
+        private void DrawVine(Sprit

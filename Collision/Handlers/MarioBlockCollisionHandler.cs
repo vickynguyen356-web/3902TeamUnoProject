@@ -155,7 +155,8 @@ namespace TeamUno.Mario.Collision.Handlers
             bool crossedBlockBottom = previousPlayerBounds.Top >= blockBounds.Bottom
                 && playerBounds.Top <= blockBounds.Bottom;
 
-            if (velocity.Y >= 0 || !crossedBlockBottom)
+            if (velocity.Y >= 0 || !crossedBlockBottom
+                || playerBounds.Right <= blockBounds.Left || playerBounds.Left >= blockBounds.Right)
             {
                 return false;
             }
