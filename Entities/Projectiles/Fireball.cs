@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Sprites;
 using TeamUno.Mario.Interfaces;
@@ -8,8 +9,12 @@ namespace TeamUno.Mario.Entities.Projectiles
     {
         public const int FireballWidth = 16;
         public const int FireballHeight = 16;
-        private const float Gravity = 500f;
-        private const float BlockBounceSpeed = 200f;
+        public const float HorizontalSpeed = 400f;
+        public const float BlockBounceSpeed = 240f;
+        private const float Gravity = 1200f;
+        private const float LifetimeSeconds = 3f;
+        private const float MaximumElapsedSeconds = 1f / 30f;
+        private float _timeRemaining = LifetimeSeconds;
         private readonly SpriteAnimation _fireballAnimation;
 
         public override int Width
@@ -51,11 +56,18 @@ namespace TeamUno.Mario.Entities.Projectiles
                 return;
             }
 
-            float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float elapsedSeconds = Math.Min(
+                (float)gameTime.ElapsedGameTime.TotalSeconds, MaximumElapsedSeconds);
+            _timeRemaining = _timeRemaining - elapsedSeconds;
+            if (_timeRemaining <= 0f)
+            {
+                Kill();
+                return;
+            }
 
+            Position = Position + Velocity * elapsedSeconds
+                + new Vector2(0f, Gravity * elapsedSeconds * elapsedSeconds / 2f);
             Velocity.Y = Velocity.Y + Gravity * elapsedSeconds;
-
-            Position = Position + Velocity * elapsedSeconds;
             Sprite.Update(gameTime, _fireballAnimation);
         }
 
