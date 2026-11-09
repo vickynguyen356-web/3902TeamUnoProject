@@ -22,6 +22,7 @@ namespace TeamUno.Mario.World
         private readonly Level _level;
         private readonly Camera _camera;
         private readonly IReadOnlyDictionary<string, LevelDefinition> _areas;
+        private readonly string _startingAreaId;
         private float _deathTimeRemaining;
         private bool _shouldExit;
         private readonly MusicPlayer _music;
@@ -103,6 +104,7 @@ namespace TeamUno.Mario.World
             _level = level;
             _camera = camera;
             _areas = areas;
+            _startingAreaId = level.Definition.LevelStartAreaId;
             _collisionSystem = CollisionSystem.CreateDefault(Progress);
             _music = music;
             Camera.Follow(Player.Bounds);
@@ -276,6 +278,7 @@ namespace TeamUno.Mario.World
             if (Progress.Lives == 0)
             {
                 State = GameSessionState.GameOver;
+                SoundPlayer.Play("Audio/SoundEffects/gameover");
                 return;
             }
 
@@ -357,12 +360,22 @@ namespace TeamUno.Mario.World
 
         public void Reset()
         {
+            bool restartingGame = State == GameSessionState.GameOver || State == GameSessionState.Won;
+            string areaId = restartingGame ? _startingAreaId : Level.Definition.Id;
             _music.Stop();
+            _isStarThemePlaying = false;
             ShouldExit = false;
             Progress.Reset();
             _timeRemaining = LevelTimerDurationSeconds;
-            Player.Reset();
-            LoadArea(Level.Definition.Id);
+            if (restartingGame)
+            {
+                Player.Respawn();
+            }
+            else
+            {
+                Player.Reset();
+            }
+            LoadArea(areaId);
         }
 
         public void LoadArea(string areaId, string spawnId = "start")
@@ -380,7 +393,7 @@ namespace TeamUno.Mario.World
             }
 
             Level.LoadArea(definition);
-            Player.EnterArea(spawn);
+            Player.EnterArea(spawn, definition.IsUnderwater);
             _music.Play(definition.MusicTrack);
             _deathTimeRemaining = 0;
             State = GameSessionState.Playing;

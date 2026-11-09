@@ -20,6 +20,15 @@ namespace TeamUno.Mario.World
         private readonly IReadOnlyList<ItemSpawnDefinition> _items;
         private readonly IReadOnlyList<EnemySpawnDefinition> _enemies;
         private readonly string _musicTrack;
+        private readonly bool _isUnderwater;
+
+        public bool IsUnderwater
+        {
+            get
+            {
+                return _isUnderwater;
+            }
+        }
 
         public int Width
         {
@@ -111,7 +120,8 @@ namespace TeamUno.Mario.World
             IReadOnlyList<EnemySpawnDefinition> enemies,
             string nextAreaId = null,
             string levelStartAreaId = null,
-            string musicTrack = null)
+            string musicTrack = null,
+            bool isUnderwater = false)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(id);
             ArgumentNullException.ThrowIfNull(spawnPoints);
@@ -127,6 +137,7 @@ namespace TeamUno.Mario.World
             _nextAreaId = nextAreaId;
             _levelStartAreaId = id;
             _musicTrack = musicTrack;
+            _isUnderwater = isUnderwater;
             if (levelStartAreaId != null)
             {
                 _levelStartAreaId = levelStartAreaId;
