@@ -7,6 +7,12 @@ namespace TeamUno.Mario.World
         private KeyboardState _previousKeyboardState;
         private GamePadState _previousGamePadState;
 
+        public void ResetInput(KeyboardState keyboardState, GamePadState gamePadState)
+        {
+            _previousKeyboardState = keyboardState;
+            _previousGamePadState = gamePadState;
+        }
+
         public bool Update(KeyboardState keyboardState, GamePadState gamePadState)
         {
             bool keyboardStartPressed =

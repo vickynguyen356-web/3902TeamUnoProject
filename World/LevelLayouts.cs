@@ -139,54 +139,94 @@ namespace TeamUno.Mario.World
             {
                 { "start", new Vector2(96, FloorY) },
                 { "items", new Vector2(832, FloorY) },
-                { "combat", new Vector2(1680, FloorY) },
+                { "combat", new Vector2(1680, 432) },
+                { "ledge", new Vector2(2656, FloorY) },
                 { "bowser", new Vector2(3120, FloorY) },
-                { "pipes", new Vector2(3872, FloorY) }
+                { "pipes", new Vector2(3872, 398) }
             };
 
             List<BlockSpawnDefinition> blocks = new List<BlockSpawnDefinition>();
-            AddBlockRows(blocks, BlockType.Ground, 0, FloorY, columns: 96, rows: 4);
-            blocks.Add(new BlockSpawnDefinition(new Vector2(192, 384), BlockType.Solid));
-            blocks.Add(new BlockSpawnDefinition(new Vector2(288, 384), BlockType.Question, contents: ItemType.Mushroom));
-            blocks.Add(new BlockSpawnDefinition(new Vector2(384, 384), BlockType.Invisible, contents: ItemType.OneUpMushroom));
-            blocks.Add(new BlockSpawnDefinition(new Vector2(480, 384), BlockType.Used));
-            blocks.Add(new BlockSpawnDefinition(new Vector2(576, 384), BlockType.Brick));
-            blocks.Add(new BlockSpawnDefinition(new Vector2(672, 384), BlockType.Empty));
-            blocks.Add(new BlockSpawnDefinition(new Vector2(864, 384), BlockType.Question, contents: ItemType.FireFlower));
-            blocks.Add(new BlockSpawnDefinition(new Vector2(1056, 384), BlockType.Question, contents: ItemType.Star));
-            blocks.Add(new BlockSpawnDefinition(new Vector2(1248, 384), BlockType.Question, contents: ItemType.BlockCoin));
-            blocks.Add(new BlockSpawnDefinition(new Vector2(1440, 384), BlockType.Platform, width: 192, height: 24));
-            AddBlockRows(blocks, BlockType.Solid, 2304, 480, columns: 2, rows: 1);
-            blocks.Add(new BlockSpawnDefinition(new Vector2(2912, 432), BlockType.Pipe, width: 64, height: 96));
-            blocks.Add(new BlockSpawnDefinition(new Vector2(3696, 240), BlockType.Vine, height: 288));
-            blocks.Add(new BlockSpawnDefinition(new Vector2(3744, 240), BlockType.Platform, width: 192, height: 24));
-            blocks.Add(new BlockSpawnDefinition(new Vector2(4032, 398), BlockType.Pipe, width: 64, height: 130,
-                destinationArea: "overworld", destinationSpawn: "start"));
-            blocks.Add(new BlockSpawnDefinition(new Vector2(4320, 30), BlockType.FlagPole, height: 498));
+            List<ItemSpawnDefinition> items = new List<ItemSpawnDefinition>();
+            List<EnemySpawnDefinition> enemies = new List<EnemySpawnDefinition>();
 
-            ItemSpawnDefinition[] items = new ItemSpawnDefinition[]
-            {
-                new ItemSpawnDefinition(ItemType.Mushroom, new Vector2(880, FloorY - 32)),
-                new ItemSpawnDefinition(ItemType.FireFlower, new Vector2(960, FloorY - 32)),
-                new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(1040, 448)),
-                new ItemSpawnDefinition(ItemType.OneUpMushroom, new Vector2(1120, FloorY - 32)),
-                new ItemSpawnDefinition(ItemType.Star, new Vector2(1200, FloorY - 32)),
-                new ItemSpawnDefinition(ItemType.FireFlower, new Vector2(1728, FloorY - 32)),
-                new ItemSpawnDefinition(ItemType.Mushroom, new Vector2(3168, FloorY - 32)),
-                new ItemSpawnDefinition(ItemType.FireFlower, new Vector2(3216, FloorY - 32))
-            };
+            AddBlockRows(blocks, BlockType.Ground, 0, FloorY, columns: 58, rows: 4);
+            AddBlockRows(blocks, BlockType.Ground, 2880, FloorY, columns: 36, rows: 4);
+            AddBlockBumpSpot(blocks, items, enemies);
+            AddItemSpot(blocks, items);
+            AddShellSpot(blocks, items, enemies);
+            enemies.Add(new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(2896, FloorY - Goomba.GoombaHeight)));
+            AddBowserSpot(blocks, items, enemies);
+            AddPipeSpot(blocks);
 
-            EnemySpawnDefinition[] enemies = new EnemySpawnDefinition[]
-            {
-                new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(1920, FloorY - Goomba.GoombaHeight)),
-                new EnemySpawnDefinition(EnemyType.Koopa, new Vector2(2160, FloorY - Koopa.KoopaHeight)),
-                new EnemySpawnDefinition(EnemyType.HammerBro, new Vector2(2592, FloorY - HammerBro.HammerBroHeight)),
-                new EnemySpawnDefinition(EnemyType.PiranhaPlant, new Vector2(2928, 384)),
-                new EnemySpawnDefinition(EnemyType.Bowser, new Vector2(3456, FloorY - Bowser.BowserHeight))
-            };
-
-            return new LevelDefinition("test", 4608, AreaHeight, spawnPoints, blocks, items, enemies, 
+            return new LevelDefinition("test", 4608, AreaHeight, spawnPoints, blocks, items, enemies,
                 musicTrack: OverworldMusic);
+        }
+
+        private static void AddBlockBumpSpot(
+            List<BlockSpawnDefinition> blocks, List<ItemSpawnDefinition> items, List<EnemySpawnDefinition> enemies)
+        {
+            blocks.Add(new BlockSpawnDefinition(new Vector2(96, 384), BlockType.Question, contents: ItemType.BlockCoin));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(192, 384), BlockType.Brick));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(288, 384), BlockType.Used));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(384, 384), BlockType.Solid));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(576, 384), BlockType.Empty));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(576, 432), BlockType.Solid, width: 96));
+            items.Add(new ItemSpawnDefinition(ItemType.FireFlower, new Vector2(608, FloorY - 32)));
+            enemies.Add(new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(104, 384 - Goomba.GoombaHeight)));
+            enemies.Add(new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(200, 384 - Goomba.GoombaHeight)));
+            enemies.Add(new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(296, 384 - Goomba.GoombaHeight)));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(448, 496), BlockType.Pipe, width: 64, height: 32));
+            enemies.Add(new EnemySpawnDefinition(EnemyType.PiranhaPlant, new Vector2(464, 496 - PiranhaPlant.PiranhaHeight)));
+        }
+
+        private static void AddItemSpot(List<BlockSpawnDefinition> blocks, List<ItemSpawnDefinition> items)
+        {
+            blocks.Add(new BlockSpawnDefinition(new Vector2(864, 384), BlockType.Invisible, contents: ItemType.OneUpMushroom));
+            items.Add(new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(872, 448)));
+            AddBlockRows(blocks, BlockType.Solid, 1008, 432, columns: 1, rows: 2);
+            AddBlockRows(blocks, BlockType.Solid, 1344, 432, columns: 1, rows: 2);
+            items.Add(new ItemSpawnDefinition(ItemType.Mushroom, new Vector2(1216, FloorY - 32)));
+            items.Add(new ItemSpawnDefinition(ItemType.Star, new Vector2(1120, FloorY - 32)));
+            items.Add(new ItemSpawnDefinition(ItemType.OneUpMushroom, new Vector2(1072, FloorY - 32)));
+            items.Add(new ItemSpawnDefinition(ItemType.FireFlower, new Vector2(936, FloorY - 32)));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(1056, 336), BlockType.Question, contents: ItemType.Mushroom));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(1200, 336), BlockType.Question, contents: ItemType.FireFlower));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(1296, 336), BlockType.Question, contents: ItemType.Star));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(672, 384), BlockType.Platform, width: 144, height: 24));
+        }
+
+        private static void AddShellSpot(
+            List<BlockSpawnDefinition> blocks, List<ItemSpawnDefinition> items, List<EnemySpawnDefinition> enemies)
+        {
+            blocks.Add(new BlockSpawnDefinition(new Vector2(1632, 432), BlockType.Platform, width: 112, height: 24));
+            items.Add(new ItemSpawnDefinition(ItemType.FireFlower, new Vector2(1584, FloorY - 32)));
+            enemies.Add(new EnemySpawnDefinition(EnemyType.Koopa, new Vector2(1840, FloorY - Koopa.KoopaHeight)));
+            enemies.Add(new EnemySpawnDefinition(EnemyType.Goomba, new Vector2(2048, FloorY - Goomba.GoombaHeight)));
+            enemies.Add(new EnemySpawnDefinition(EnemyType.Koopa, new Vector2(2160, FloorY - Koopa.KoopaHeight)));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(2304, FloorY - TileSize), BlockType.Brick));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(2400, FloorY - TileSize), BlockType.Question, contents: ItemType.BlockCoin));
+            enemies.Add(new EnemySpawnDefinition(EnemyType.HammerBro, new Vector2(2480, FloorY - HammerBro.HammerBroHeight)));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(2448, 456), BlockType.Platform, width: 96, height: 24));
+            AddBlockRows(blocks, BlockType.Solid, 2544, 432, columns: 1, rows: 2);
+        }
+
+        private static void AddBowserSpot(
+            List<BlockSpawnDefinition> blocks, List<ItemSpawnDefinition> items, List<EnemySpawnDefinition> enemies)
+        {
+            AddBlockRows(blocks, BlockType.Solid, 3024, 432, columns: 1, rows: 2);
+            items.Add(new ItemSpawnDefinition(ItemType.FireFlower, new Vector2(3200, FloorY - 32)));
+            enemies.Add(new EnemySpawnDefinition(EnemyType.Bowser, new Vector2(3504, FloorY - Bowser.BowserHeight)));
+            AddBlockRows(blocks, BlockType.Solid, 3712, 432, columns: 1, rows: 2);
+        }
+
+        private static void AddPipeSpot(List<BlockSpawnDefinition> blocks)
+        {
+            blocks.Add(new BlockSpawnDefinition(new Vector2(3856, 398), BlockType.Pipe, width: 64, height: 130,
+                destinationArea: "overworld", destinationSpawn: "start"));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(4000, 432), BlockType.Pipe, width: 64, height: 96));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(4152, 240), BlockType.Vine, height: 288));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(4200, 240), BlockType.Platform, width: 144, height: 24));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(4464, 30), BlockType.FlagPole, height: 498));
         }
 
         private static LevelDefinition CreateBowserParty()

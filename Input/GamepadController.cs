@@ -58,10 +58,6 @@ namespace TeamUno.Mario.Input
                 _session.Reset();
                 resetRequested = true;
             }
-            else if (_session.State == GameSessionState.Paused && WasPressed(state, Buttons.Start))
-            {
-                _session.TogglePause();
-            }
 
             _isJumpHeld = connected && state.IsButtonDown(Buttons.A);
             if (_session.CanControlPlayer && !resetRequested)

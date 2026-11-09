@@ -22,6 +22,7 @@ namespace TeamUno.Mario.World
         private readonly Level _level;
         private readonly Camera _camera;
         private readonly IReadOnlyDictionary<string, LevelDefinition> _areas;
+        private readonly string _startingAreaId;
         private float _deathTimeRemaining;
         private bool _shouldExit;
         private readonly MusicPlayer _music;
@@ -103,6 +104,7 @@ namespace TeamUno.Mario.World
             _level = level;
             _camera = camera;
             _areas = areas;
+            _startingAreaId = level.Definition.LevelStartAreaId;
             _collisionSystem = CollisionSystem.CreateDefault(Progress);
             _music = music;
             Camera.Follow(Player.Bounds);
@@ -311,14 +313,11 @@ namespace TeamUno.Mario.World
         {
             if (State == GameSessionState.Playing)
             {
-                State = GameSessionState.Paused;
-                Player.ClearControls();
-                _music.Pause();
+                OpenMenu();
             }
-            else if (State == GameSessionState.Paused)
+            else if (State == GameSessionState.Menu)
             {
-                State = GameSessionState.Playing;
-                _music.Resume();
+                CloseMenu();
             }
         }
 
@@ -329,9 +328,15 @@ namespace TeamUno.Mario.World
                 return;
             }
 
-            State = GameSessionState.Playing;
-            _timeRemaining = LevelTimerDurationSeconds;
-            _music.Play(Level.Definition.MusicTrack);
+            Reset(_startingAreaId);
+        }
+
+        public void ReturnToTitle()
+        {
+            _music.Stop();
+            _isStarThemePlaying = false;
+            Player.ClearControls();
+            State = GameSessionState.Title;
         }
 
         public void ToggleMute()
@@ -357,12 +362,18 @@ namespace TeamUno.Mario.World
 
         public void Reset()
         {
+            Reset(Level.Definition.Id);
+        }
+
+        private void Reset(string areaId)
+        {
             _music.Stop();
+            _isStarThemePlaying = false;
             ShouldExit = false;
             Progress.Reset();
             _timeRemaining = LevelTimerDurationSeconds;
             Player.Reset();
-            LoadArea(Level.Definition.Id);
+            LoadArea(areaId);
         }
 
         public void LoadArea(string areaId, string spawnId = "start")
