@@ -251,4 +251,11 @@ namespace TeamUno.Mario.Entities.Enemies
         {
             if (!IsDead)
             {
-                
+                // small hop before falling
+                Velocity = new Vector2(0f, DeathFallSpeed);
+            }
+
+            StateMachine.Kill();
+        }
+    }
+}
