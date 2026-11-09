@@ -361,7 +361,11 @@ namespace TeamUno.Mario.World
         public void Reset()
         {
             bool restartingGame = State == GameSessionState.GameOver || State == GameSessionState.Won;
-            string areaId = restartingGame ? _startingAreaId : Level.Definition.Id;
+            string areaId = Level.Definition.Id;
+            if (restartingGame)
+            {
+                areaId = _startingAreaId;
+            }
             _music.Stop();
             _isStarThemePlaying = false;
             ShouldExit = false;

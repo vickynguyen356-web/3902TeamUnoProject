@@ -65,9 +65,12 @@ namespace TeamUno.Mario.Entities.Projectiles
                 return;
             }
 
-            Position = Position + Velocity * elapsedSeconds
-                + new Vector2(0f, Gravity * elapsedSeconds * elapsedSeconds / 2f);
+            Vector2 previousVelocity = Velocity;
             Velocity.Y = Velocity.Y + Gravity * elapsedSeconds;
+
+            // move using the average velocity during this frame
+            Vector2 averageVelocity = (previousVelocity + Velocity) / 2f;
+            Position = Position + averageVelocity * elapsedSeconds;
             Sprite.Update(gameTime, _fireballAnimation);
         }
 

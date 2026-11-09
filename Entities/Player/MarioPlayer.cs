@@ -44,6 +44,7 @@ namespace TeamUno.Mario.Entities.Player
 
         private float _starColorTime;
         private float _damageInvulnerabilityTimeRemaining;
+        private float _damageFlashTime;
         private float _fireballCooldownTimeRemaining;
         private readonly List<IProjectile> _activeFireballs = new List<IProjectile>();
         private readonly ISprite _sprite;
@@ -59,6 +60,7 @@ namespace TeamUno.Mario.Entities.Player
         private Vector2 _velocity;
         private bool _isGrounded;
         private bool _isSwimming;
+        private bool _isDamageFlashDim;
         private FacingDirection _facingDirection = FacingDirection.Left;
         private float _movementDirection;
         private bool _jumpRequested;
@@ -191,8 +193,7 @@ namespace TeamUno.Mario.Entities.Player
         {
             get
             {
-                return !IsDead && _damageInvulnerabilityTimeRemaining > 0f
-                    && (int)(_damageInvulnerabilityTimeRemaining / DamageFlashDurationSeconds) % 2 == 0;
+                return !IsDead && _damageInvulnerabilityTimeRemaining > 0f && _isDamageFlashDim;
             }
         }
 
@@ -326,9 +327,16 @@ namespace TeamUno.Mario.Entities.Player
             int previousHeight = Bounds.Height;
             bool wasChangingForm = IsChangingForm;
             _fireballCooldownTimeRemaining = Math.Max(0f, _fireballCooldownTimeRemaining - elapsedSeconds);
-            _activeFireballs.RemoveAll(fireball => fireball.IsDead);
+            for (int index = _activeFireballs.Count - 1; index >= 0; index = index - 1)
+            {
+                if (_activeFireballs[index].IsDead)
+                {
+                    _activeFireballs.RemoveAt(index);
+                }
+            }
             _damageInvulnerabilityTimeRemaining = Math.Max(
                 0f, _damageInvulnerabilityTimeRemaining - elapsedSeconds);
+            UpdateDamageFlash(elapsedSeconds);
             if (wasChangingForm)
             {
                 ClearInputRequests();
@@ -366,7 +374,14 @@ namespace TeamUno.Mario.Entities.Player
 
                 if (_jumpRequested && (IsGrounded || IsSwimming) && !IsCrouching)
                 {
-                    _velocity.Y = IsSwimming ? SwimStrokeVelocity : JumpVelocity;
+                    if (IsSwimming)
+                    {
+                        _velocity.Y = SwimStrokeVelocity;
+                    }
+                    else
+                    {
+                        _velocity.Y = JumpVelocity;
+                    }
                     IsGrounded = false;
                     if (IsSwimming)
                     {
@@ -450,6 +465,16 @@ namespace TeamUno.Mario.Entities.Player
 
         private void UpdateHorizontalVelocity(float elapsedSeconds)
         {
+            float acceleration = HorizontalAcceleration;
+            float maximumSpeed = MaximumHorizontalSpeed;
+            float friction = HorizontalFriction;
+            if (IsSwimming)
+            {
+                acceleration = SwimAcceleration;
+                maximumSpeed = MaximumSwimSpeed;
+                friction = SwimFriction;
+            }
+
             if (_movementDirection != 0)
             {
                 if (_movementDirection > 0)
@@ -464,15 +489,12 @@ namespace TeamUno.Mario.Entities.Player
 
             if (_movementDirection != 0 && !IsCrouching)
             {
-                float acceleration = IsSwimming ? SwimAcceleration : HorizontalAcceleration;
-                float maximumSpeed = IsSwimming ? MaximumSwimSpeed : MaximumHorizontalSpeed;
                 float acceleratedVelocityX = _velocity.X
                     + _movementDirection * acceleration * elapsedSeconds;
                 _velocity.X = MathHelper.Clamp(acceleratedVelocityX, -maximumSpeed, maximumSpeed);
                 return;
             }
 
-            float friction = IsSwimming ? SwimFriction : HorizontalFriction;
             float speedReduction = friction * elapsedSeconds;
             if (_velocity.X > 0)
             {
@@ -655,6 +677,8 @@ namespace TeamUno.Mario.Entities.Player
         {
             _starColorTime = 0f;
             _damageInvulnerabilityTimeRemaining = 0f;
+            _damageFlashTime = 0f;
+            _isDamageFlashDim = false;
             _fireballCooldownTimeRemaining = 0f;
             _activeFireballs.Clear();
             IsSwimming = false;
@@ -714,9 +738,28 @@ namespace TeamUno.Mario.Entities.Player
             }
         }
 
+        private void UpdateDamageFlash(float elapsedSeconds)
+        {
+            if (IsDead || _damageInvulnerabilityTimeRemaining <= 0f)
+            {
+                _damageFlashTime = 0f;
+                _isDamageFlashDim = false;
+                return;
+            }
+
+            _damageFlashTime = _damageFlashTime + elapsedSeconds;
+            while (_damageFlashTime >= DamageFlashDurationSeconds)
+            {
+                _damageFlashTime = _damageFlashTime - DamageFlashDurationSeconds;
+                _isDamageFlashDim = !_isDamageFlashDim;
+            }
+        }
+
         private void StartInvulnerabilityFrames()
         {
             _damageInvulnerabilityTimeRemaining = DamageInvulnerabilityDurationSeconds;
+            _damageFlashTime = 0f;
+            _isDamageFlashDim = false;
         }
 
         public void SetCrouching(bool crouching)
