@@ -4,6 +4,7 @@ using TeamUno.Mario.Interfaces;
 using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Projectiles;
 using TeamUno.Mario.Audio;
+using TeamUno.Mario.World;
 
 namespace TeamUno.Mario.Collision.Handlers
 {
@@ -17,6 +18,13 @@ namespace TeamUno.Mario.Collision.Handlers
     internal class MarioEnemyCollisionHandler : ICollisionHandler<MarioPlayer, IEnemy>
     {
         private const float StompBounceVelocity = -350f;
+        private readonly GameProgress _progress;
+
+        public MarioEnemyCollisionHandler(GameProgress progress)
+        {
+            System.ArgumentNullException.ThrowIfNull(progress);
+            _progress = progress;
+        }
 
         public void Handle(MarioPlayer first, IEnemy second, CollisionInfo info)
         {
@@ -38,6 +46,7 @@ namespace TeamUno.Mario.Collision.Handlers
                 if (enemy != null && !enemy.IsDead)
                 {
                     enemy.Kill();
+                    _progress.AddScore(100);
                 }
 
                 return;
@@ -62,11 +71,13 @@ namespace TeamUno.Mario.Collision.Handlers
                 if (shell != null)
                 {
                     first.AddProjectile(shell);
+                    _progress.AddScore(100);
                 }
             }
             else
             {
                 second.Kill();
+                _progress.AddScore(100);
             }
 
             SoundPlayer.Play("Audio/SoundEffects/stompswim");

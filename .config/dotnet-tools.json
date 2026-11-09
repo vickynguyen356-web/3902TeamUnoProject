@@ -6,7 +6,15 @@
       "version": "3.8.5.1",
       "commands": [
         "mgcb"
-      ]
+      ],
+      "rollForward": false
+    },
+    "dotnet-mgcb-editor-windows": {
+      "version": "3.8.5.1",
+      "commands": [
+        "mgcb-editor-windows"
+      ],
+      "rollForward": false
     }
   }
 }

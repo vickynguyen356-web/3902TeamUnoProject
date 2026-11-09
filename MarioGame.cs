@@ -25,8 +25,11 @@ namespace TeamUno.Mario
         private GameSession _gameSession;
         private GameRenderer _gameRenderer;
         private KeyboardController _controller;
+        private GamepadController _gamepadController;
         private KeyboardState _previousKeys;
+        private GamePadState _previousGamePad;
         private MenuScreen _menu;
+        private readonly TitleScreen _titleScreen = new TitleScreen();
 
         public MarioGame()
         {
@@ -51,7 +54,7 @@ namespace TeamUno.Mario
             Texture2D marioTexture = Content.Load<Texture2D>("Sprites/mario");
             Texture2D enemyTexture = Content.Load<Texture2D>("Sprites/enemiesSprites");
             Texture2D itemTexture = Content.Load<Texture2D>("Sprites/items");
-            Texture2D backgroundTexture = Content.Load<Texture2D>("background");
+            Texture2D titleBackgroundTexture = Content.Load<Texture2D>("super-mario-bros-bg");
             Texture2D blockTexture = Content.Load<Texture2D>("Sprites/blocksspritesheetbg");
 
             ProjectileFactory.Initialize(enemyTexture, itemTexture);
@@ -74,32 +77,58 @@ namespace TeamUno.Mario
 
             KeyBindings bindings = new KeyBindings();
             _controller = new KeyboardController(player, _gameSession, bindings);
+            _gamepadController = new GamepadController(player, _gameSession);
             _menu = new MenuScreen(_gameSession, bindings, _gameSession.AreaIds);
-            _gameRenderer = new GameRenderer(GraphicsDevice, backgroundTexture, blockTexture);
+            _gameRenderer = new GameRenderer(
+                GraphicsDevice, titleBackgroundTexture, blockTexture);
         }
 
         protected override void Update(GameTime gameTime)
         {
             KeyboardState keys = Keyboard.GetState();
+            GamePadState gamePad = GamePad.GetState(PlayerIndex.One);
 
-            if (_gameSession.State == GameSessionState.Menu)
+            if (_gameSession.State == GameSessionState.Title)
             {
-                _menu.Update();
-                if (_gameSession.State != GameSessionState.Menu)
+                if (_titleScreen.Update(keys, gamePad))
                 {
-                    _controller.ResetInput();   // keys held in the menu aren't new presses
+                    _gameSession.StartGame();
+                    _controller.ResetInput();
+                    _gamepadController.ResetInput();
                 }
             }
-            else if (keys.IsKeyDown(Keys.Escape) && _previousKeys.IsKeyUp(Keys.Escape))
+            else if (_gameSession.State == GameSessionState.Menu)
+            {
+                _menu.Update(gamePad);
+                _controller.ResetInput();
+                _gamepadController.ResetInput();
+            }
+            else if ((keys.IsKeyDown(Keys.Escape) && _previousKeys.IsKeyUp(Keys.Escape))
+                || (gamePad.IsButtonDown(Buttons.Start)
+                    && (!_previousGamePad.IsConnected || _previousGamePad.IsButtonUp(Buttons.Start))
+                    && _gameSession.State == GameSessionState.Playing))
             {
                 _menu.Open();
             }
             else
             {
-                _controller.Update();
+                bool endScreen = _gameSession.State == GameSessionState.Won
+                    || _gameSession.State == GameSessionState.GameOver;
+                if (endScreen && keys.IsKeyDown(Keys.Enter) && _previousKeys.IsKeyUp(Keys.Enter))
+                {
+                    _gameSession.Reset();
+                    _controller.ResetInput();
+                    _gamepadController.ResetInput();
+                }
+                else
+                {
+                    _controller.Update();
+                    _gamepadController.Update();
+                }
             }
 
             _previousKeys = keys;
+            _previousGamePad = gamePad;
 
             if (_gameSession.ShouldExit)
             {
@@ -107,7 +136,7 @@ namespace TeamUno.Mario
                 return;
             }
 
-            _gameSession.Update(gameTime, _controller.IsJumpHeld);
+            _gameSession.Update(gameTime, _controller.IsJumpHeld || _gamepadController.IsJumpHeld);
             Window.Title = "Team Uno Mario - " + _gameSession.Level.Definition.Id;
 
             base.Update(gameTime);
@@ -118,15 +147,23 @@ namespace TeamUno.Mario
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            _gameRenderer.DrawBackground(GraphicsDevice, _spriteBatch, GraphicsDevice.Viewport.Bounds);
+            _gameRenderer.DrawBackground(
+                _spriteBatch,
+                GraphicsDevice.Viewport.Bounds,
+                isTitleScreen: _gameSession.State == GameSessionState.Title,
+                cameraX: _gameSession.Camera.Position.X);
             _spriteBatch.End();
 
-            _spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _gameSession.Camera.Transform);
-            _gameRenderer.DrawWorld(_spriteBatch, _gameSession);
-            _spriteBatch.End();
+            if (_gameSession.State != GameSessionState.Title)
+            {
+                _spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _gameSession.Camera.Transform);
+                _gameRenderer.DrawWorld(_spriteBatch, _gameSession);
+                _spriteBatch.End();
+            }
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             _gameRenderer.DrawHud(_spriteBatch, _gameSession, _menu, _font, GraphicsDevice.Viewport.Bounds);
+            _gameRenderer.DrawTransitionOverlay(_spriteBatch, _gameSession, GraphicsDevice.Viewport.Bounds);
             _spriteBatch.End();
 
             base.Draw(gameTime);

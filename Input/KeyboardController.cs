@@ -17,6 +17,7 @@ namespace TeamUno.Mario.Input
         private readonly KeyBindings _bindings;
         private readonly ICommand _moveLeftCommand;
         private readonly ICommand _moveRightCommand;
+        private readonly ICommand _stopMovingCommand;
         private readonly ICommand _crouchCommand;
         private readonly ICommand _standCommand;
         private readonly ICommand _jumpCommand;
@@ -50,6 +51,7 @@ namespace TeamUno.Mario.Input
 
             _moveLeftCommand = new MoveCommand(player, -1);
             _moveRightCommand = new MoveCommand(player, 1);
+            _stopMovingCommand = new MoveCommand(player, 0);
             _crouchCommand = new CrouchCommand(player, true);
             _standCommand = new CrouchCommand(player, false);
             _quitCommand = new QuitCommand(gameActions);
@@ -175,6 +177,15 @@ namespace TeamUno.Mario.Input
                 || opposingClimb)
             {
                 _pendingCommands.Add(_stopClimbingCommand);
+            }
+
+            bool opposingMovement = _pendingCommands.Contains(_moveLeftCommand)
+                && _pendingCommands.Contains(_moveRightCommand);
+            if (!_pendingCommands.Contains(_moveLeftCommand)
+                && !_pendingCommands.Contains(_moveRightCommand)
+                || opposingMovement)
+            {
+                _pendingCommands.Add(_stopMovingCommand);
             }
         }
 
