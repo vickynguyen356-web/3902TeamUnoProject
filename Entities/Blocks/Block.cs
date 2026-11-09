@@ -293,4 +293,25 @@ namespace TeamUno.Mario.Entities.Blocks
             }
         }
 
-        private void DrawVine(Sprit
+        private void DrawVine(SpriteBatch spriteBatch, Texture2D blockTexture)
+        {
+            Rectangle brightGreenPixel = new Rectangle(10, 150, 1, 1);
+            Rectangle darkGreenPixel = new Rectangle(20, 150, 1, 1);
+            int stemWidth = 6;
+            int stemX = Bounds.Center.X - stemWidth / 2;
+
+            spriteBatch.Draw(blockTexture,
+                new Rectangle(stemX, Bounds.Top, stemWidth, Bounds.Height),
+                brightGreenPixel, Color.White);
+
+            for (int y = Bounds.Top + 12, leafIndex = 0; y < Bounds.Bottom; y += 24, leafIndex++)
+            {
+                int leafY = Math.Min(y, Bounds.Bottom - 6);
+                int leafX = leafIndex % 2 == 0 ? stemX - 8 : stemX + stemWidth;
+                Rectangle leafSource = leafIndex % 2 == 0 ? brightGreenPixel : darkGreenPixel;
+                spriteBatch.Draw(blockTexture,
+                    new Rectangle(leafX, leafY, 10, 6), leafSource, Color.White);
+            }
+        }
+    }
+}
