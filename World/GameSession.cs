@@ -317,8 +317,6 @@ namespace TeamUno.Mario.World
             {
                 OpenMenu();
                 SoundPlayer.Play("Audio/SoundEffects/pause");
-                State = GameSessionState.Paused;
-                Player.ClearControls();
                 _music.Pause();
             }
             else if (State == GameSessionState.Menu)
