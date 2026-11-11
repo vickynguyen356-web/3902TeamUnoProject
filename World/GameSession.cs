@@ -167,6 +167,7 @@ namespace TeamUno.Mario.World
             Player.UpdatePosition(elapsedSeconds);
             Level.CollectProjectiles(Player);
             UpdateStarMusic();
+            Level.ListenerPosition = new Vector2(_player.Bounds.Center.X, _player.Bounds.Center.Y);
             Level.Update(gameTime);
             _collisionSystem.Update(this, previousPlayerBounds, isJumpHeld);
             Level.CollectProjectiles(Player);
@@ -315,6 +316,8 @@ namespace TeamUno.Mario.World
             if (State == GameSessionState.Playing)
             {
                 OpenMenu();
+                SoundPlayer.Play("Audio/SoundEffects/pause");
+                _music.Pause();
             }
             else if (State == GameSessionState.Menu)
             {

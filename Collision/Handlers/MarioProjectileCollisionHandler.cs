@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Player;
 using TeamUno.Mario.Entities.Projectiles;
 using TeamUno.Mario.Interfaces;
+using TeamUno.Mario.Audio;
 
 namespace TeamUno.Mario.Collision.Handlers
 {
@@ -67,6 +68,7 @@ namespace TeamUno.Mario.Collision.Handlers
             {
                 if (shell.IsMoving)
                 {
+                    SoundPlayer.Play("Audio/SoundEffects/stompswim");
                     shell.Stop();
                 }
                 else
@@ -80,7 +82,7 @@ namespace TeamUno.Mario.Collision.Handlers
                     {
                         kickDirection = -1f;
                     }
-
+                    SoundPlayer.Play("Audio/SoundEffects/kickkill");
                     shell.Kick(kickDirection);
                 }
 

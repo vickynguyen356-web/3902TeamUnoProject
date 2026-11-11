@@ -64,11 +64,14 @@ namespace TeamUno.Mario.Entities.Player
         private FacingDirection _facingDirection = FacingDirection.Left;
         private float _movementDirection;
         private bool _jumpRequested;
+        private bool _playJumpSoundPending;
         private bool _fireballRequested;
         private bool _pipeEntryRequested;
         private bool _isSlidingOnFlagpole;
         private bool _isClimbingFlagpole;
         private bool _isClimbingVine;
+        private const float VineRegrabLockoutSeconds = 0.25f;
+        private float _vineRegrabLockoutRemaining;
         private float _climbDirection;
         private float _flagpoleTopPositionY;
         private float _flagpoleBottomPositionY;
@@ -336,6 +339,8 @@ namespace TeamUno.Mario.Entities.Player
             }
             _damageInvulnerabilityTimeRemaining = Math.Max(
                 0f, _damageInvulnerabilityTimeRemaining - elapsedSeconds);
+            _vineRegrabLockoutRemaining = Math.Max(0f, _vineRegrabLockoutRemaining - elapsedSeconds);
+
             UpdateDamageFlash(elapsedSeconds);
             if (wasChangingForm)
             {
@@ -377,17 +382,15 @@ namespace TeamUno.Mario.Entities.Player
                     if (IsSwimming)
                     {
                         _velocity.Y = SwimStrokeVelocity;
+                        SoundPlayer.Play("Audio/SoundEffects/stompswim");
                     }
                     else
                     {
                         _velocity.Y = JumpVelocity;
+                        _playJumpSoundPending = true;
                     }
                     IsGrounded = false;
-                    if (IsSwimming)
-                    {
-                        SoundPlayer.Play(SwimSound);
-                    }
-                    else if (IsSmall)
+                    if (IsSmall)
                     {
                         SoundPlayer.Play("Audio/SoundEffects/jumpsmall");
                     }
@@ -396,7 +399,7 @@ namespace TeamUno.Mario.Entities.Player
                         SoundPlayer.Play("Audio/SoundEffects/jump");
                     }
                 }
-            }
+            }     
 
             if (_fireballRequested && _fireballCooldownTimeRemaining <= 0f
                 && _activeFireballs.Count < MaximumActiveFireballs
@@ -545,6 +548,7 @@ namespace TeamUno.Mario.Entities.Player
             Position = new Vector2(spawnFeet.X, spawnFeet.Y - Bounds.Height);
             _velocity = Vector2.Zero;
             IsGrounded = false;
+            _playJumpSoundPending = false;
             _climbDirection = 0;
             ClearPipeEntryRequest();
             StopFlagpoleSlide();
@@ -568,9 +572,14 @@ namespace TeamUno.Mario.Entities.Player
 
         internal void TryClimbVine(Rectangle vineBounds)
         {
-            if (IsDead || IsChangingForm || IsSwimming || (_climbDirection == 0 && !_isClimbingVine))
+            if (IsDead || IsChangingForm || IsSwimming || _vineRegrabLockoutRemaining > 0f || (_climbDirection == 0 && !_isClimbingVine))
             {
                 return;
+            }
+
+            if (!_isClimbingVine)
+            {
+                SoundPlayer.Play("Audio/SoundEffects/vine");
             }
 
             _isClimbingVine = true;
@@ -591,6 +600,11 @@ namespace TeamUno.Mario.Entities.Player
 
         private void StopVineClimb()
         {
+            if (_isClimbingVine)
+            {
+                _vineRegrabLockoutRemaining = VineRegrabLockoutSeconds;
+            }
+
             _isClimbingVine = false;
             _velocity = new Vector2(_velocity.X, 0);
         }
@@ -640,7 +654,26 @@ namespace TeamUno.Mario.Entities.Player
         {
             _stateMachine.UpdateAnimationState(
                 IsGrounded, _velocity, IsSlidingOnFlagpole || _isClimbingVine, IsSwimming);
-            _sprite.Update(gameTime, GetAnimation());
+
+            if (_playJumpSoundPending)
+            {
+                _playJumpSoundPending = false;
+                if (!_isClimbingVine)
+                {
+                    string jumpSound = IsSmall
+                        ? "Audio/SoundEffects/jumpsmall"
+                        : "Audio/SoundEffects/jump";
+                    SoundPlayer.Play(jumpSound);
+                }
+            }
+
+            GameTime animationTime = gameTime;
+            bool holdingStillOnVine = _isClimbingVine && Math.Abs(_velocity.Y) < 0.01f;
+            if (holdingStillOnVine)
+            {
+                animationTime = new GameTime();   // zero elapsed time, so the frame doesn't advance
+            }
+            _sprite.Update(animationTime, GetAnimation());
         }
 
         private SpriteAnimation GetAnimation()
@@ -692,6 +725,7 @@ namespace TeamUno.Mario.Entities.Player
             _isSlidingOnFlagpole = false;
             _isClimbingFlagpole = false;
             _isClimbingVine = false;
+            _playJumpSoundPending = false;
             _climbDirection = 0;
             FacingDirection = FacingDirection.Left;
             _stateMachine.Reset();

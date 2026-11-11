@@ -1,3 +1,4 @@
+using TeamUno.Mario.Audio;
 using TeamUno.Mario.Entities.Enemies;
 using TeamUno.Mario.Entities.Projectiles;
 using TeamUno.Mario.Interfaces;
@@ -62,7 +63,12 @@ namespace TeamUno.Mario.Collision.Handlers
 
             if (isMarioFireball)
             {
+                SoundPlayer.Play("Audio/SoundEffects/kickkill");
                 second.Kill();
+            }
+            else if (isMovingShell)
+            {
+                SoundPlayer.Play("Audio/SoundEffects/kickkill");
             }
         }
     }
