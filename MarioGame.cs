@@ -87,6 +87,7 @@ namespace TeamUno.Mario
         {
             KeyboardState keys = Keyboard.GetState();
             GamePadState gamePad = GamePad.GetState(PlayerIndex.One);
+            GameSessionState previousState = _gameSession.State;
 
             if (_gameSession.State == GameSessionState.Title)
             {
@@ -99,16 +100,17 @@ namespace TeamUno.Mario
             }
             else if (_gameSession.State == GameSessionState.Menu)
             {
-                _menu.Update(gamePad);
+                _menu.Update(keys, gamePad);
                 _controller.ResetInput();
                 _gamepadController.ResetInput();
+                _titleScreen.ResetInput(keys, gamePad);
             }
-            else if ((keys.IsKeyDown(Keys.Escape) && _previousKeys.IsKeyUp(Keys.Escape))
-                || (gamePad.IsButtonDown(Buttons.Start)
-                    && (!_previousGamePad.IsConnected || _previousGamePad.IsButtonUp(Buttons.Start))
-                    && _gameSession.State == GameSessionState.Playing))
+            else if (_gameSession.State == GameSessionState.Playing
+                && ((keys.IsKeyDown(Keys.Escape) && _previousKeys.IsKeyUp(Keys.Escape))
+                    || (gamePad.IsButtonDown(Buttons.Start)
+                        && (!_previousGamePad.IsConnected || _previousGamePad.IsButtonUp(Buttons.Start)))))
             {
-                _menu.Open();
+                _gameSession.OpenMenu();
             }
             else
             {
@@ -125,6 +127,13 @@ namespace TeamUno.Mario
                     _controller.Update();
                     _gamepadController.Update();
                 }
+            }
+
+            if (previousState != GameSessionState.Menu && _gameSession.State == GameSessionState.Menu)
+            {
+                _menu.Open(keys, gamePad);
+                _controller.ResetInput();
+                _gamepadController.ResetInput();
             }
 
             _previousKeys = keys;

@@ -8,30 +8,12 @@ namespace TeamUno.Mario.Entities.Player
     {
         public const float FormTransitionDurationSeconds = 0.7f;
         private const float StarDuration = 10f;
-        private float _starTimeRemaining;
-
-        public bool IsStarActive
-        {
-            get { return _starTimeRemaining > 0f; }
-        }
-
-        public void ActivateStar()
-        {
-            if (!IsDead)
-            {
-                _starTimeRemaining = StarDuration;
-            }
-        }
-
-        public void UpdateStar(float elapsedSeconds)
-        {
-            _starTimeRemaining = Math.Max(0f, _starTimeRemaining - elapsedSeconds);
-        }
 
         private const float MinimumRunningSpeed = 15f;
         private const float FireballPoseDurationSeconds = 0.12f;
 
         private readonly PlayerForm _startingForm;
+        private float _starTimeRemaining;
         private float _throwTimeRemaining;
         private float _transitionTimeRemaining;
         private PlayerForm _transitionStartForm;
@@ -97,6 +79,14 @@ namespace TeamUno.Mario.Entities.Player
             }
         }
 
+        public bool IsStarActive
+        {
+            get
+            {
+                return _starTimeRemaining > 0f;
+            }
+        }
+
         public bool IsThrowing
         {
             get
@@ -134,6 +124,19 @@ namespace TeamUno.Mario.Entities.Player
             _startingForm = startingForm;
             _form = startingForm;
             ResetFormTransition();
+        }
+
+        public void ActivateStar()
+        {
+            if (!IsDead)
+            {
+                _starTimeRemaining = StarDuration;
+            }
+        }
+
+        public void UpdateStar(float elapsedSeconds)
+        {
+            _starTimeRemaining = Math.Max(0f, _starTimeRemaining - elapsedSeconds);
         }
 
         public void UpdateThrowTimer(float elapsedSeconds)
@@ -188,7 +191,8 @@ namespace TeamUno.Mario.Entities.Player
             return true;
         }
 
-        public void UpdateAnimationState(bool isGrounded, Vector2 velocity, bool isClimbing = false)
+        public void UpdateAnimationState(
+            bool isGrounded, Vector2 velocity, bool isClimbing = false, bool isSwimming = false)
         {
             if (IsDead)
             {
@@ -209,6 +213,10 @@ namespace TeamUno.Mario.Entities.Player
             else if (IsThrowing)
             {
                 AnimationState = EntityAnimationState.ThrowFireball;
+            }
+            else if (isSwimming)
+            {
+                AnimationState = EntityAnimationState.Swim;
             }
             else if (!isGrounded)
             {

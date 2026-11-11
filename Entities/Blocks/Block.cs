@@ -26,8 +26,12 @@ namespace TeamUno.Mario.Entities.Blocks
     {
         private const int DefaultWidth = 48;
         private const int DefaultHeight = 48;
+        private const int FlagpoleSourceHeight = 153;
+        private const int FlagpoleBaseSize = 48;
         private const float BreakAnimationDurationSeconds = 0.55f;
         private const float DebrisGravity = 720f;
+        private static readonly Rectangle FlagpoleSource = new Rectangle(139, 0, 16, FlagpoleSourceHeight);
+        private static readonly Rectangle FlagpoleBaseSource = new Rectangle(51, 0, 16, 16);
         private static readonly Rectangle BrickSource = new Rectangle(17, 0, 16, 16);
 
         private BlockSprite _sprite;
@@ -258,6 +262,17 @@ namespace TeamUno.Mario.Entities.Blocks
             if (Type == BlockType.Vine)
             {
                 DrawVine(spriteBatch, blockTexture);
+                return;
+            }
+
+            if (Type == BlockType.FlagPole)
+            {
+                // keep the base one tile tall instead of stretching it with the pole
+                Rectangle pole = new Rectangle(Bounds.X, Bounds.Y, Width, Math.Max(0, Height - FlagpoleBaseSize));
+                Rectangle poleBase = new Rectangle(
+                    Bounds.Center.X - FlagpoleBaseSize / 2, Bounds.Bottom - FlagpoleBaseSize, FlagpoleBaseSize, FlagpoleBaseSize);
+                spriteBatch.Draw(blockTexture, pole, FlagpoleSource, Color.White);
+                spriteBatch.Draw(blockTexture, poleBase, FlagpoleBaseSource, Color.White);
                 return;
             }
 
