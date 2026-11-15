@@ -1,0 +1,25 @@
+Author of code review: Ishika
+Date of code review: 11/15/26
+Sprint number: 4
+Name of .cs file reviewed: MenuScreen.cs
+Author of .cs file: Vy, Jake
+Minutes taken for review: 15
+Readability:
+The Page enum and methods like UpdateNavigation, UpdateRebinding, and Activate make it easy to follow the menu flow.
+Code quality:
+The main menu labels are stored separately from the numeric cases in ActivateMain, so changing the order in one place could make an option trigger the wrong action.
+Hypothetical change:
+Adding a Save game option would be easier if each menu label and its action were kept together.
+
+Author of code review: Ishika
+Date of code review: 11/15/26
+Sprint number: 4
+Name of .cs file reviewed: KeyBindings.cs
+Author of .cs file: Vy
+Minutes taken for review: 20
+Readability:
+The dictionary makes it clear which default key belongs to each game action, and Set is easy to follow.
+Code quality:
+Bindings are only kept in memory, so custom controls are lost when the game is restarted.
+Hypothetical change:
+Saving the bindings when they change and loading them when the game starts would let players keep their control settings between sessions.
