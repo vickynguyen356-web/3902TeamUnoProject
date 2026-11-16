@@ -19,7 +19,7 @@ namespace TeamUno.Mario.Entities.Player
         private const float DamageFlashOpacity = 0.3f;
         private const float FireballCooldownSeconds = 0.3f;
         private const int MaximumActiveFireballs = 2;
-        private const string SwimSound = "Audio/SoundEffects/stompswim";
+        //private const string SwimSound = "Audio/SoundEffects/stompswim";
         private const float SwimAcceleration = 700f;
         private const float MaximumSwimSpeed = 140f;
         private const float SwimFriction = 600f;
