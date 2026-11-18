@@ -1,0 +1,40 @@
+READABILITY REVIEW
+
+Author of review: Jake Hanna
+Date: November 8, 2026
+Sprint: 4
+File reviewed: MusicPlayer.cs
+Author of code: Vy
+Minutes spent: 30
+
+The methods are short, and names like Play, Pause, and Resume make
+the class easy to follow. Keeping the music handling together also
+makes it easy to find where playback changes happen.
+
+The name _interrupt takes more reading to understand. It holds
+temporary music, like the star theme, while the level music is
+paused. Something like _temporaryTheme, with similar names for the
+related methods, would make that easier to follow.
+
+CODE QUALITY REVIEW
+
+Author of review: Jake Hanna
+Date: November 8, 2026
+Sprint: 4
+File reviewed: KeyBindings.cs
+Author of code: Vy
+
+The dictionary makes the customizable controls easy to manage.
+Swapping keys when a binding is already taken also helps avoid
+conflicts.
+
+The reserved keys have to be kept in sync with the fixed shortcuts
+in KeyboardController. Adding a shortcut means remembering to
+update both files. If one gets missed, the controls menu could let
+someone assign a key that already has another purpose.
+
+Hypothetical change:
+Add F10 as a shortcut to another testing room. We would need to
+add the command in KeyboardController and reserve F10 here.
+Keeping the fixed shortcut definitions together would make this
+easier to maintain.

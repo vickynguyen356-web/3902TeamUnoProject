@@ -23,7 +23,7 @@ namespace TeamUno.Mario.Entities.Items
         public override void Update(GameTime gameTime)
         {
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            elapsedSeconds = System.Math.Min(elapsedSeconds, 1f / 30f);
+            elapsedSeconds = System.Math.Min(elapsedSeconds, MaximumElapsedSeconds);
             // gravity brings the star back down to the terrain
             Velocity.Y = Velocity.Y + Gravity * elapsedSeconds;
             Position = Position + Velocity * elapsedSeconds;

@@ -12,98 +12,25 @@ namespace TeamUno.Mario.Entities.Enemies
 {
     internal abstract class Enemy : IEnemy, IProjectileEmitter, ICollidable
     {
+        private const float MaximumElapsedSeconds = 1f / 30f;
+        private const int GroundProbeDepth = 4;
+
         protected readonly EnemyStateMachine StateMachine;
         protected readonly ISprite Sprite;
         protected Vector2 Velocity;
         private IReadOnlyList<Block> _worldBlocks;
         private const float Gravity = 1500f;
         private const float MaximumFallSpeed = 700f;
+        private const float DeathFallSpeed = -250f;
 
-        public void UpdateGravity(GameTime gameTime)
+        public void UpdateDeathFall(GameTime gameTime)
         {
-            if (IsDead || this is PiranhaPlant)
-            {
-                return;
-            }
-
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             elapsedSeconds = Math.Min(elapsedSeconds, 1f / 30f);
+
+            Velocity.X = 0f;
             Velocity.Y = Math.Min(Velocity.Y + Gravity * elapsedSeconds, MaximumFallSpeed);
             Position = new Vector2(Position.X, Position.Y + Velocity.Y * elapsedSeconds);
-        }
-
-        public void SetWorldBlocks(IReadOnlyList<Block> blocks)
-        {
-            _worldBlocks = blocks;
-        }
-
-        protected bool TryWalk(float elapsedSeconds)
-        {
-            float nextX = Position.X + Velocity.X * elapsedSeconds;
-            Rectangle nextBounds = new Rectangle((int)nextX, (int)Position.Y, Width, Height);
-            if (!CanWalkTo(nextBounds))
-            {
-                return false;
-            }
-
-            Position = new Vector2(nextX, Position.Y);
-            return true;
-        }
-
-        private bool CanWalkTo(Rectangle nextBounds)
-        {
-            if (_worldBlocks == null || Velocity.X == 0f)
-            {
-                return true;
-            }
-
-            int aheadX = nextBounds.Right;
-            if (Velocity.X < 0f)
-            {
-                aheadX = nextBounds.Left - 1;
-            }
-
-            // check for ground under the enemy and just ahead of its feet
-            Rectangle groundAhead = new Rectangle(aheadX, Bounds.Bottom, 1, 4);
-            Rectangle groundBelow = new Rectangle(Bounds.Left, Bounds.Bottom, Width, 4);
-            bool hasGroundBelow = false;
-            bool hasGroundAhead = false;
-
-            foreach (Block block in _worldBlocks)
-            {
-                if (block.IsDeleted || block.Type == BlockType.Empty || block.Type == BlockType.Invisible
-                    || block.Type == BlockType.Vine
-                    || block.Type == BlockType.FlagPole)
-                {
-                    continue;
-                }
-
-                // platforms support walking but do not act as side walls
-                if (block.Type != BlockType.Platform && nextBounds.Intersects(block.Bounds))
-                {
-                    return false;
-                }
-
-                if (block.Bounds.Top >= Bounds.Bottom)
-                {
-                    if (groundBelow.Intersects(block.Bounds))
-                    {
-                        hasGroundBelow = true;
-                    }
-                    if (groundAhead.Intersects(block.Bounds))
-                    {
-                        hasGroundAhead = true;
-                    }
-                }
-            }
-
-            // turn before walking off the surface we are standing on
-            if (hasGroundBelow && !hasGroundAhead)
-            {
-                return false;
-            }
-
-            return true;
         }
 
         private Vector2 _position;
@@ -176,6 +103,13 @@ namespace TeamUno.Mario.Entities.Enemies
             }
         }
 
+        protected virtual Color TintColor
+        {
+            get
+            {
+                return Color.White;
+            }
+        }
         public abstract void Update(GameTime gameTime);
 
         public IReadOnlyList<IProjectile> Projectiles
@@ -184,6 +118,93 @@ namespace TeamUno.Mario.Entities.Enemies
             {
                 return _readOnlyProjectiles;
             }
+        }
+
+        public void UpdateGravity(GameTime gameTime)
+        {
+            if (IsDead || this is PiranhaPlant)
+            {
+                return;
+            }
+
+            float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            elapsedSeconds = Math.Min(elapsedSeconds, MaximumElapsedSeconds);
+            Velocity.Y = Math.Min(Velocity.Y + Gravity * elapsedSeconds, MaximumFallSpeed);
+            Position = new Vector2(Position.X, Position.Y + Velocity.Y * elapsedSeconds);
+        }
+
+        public void SetWorldBlocks(IReadOnlyList<Block> blocks)
+        {
+            _worldBlocks = blocks;
+        }
+
+        protected bool TryWalk(float elapsedSeconds)
+        {
+            float nextX = Position.X + Velocity.X * elapsedSeconds;
+            Rectangle nextBounds = new Rectangle((int)nextX, (int)Position.Y, Width, Height);
+            if (!CanWalkTo(nextBounds))
+            {
+                return false;
+            }
+
+            Position = new Vector2(nextX, Position.Y);
+            return true;
+        }
+
+        private bool CanWalkTo(Rectangle nextBounds)
+        {
+            if (_worldBlocks == null || Velocity.X == 0f)
+            {
+                return true;
+            }
+
+            int aheadX = nextBounds.Right;
+            if (Velocity.X < 0f)
+            {
+                aheadX = nextBounds.Left - 1;
+            }
+
+            // check for ground under the enemy and just ahead of its feet
+            Rectangle groundAhead = new Rectangle(aheadX, Bounds.Bottom, 1, GroundProbeDepth);
+            Rectangle groundBelow = new Rectangle(Bounds.Left, Bounds.Bottom, Width, GroundProbeDepth);
+            bool hasGroundBelow = false;
+            bool hasGroundAhead = false;
+
+            foreach (Block block in _worldBlocks)
+            {
+                if (block.IsDeleted || block.Type == BlockType.Empty || block.Type == BlockType.Invisible
+                    || block.Type == BlockType.Vine
+                    || block.Type == BlockType.FlagPole)
+                {
+                    continue;
+                }
+
+                // platforms support walking but do not act as side walls
+                if (block.Type != BlockType.Platform && nextBounds.Intersects(block.Bounds))
+                {
+                    return false;
+                }
+
+                if (block.Bounds.Top >= Bounds.Bottom)
+                {
+                    if (groundBelow.Intersects(block.Bounds))
+                    {
+                        hasGroundBelow = true;
+                    }
+                    if (groundAhead.Intersects(block.Bounds))
+                    {
+                        hasGroundAhead = true;
+                    }
+                }
+            }
+
+            // turn before walking off the surface we are standing on
+            if (hasGroundBelow && !hasGroundAhead)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         protected void QueueProjectile(ProjectileType type, Vector2 position, Vector2 velocity)
@@ -217,7 +238,8 @@ namespace TeamUno.Mario.Entities.Enemies
             Sprite.Draw(
                 spriteBatch,
                 Bounds,
-                StateMachine.FacingDirection);
+                StateMachine.FacingDirection,
+                TintColor);
         }
 
         public virtual void TakeDamage()
@@ -227,6 +249,12 @@ namespace TeamUno.Mario.Entities.Enemies
 
         public virtual void Kill()
         {
+            if (!IsDead)
+            {
+                // small hop before falling
+                Velocity = new Vector2(0f, DeathFallSpeed);
+            }
+
             StateMachine.Kill();
         }
     }

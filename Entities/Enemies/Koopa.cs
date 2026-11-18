@@ -18,6 +18,7 @@ namespace TeamUno.Mario.Entities.Enemies
         private readonly float _leftBound;
         private readonly float _rightBound;
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _koopaAnimations;
+        private const float RemoveOffsetY = 100000f;
 
         public override int Width
         {
@@ -86,6 +87,8 @@ namespace TeamUno.Mario.Entities.Enemies
 
             float shellX = Position.X + (Width - KoopaShell.ShellWidth) / 2f;
             float shellY = Position.Y + Height - KoopaShell.ShellHeight;
+
+            Position = new Vector2(Position.X, RemoveOffsetY);
 
             return _createShell(new Vector2(shellX, shellY));
         }

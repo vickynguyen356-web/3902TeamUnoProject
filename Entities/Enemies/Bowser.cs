@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using TeamUno.Mario.Audio;
 using TeamUno.Mario.Entities;
 using TeamUno.Mario.Entities.Projectiles;
 using TeamUno.Mario.Entities.Sprites;
@@ -9,26 +10,31 @@ namespace TeamUno.Mario.Entities.Enemies
 {
     internal class Bowser : Enemy
     {
+        // sprite fields
         public const int BowserWidth = 64;
         public const int BowserHeight = 64;
-        public const int MaximumHealth = 3;
+        // animation fields
         private const float WalkSpeed = 45f;
         private const float PatrolDistance = 150f;
+        private readonly float _leftBound;
+        private readonly float _rightBound;
         private const float FireSpeed = 150f;
         private const float FireInterval = 2.5f;
         private const float SpitFireDuration = 0.6f;
         private const float FireReleaseTime = 0.28f;
         private const float MouthHeight = 24f;
-
-        private readonly float _leftBound;
-        private readonly float _rightBound;
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _bowserAnimations;
         private bool _isSpittingFire;
         private bool _fireReleased;
         private float _spitFireTimer;
         private float _fireTimer;
-
+        private const float HearingDistance = 1000f;
+        public Vector2? ListenerPosition { get; set; }
+        // health fields
+        public const int MaximumHealth = 3;
         public int Health { get; private set; } = MaximumHealth;
+        private const float HitFlashDuration = 0.25f;
+        private float _hitFlashTimer;
 
         public override int Width
         {
@@ -44,6 +50,30 @@ namespace TeamUno.Mario.Entities.Enemies
             {
                 return BowserHeight;
             }
+        }
+
+        protected override Color TintColor
+        {
+            get
+            {
+                if (_hitFlashTimer > 0f)
+                {
+                    return Color.Red;
+                }
+
+                return Color.White;
+            }
+        }
+
+        private bool IsListenerInRange()
+        {
+            if (ListenerPosition == null)
+            {
+                return true; // always playing
+            }
+
+            Vector2 center = Position + new Vector2(Width / 2f, Height / 2f);
+            return Vector2.Distance(center, ListenerPosition.Value) <= HearingDistance;
         }
 
         public Bowser(ISprite sprite, Vector2 position)
@@ -83,6 +113,11 @@ namespace TeamUno.Mario.Entities.Enemies
                 {
                     SpitFire();
                 }
+            }
+
+            if (_hitFlashTimer > 0f)
+            {
+                _hitFlashTimer = System.Math.Max(0f, _hitFlashTimer - elapsedSeconds);
             }
 
             UpdateAnimation(gameTime);
@@ -128,6 +163,11 @@ namespace TeamUno.Mario.Entities.Enemies
 
             if (_spitFireTimer >= FireReleaseTime && !_fireReleased)
             {
+                if (IsListenerInRange())
+                {
+                    SoundPlayer.Play("Audio/SoundEffects/fire");
+                }
+
                 ReleaseFire();
                 _fireReleased = true;
             }
@@ -198,8 +238,12 @@ namespace TeamUno.Mario.Entities.Enemies
             }
 
             Health = System.Math.Max(0, Health - 1);
-            if (Health == 0)
+            _hitFlashTimer = HitFlashDuration;
+
+            // bowser has no more health
+            if (Health <= 0)
             {
+                SoundPlayer.Play("Audio/SoundEffects/bowserfall");
                 Kill();
             }
         }

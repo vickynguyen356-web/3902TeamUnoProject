@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
@@ -13,6 +13,14 @@
     <NoWarn>$(NoWarn);CA2213</NoWarn>
     <NoWarn>$(NoWarn);CA1812</NoWarn>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Content\blocksspritesheetbg.png" />
+    <None Remove="Content\bricksobstacles.png" />
+    <None Remove="Content\enemiesSprites.png" />
+    <None Remove="Content\items.png" />
+    <None Remove="Content\mario.png" />
+    <None Remove="Content\spritesheet.png" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.*" />

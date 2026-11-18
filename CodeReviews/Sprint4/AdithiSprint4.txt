@@ -1,0 +1,89 @@
+Author of code review: Adithi Math
+Date of code review: 11/09/2026
+Sprint number: 4
+Minutes taken to complete review: 30 minutes
+
+Input/KeyboardController.cs
+===========================
+
+Name of .cs file reviewed: Input/KeyboardController.cs
+Author of .cs file: Vy Nguyen + Ishika Aahna + Jake Hanna
+Commit reviewed: 3eb837b
+
+READABILITY REVIEW
+
+Comments:
+The separate held and pressed command dictionaries make it clear which actions repeat and which happen once per press. BuildMaps keeps the key assignments together and ReadBindings and ExecuteCommands separate reading input from carring out the actions.
+
+The constructor is still long because it creates each command and lists the testing areas. I would move the testing-area command setup into a helper so the constructor is easier to follow. I would also add parentheses around the combined conditions for stopping movement and climbing to would make the grouping easier to see without remembering the order of && and ||.
+
+CODE QUALITY REVIEW
+
+Comments:
+Using commands keeps the actual player behavior out of the controller. Listening to the bindings' Changed event is also useful because BuildMaps can update the controls immediately after a player changes a key in the menu.
+
+The area commands and areaKeys are stored in different places and matched by their positions. If one list is reordered or gets an extra entry, a shortcut could load the wrong room or the loop could access an entry that is not there. I would keep each shortcut beside its LoadAreaCommand in one collection instead of relying on two matching lists.
+
+Hypothetical change:
+Add a shortcut for the underwater area. With the current setup, we need to add its command in the constructor and its key in BuildMaps at the same position. Keeping the key and command together would make this easier, check every testing shortcut after and also check that rebinding movement still updates the command maps correctly.
+
+---
+
+Author of code review: Adithi Math
+Date of code review: 11/09/2026
+Sprint number: 4
+Minutes taken to complete review: 25 minutes
+
+Input/GamepadController.cs
+==========================
+
+Name of .cs file reviewed: Input/GamepadController.cs
+Author of .cs file: Ishika Aahna + Jake Hanna
+Commit reviewed: 3eb837b
+
+READABILITY REVIEW
+
+Comments:
+StickDeadZone explains the value used to ignore small stick movements. WasPressed also makes the difference between holding a button and pressing it once clear. The resetRequested variable helps explain why player actions are skipped immediately after restarting.
+
+Update handles restarting, muting, movement, jumping, climbing, shooting, and pausing in one method. I would move the movement and climbing checks into a small helper so it is easier to read the session controls separately from player movement.
+
+CODE QUALITY REVIEW
+
+Comments:
+Using IPlayer lets the controller call the player's existing actions instead of putting movement or fireball logic here. Checking CanControlPlayer also keeps normal player actions from running during states where control is disabled.
+
+The controller still depends directly on GameSession, while KeyboardController uses IGameActions and command classes. This means the two controllers have different places to maintain similar rules. I would consider reusing the existing commands where they fit, while keeping the end-screen checks that need the session state.
+
+Hypothetical change:
+Make a small stick movement produce slower walking. The current code checks the stick direction but passes either -1 or 1 to Move, so the amount of stick movement is not used for speed. We would need to pass the stick amount outside the dead zone and check how the player uses it.
+
+---
+Author of code review: Adithi Math
+Date of code review: 11/05/2026
+Sprint number: 4
+Minutes taken to complete review: 25 minutes
+
+Entities/Projectiles/KoopaShell.cs
+==================================
+
+Name of .cs file reviewed: Entities/Projectiles/KoopaShell.cs
+Author of .cs file: Vy Nguyen
+Commit reviewed: eb800e9
+
+READABILITY REVIEW
+
+Comments:
+Constants like ReviveDelaySeconds and WarningSeconds make the shell timing easy to understand. ShouldRevive and IsAboutToRevive also explain what the rest of the game should check without needing to read the timer calculation each time.
+
+Small typo because ResetIdleTImer should be ResetIdleTimer (capitalization error), and IsKnockOff to IsKnockedOff so it reads more naturally as a bool. I would also group the internal properties with the other properties instead of placing them between methods. The unused System.Dynamic import can be removed.
+
+CODE QUALITY REVIEW
+
+Comments:
+KnockOff checks if the shell is already dead or knocked off before applying the hop, which helps prevent repeated contacts from starting that motion again. The early return in Update also keeps knocked-off shells from continuing the normal idle timer, and ShouldRevive makes sure those shells cannot revive.
+
+The revival timer treats any shell with 0 horizontal speed as idle even if it is still falling. If revival is supposed to happen only after the shell has settled, I would also check if it has landed before increasing the timer. That would need to use the floor-collision information instead of assuming 0 horizontal speed means the shell is resting.
+
+Hypothetical change:
+Add a long drop where a stopped shell can fall for a few seconds. The current timer could reach the revival delay during the fall, so decide if that is intended, then test a shell resting on the floor, falling, moving after a kick, and knocked off. A kick should reset the timer and a knocked-off shell should never revive.

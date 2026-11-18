@@ -1,0 +1,39 @@
+READABILITY REVIEW
+
+Author of review: Vy Nguyen
+Date: November 11, 2026
+Sprint: 4
+File reviewed: Enemy.cs
+Author of code: Vy, Adithi
+Minutes spent: 30
+
+The descriptive names for the fields and methods, like TryWalk, CanWalkTo, groundAhead, etc., make it easy to
+understand their purpose without needing explanatory comments. UpdateGravity() exits early for 
+dead enemies, so the main logic isn't nested. There are helpful comments like "Platforms support walking 
+but do not act as side walls" to explain the why of the code. 
+
+CanWalkTo() does a lot for one method. It computes the probe rectangles, filters non-solid block types,
+checks wall collisions, ground support, and decides whether the enemy should turn or not. A change could 
+be to split these responsibilities into a HitsWall() and IsSolidForEnemies() methods to help further
+simplify the logic and make it easier to read. 
+
+CODE QUALITY REVIEW
+
+Author of review: Vy Nguyen
+Date: November 11, 2026
+Sprint: 4
+File reviewed: MenuScreen.cs
+Author of code: Vy, Jake
+
+The Title and Instructions are read only properties with a clear and distinct job. Title has a default case that makes sense.
+ActivateMain() is easy to read, and each case in the switch statement is short and concise.
+
+The magic numbers in ActivateMain() only work as long as the menu items stay in that order.
+If we wanted to reorder or insert an item, it will break the wiring. The hardcoded instructions
+in Instructions will not update if a player rebinds the key bindings. 
+
+Hypothetical change:
+Remove the instructions from Instruction, most games don't have a tutorial that shows
+players how to move with W/A/S/D keys in general. It's safe to assume players will know
+what keys to use for movement and click the menu option to view the other key bindings that
+aren't so obvious. 

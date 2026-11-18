@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Player;
 using TeamUno.Mario.Entities.Projectiles;
 using TeamUno.Mario.Interfaces;
+using TeamUno.Mario.Audio;
 
 namespace TeamUno.Mario.Collision.Handlers
 {
@@ -21,9 +22,21 @@ namespace TeamUno.Mario.Collision.Handlers
                 return;
             }
 
+            // mario is in star mode, everything gets removed
+            if (first.IsStarActive)
+            {
+                second.Kill();
+                return;
+            }
+
             KoopaShell shell = second as KoopaShell;
             if (shell != null)
             {
+                if (shell.IsKnockOff)
+                {
+                    return;
+                }
+
                 if (first.IsStarActive)
                 {
                     second.Kill();
@@ -55,6 +68,7 @@ namespace TeamUno.Mario.Collision.Handlers
             {
                 if (shell.IsMoving)
                 {
+                    SoundPlayer.Play("Audio/SoundEffects/stompswim");
                     shell.Stop();
                 }
                 else
@@ -68,7 +82,7 @@ namespace TeamUno.Mario.Collision.Handlers
                     {
                         kickDirection = -1f;
                     }
-
+                    SoundPlayer.Play("Audio/SoundEffects/kickkill");
                     shell.Kick(kickDirection);
                 }
 
@@ -88,6 +102,7 @@ namespace TeamUno.Mario.Collision.Handlers
 
             if (info.Side != CollisionSide.Left && info.Side != CollisionSide.Right)
             {
+                shell.ResetIdleTImer();
                 return;
             }
 

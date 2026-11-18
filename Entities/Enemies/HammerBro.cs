@@ -9,19 +9,24 @@ namespace TeamUno.Mario.Entities.Enemies
 {
     internal class HammerBro : Enemy
     {
+        // sprite related fields
         public const int HammerBroWidth = 32;
         public const int HammerBroHeight = 48;
+        private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _hammerBroAnimations;
+        // movement related fields
         private const float RunSpeed = 45f;
         private const float PatrolDistance = 100f;
+        private readonly float _leftBound;
+        private readonly float _rightBound;
+        private const float JumpVelocity = -500f;
+        private const float JumpInterval = 5f;
+        private float _jumpTimer;
+        private FacingDirection _patrolDirection = FacingDirection.Left;
+        // hammer fields
         private const float HammerSpeed = 150f;
         private const float HammerVerticalSpeed = -180f;
         private const float ThrowDuration = 0.56f;
         private const float ThrowReleaseTime = 0.28f;
-
-        private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _hammerBroAnimations;
-        private readonly float _leftBound;
-        private readonly float _rightBound;
-        private FacingDirection _patrolDirection = FacingDirection.Left;
         private bool _isThrowing;
         private float _throwTimer;
         private bool _hammerReleased;
@@ -65,6 +70,14 @@ namespace TeamUno.Mario.Entities.Enemies
                 return;
             }
 
+            // jump every 5 seconds
+            _jumpTimer += elapsedSeconds;
+            if (_jumpTimer >= JumpInterval)
+            {
+                Velocity.Y = JumpVelocity;
+                _jumpTimer = 0f;
+            }
+
             // follow the new direction after hitting a block
             if (!_isThrowing)
             {
@@ -80,18 +93,18 @@ namespace TeamUno.Mario.Entities.Enemies
 
             if (_isThrowing)
             {
-                // Stop moving while throwing.
+                // stop moving to throw
                 Velocity.X = 0f;
                 _throwTimer = _throwTimer + elapsedSeconds;
 
-                // Release the hammer halfway through the throw animation.
+                // release hammer halfway through throw animation
                 if (_throwTimer >= ThrowReleaseTime && !_hammerReleased)
                 {
                     ThrowHammer();
                     _hammerReleased = true;
                 }
 
-                // Finish the throw and start walking in the opposite direction.
+                // finish the throw and start walking in the opposite direction
                 if (_throwTimer >= ThrowDuration)
                 {
                     _throwTimer = 0f;
@@ -112,7 +125,7 @@ namespace TeamUno.Mario.Entities.Enemies
             }
             else
             {
-                // Walk in the current direction.
+                // walk in the current direction.
                 Velocity.X = GetPatrolVelocity();
                 // stop and throw before turning away from a wall or edge
                 if (!TryWalk(elapsedSeconds))
@@ -126,7 +139,7 @@ namespace TeamUno.Mario.Entities.Enemies
                 }
                 else if (Position.X >= _rightBound)
                 {
-                    // Reached the right boundary.
+                    // reached the right boundary
                     Position = new Vector2(_rightBound, Position.Y);
                     StartThrowing();
                 }

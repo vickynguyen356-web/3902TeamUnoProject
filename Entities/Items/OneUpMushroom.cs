@@ -27,7 +27,7 @@ namespace TeamUno.Mario.Entities.Items
         public override void Update(GameTime gameTime)
         {
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            elapsedSeconds = System.Math.Min(elapsedSeconds, 1f / 30f);
+            elapsedSeconds = System.Math.Min(elapsedSeconds, MaximumElapsedSeconds);
             Velocity.Y = Velocity.Y + Gravity * elapsedSeconds;
             // use the current velocity since a collision can change it
             Position = Position + Velocity * elapsedSeconds;

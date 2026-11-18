@@ -9,6 +9,8 @@ namespace TeamUno.Mario.Entities.Player
 {
     internal static class MarioSpriteFactory
     {
+        private const float WalkingFrameDurationSeconds = 0.12f;
+
         public static ISprite Create(Texture2D spriteSheetTexture)
         {
             return new SpriteSheetSprite(spriteSheetTexture, 2f);
@@ -41,7 +43,7 @@ namespace TeamUno.Mario.Entities.Player
             walkingFrames[0] = CreateFrame(150, 52, 16, 32, 239, 52);
             walkingFrames[1] = CreateFrame(121, 52, 14, 31, 270, 52);
             walkingFrames[2] = CreateFrame(90, 53, 16, 30, 299, 53);
-            SpriteAnimation run = new SpriteAnimation(0.28f, walkingFrames);
+            SpriteAnimation run = new SpriteAnimation(WalkingFrameDurationSeconds, walkingFrames);
 
             SpriteAnimation crouch = new SpriteAnimation(1f, CreateFrame(0, 57, 16, 22, 389, 57));
             SpriteAnimation jump = new SpriteAnimation(0.20f, CreateFrame(30, 52, 16, 32, 359, 52));
@@ -81,7 +83,7 @@ namespace TeamUno.Mario.Entities.Player
             walkingFrames[0] = CreateFrame(150, 0, 14, 15, 241, 0);
             walkingFrames[1] = CreateFrame(121, 0, 12, 16, 272, 0);
             walkingFrames[2] = CreateFrame(89, 0, 16, 16, 300, 0);
-            SpriteAnimation run = new SpriteAnimation(0.28f, walkingFrames);
+            SpriteAnimation run = new SpriteAnimation(WalkingFrameDurationSeconds, walkingFrames);
 
             SpriteAnimation crouch = new SpriteAnimation(1f, CreateStandingFrame(PlayerForm.Small));
             SpriteAnimation jump = new SpriteAnimation(0.20f, CreateFrame(29, 0, 17, 16, 359, 0));
@@ -119,7 +121,7 @@ namespace TeamUno.Mario.Entities.Player
             walkingFrames[0] = CreateFrame(152, 122, 16, 32, 237, 122);
             walkingFrames[1] = CreateFrame(128, 122, 14, 31, 263, 122);
             walkingFrames[2] = CreateFrame(102, 123, 16, 30, 287, 123);
-            SpriteAnimation run = new SpriteAnimation(0.28f, walkingFrames);
+            SpriteAnimation run = new SpriteAnimation(WalkingFrameDurationSeconds, walkingFrames);
 
             SpriteAnimation crouch = new SpriteAnimation(1f, CreateFrame(0, 127, 16, 22, 389, 127));
             SpriteAnimation jump = new SpriteAnimation(0.20f, CreateFrame(27, 122, 16, 32, 362, 122));
