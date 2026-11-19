@@ -27,6 +27,11 @@ namespace TeamUno.Mario.Collision.Handlers
                 return;
             }
 
+            if (block.Type == BlockType.Axe)
+            {
+                return;
+            }
+
             if (block.Type == BlockType.Empty)
             {
                 return;
@@ -52,6 +57,12 @@ namespace TeamUno.Mario.Collision.Handlers
 
             if (ResolveLanding(player, blockBounds, info.FirstPreviousBounds))
             {
+                block.ActivateMovingPlatform();
+                if (block.Type == BlockType.Spring)
+                {
+                    player.BounceFromSpring();
+                }
+
                 return;
             }
 
@@ -80,21 +91,37 @@ namespace TeamUno.Mario.Collision.Handlers
         private static void HandleVineCollision(MarioPlayer player, Block vine)
         {
             player.TryClimbVine(vine.Bounds);
+            vine.RequestVineTravel(player.Bounds, player.IsClimbingVine);
         }
 
         private static bool TryEnterPipe(MarioPlayer player, Block pipe, CollisionInfo info)
         {
-            if (!player.IsPipeEntryRequested || pipe.DestinationArea == null)
+            if (pipe.DestinationArea == null)
             {
                 return false;
             }
 
             Rectangle playerBounds = player.Bounds;
             Rectangle pipeBounds = pipe.Bounds;
-            if (Math.Abs(info.FirstPreviousBounds.Bottom - pipeBounds.Top) > 2
-                || playerBounds.Bottom < pipeBounds.Top
-                || playerBounds.Center.X < pipeBounds.Left
-                || playerBounds.Center.X > pipeBounds.Right)
+            bool enteringFromTop = pipe.EntryDirection == null
+                || pipe.EntryDirection.Equals("DOWN", StringComparison.OrdinalIgnoreCase);
+            bool crossedPipeTop = info.FirstPreviousBounds.Bottom <= pipeBounds.Top
+                && playerBounds.Bottom >= pipeBounds.Top;
+            bool canEnterFromTop = enteringFromTop
+                && (player.IsPipeEntryRequested
+                    || player.IsCrouching)
+                && crossedPipeTop
+                && playerBounds.Center.X >= pipeBounds.Left
+                && playerBounds.Center.X <= pipeBounds.Right;
+            bool movingTowardPipe = pipe.EntryDirection != null
+                && ((pipe.EntryDirection.Equals("RIGHT", StringComparison.OrdinalIgnoreCase)
+                        && info.Side == CollisionSide.Right
+                        && (player.MovementInput > 0f || player.Velocity.X > 0f))
+                    || (pipe.EntryDirection.Equals("LEFT", StringComparison.OrdinalIgnoreCase)
+                        && info.Side == CollisionSide.Left
+                        && (player.MovementInput < 0f || player.Velocity.X < 0f)));
+
+            if (!canEnterFromTop && !movingTowardPipe)
             {
                 return false;
             }
@@ -114,7 +141,6 @@ namespace TeamUno.Mario.Collision.Handlers
             {
                 player.StartFlagpoleSlide(
                     flagpoleBounds.Center.X,
-                    flagpoleBounds.Top,
                     flagpoleBounds.Bottom);
             }
         }
@@ -165,7 +191,7 @@ namespace TeamUno.Mario.Collision.Handlers
             position.Y = blockBounds.Bottom;
             velocity.Y = 0;
             player.ApplyMotion(position, velocity, isGrounded: false);
-            block.HitFromBelow(!player.IsSmall);
+            block.HitFromBelow(!player.IsSmall, player.IsSmall);
             return true;
         }
 
@@ -175,6 +201,11 @@ namespace TeamUno.Mario.Collision.Handlers
             Rectangle previousPlayerBounds)
         {
             Rectangle playerBounds = player.Bounds;
+            if (playerBounds.Bottom <= blockBounds.Top || playerBounds.Top >= blockBounds.Bottom)
+            {
+                return;
+            }
+
             Vector2 position = player.Position;
             Vector2 velocity = player.Velocity;
 

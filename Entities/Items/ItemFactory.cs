@@ -25,6 +25,8 @@ namespace TeamUno.Mario.Entities.Items
             {
                 case ItemType.Mushroom:
                     return new Mushroom(position, sprite);
+                case ItemType.FireFlowerMushroom:
+                    return new FireFlowerMushroom(position, sprite);
                 case ItemType.FireFlower:
                     return new FireFlower(position, sprite);
                 case ItemType.FloatingCoin:

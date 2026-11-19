@@ -19,8 +19,8 @@ namespace TeamUno.Mario.Entities.Projectiles
         private float _kickGraceTimeRemaining;
         private float _idleTime;
         private bool _isKnockOff;
-        public const int ShellWidth = 40;
-        public const int ShellHeight = 32;
+        public const int ShellWidth = 60;
+        public const int ShellHeight = 48;
 
         public override int Width
         {

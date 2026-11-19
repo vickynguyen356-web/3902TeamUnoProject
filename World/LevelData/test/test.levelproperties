@@ -1,0 +1,36 @@
+### Layers use reference tile IDs:
+# Foreground: 384 ground, 289 brick, 192 question block, 196 used block,
+# 720 invisible block, 609 platform, 150-151/198-199 pipe, 101/149 pole, 152 flag.
+# Enemies: 38 Koopa, 44 Piranha Plant, 56 Hammer Bro, 61 Bowser, 70 Goomba.
+# Collectibles: block contents (48 Fire Flower, 52 1-Up, 96 Star, 144 coin, 148 vine, 608 Mushroom).
+# Items: loose items use the same IDs in test_Items.csv.
+PLAYER_START = (2, 10)
+CAMERA_START = (0, 0)
+CAMERA_MAX = 95
+
+LEVEL_TYPE = OVERWORLD
+NEXT_LEVEL = (0, 0)
+BACKGROUND_COLOR = BLUE
+
+SPAWN_POINT=\
+	items (17, 10),\
+	combat (35, 8),\
+	ledge (55, 10),\
+	bowser (65, 10),\
+	pipes (81, 7)
+
+FLOATING_TEXT=\
+
+WARP_PIPE=\
+
+WARP_PIPE_AREA=\
+	(80, 8) overworld start DOWN NONE FALSE BLUE OVERWORLD
+
+MOVING_PLATFORM=\
+
+PLATFORM_LEVEL=\
+
+FIRE_BAR=\
+
+VINE=\
+	(86, 5) (87, 5) (0, 0) 10 (2, 10) 95 BLUE OVERWORLD
