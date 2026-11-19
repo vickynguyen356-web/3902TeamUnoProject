@@ -83,6 +83,14 @@ namespace TeamUno.Mario.Entities.Enemies
             }
         }
 
+        public virtual Rectangle CollisionBounds
+        {
+            get
+            {
+                return Bounds;
+            }
+        }
+
         public bool IsDead
         {
             get
@@ -120,7 +128,11 @@ namespace TeamUno.Mario.Entities.Enemies
             }
         }
 
+<<<<<<< Updated upstream
         public void UpdateGravity(GameTime gameTime)
+=======
+        public virtual void UpdateGravity(GameTime gameTime)
+>>>>>>> Stashed changes
         {
             if (IsDead || this is PiranhaPlant)
             {
@@ -133,6 +145,17 @@ namespace TeamUno.Mario.Entities.Enemies
             Position = new Vector2(Position.X, Position.Y + Velocity.Y * elapsedSeconds);
         }
 
+<<<<<<< Updated upstream
+=======
+        protected virtual bool TurnsAtLedges
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+>>>>>>> Stashed changes
         public void SetWorldBlocks(IReadOnlyList<Block> blocks)
         {
             _worldBlocks = blocks;
@@ -174,7 +197,11 @@ namespace TeamUno.Mario.Entities.Enemies
             {
                 if (block.IsDeleted || block.Type == BlockType.Empty || block.Type == BlockType.Invisible
                     || block.Type == BlockType.Vine
+<<<<<<< Updated upstream
                     || block.Type == BlockType.FlagPole)
+=======
+                    || block.Type == BlockType.FlagPole || block.Type == BlockType.Flag)
+>>>>>>> Stashed changes
                 {
                     continue;
                 }
@@ -199,7 +226,11 @@ namespace TeamUno.Mario.Entities.Enemies
             }
 
             // turn before walking off the surface we are standing on
+<<<<<<< Updated upstream
             if (hasGroundBelow && !hasGroundAhead)
+=======
+            if (TurnsAtLedges && hasGroundBelow && !hasGroundAhead)
+>>>>>>> Stashed changes
             {
                 return false;
             }

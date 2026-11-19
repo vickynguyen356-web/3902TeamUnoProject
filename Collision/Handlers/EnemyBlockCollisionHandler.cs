@@ -20,12 +20,15 @@ namespace TeamUno.Mario.Collision.Handlers
         {
             // TODO: Enemy update (turn around on side hit, deleted upon falling thru floor).
             // TODO: Block update.
-            if (first.IsDead || first is PiranhaPlant
+            if (first.IsDead || first is PiranhaPlant || first is BulletBill
+                || first is BulletBillCannon || first is FireBarSegment
+                || first is CheepCheep
                 || second.IsDeleted
                 || second.Type == BlockType.Empty
                 || second.Type == BlockType.Invisible
                 || second.Type == BlockType.Vine
-                || second.Type == BlockType.FlagPole)
+                || second.Type == BlockType.FlagPole
+                || second.Type == BlockType.Flag)
             {
                 return;
             }
@@ -36,7 +39,8 @@ namespace TeamUno.Mario.Collision.Handlers
             }
 
             Rectangle blockBounds = second.Bounds;
-            Rectangle enemyBounds = first.Bounds;
+            Rectangle enemyBounds = first.CollisionBounds;
+            Rectangle visualBounds = first.Bounds;
             Vector2 position = first.Position;
             Vector2 velocity = first.Velocity;
 
@@ -47,7 +51,7 @@ namespace TeamUno.Mario.Collision.Handlers
                     {
                         return;
                     }
-                    position.X = blockBounds.Left - enemyBounds.Width;
+                    position.X = blockBounds.Left - (enemyBounds.Right - visualBounds.Left);
                     velocity.X = -velocity.X;
                     break;
                 case CollisionSide.Left:
@@ -55,7 +59,7 @@ namespace TeamUno.Mario.Collision.Handlers
                     {
                         return;
                     }
-                    position.X = blockBounds.Right;
+                    position.X = blockBounds.Right - (enemyBounds.Left - visualBounds.Left);
                     velocity.X = -velocity.X;
                     break;
                 case CollisionSide.Bottom:
@@ -63,7 +67,7 @@ namespace TeamUno.Mario.Collision.Handlers
                     {
                         return;
                     }
-                    position.Y = blockBounds.Top - enemyBounds.Height;
+                    position.Y = blockBounds.Top - (enemyBounds.Bottom - visualBounds.Top);
                     velocity.Y = 0f;
                     break;
                 case CollisionSide.Top:
@@ -71,7 +75,7 @@ namespace TeamUno.Mario.Collision.Handlers
                     {
                         return;
                     }
-                    position.Y = blockBounds.Bottom;
+                    position.Y = blockBounds.Bottom - (enemyBounds.Top - visualBounds.Top);
                     velocity.Y = 0f;
                     break;
                 default:

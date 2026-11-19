@@ -1,0 +1,28 @@
+### CSV layers use reference tile IDs:
+# Foreground: 384 solid/ground, 144 coin, 150-151/198-199 pipe.
+# Loose items can be placed in underwater_Items.csv.
+PLAYER_START = (2, 10)
+CAMERA_START = (0, 0)
+CAMERA_MAX = 31
+
+LEVEL_TYPE = UNDERWATER
+NEXT_LEVEL = (0, 0)
+MUSIC_TRACK = Audio/Tracks/undergroundTheme
+BACKGROUND_COLOR = BLUE
+
+SPAWN_POINT=\
+
+FLOATING_TEXT=\
+
+WARP_PIPE=\
+
+WARP_PIPE_AREA=\
+	(24, 9) test items DOWN NONE FALSE BLUE OVERWORLD
+
+MOVING_PLATFORM=\
+
+PLATFORM_LEVEL=\
+
+FIRE_BAR=\
+
+VINE=\

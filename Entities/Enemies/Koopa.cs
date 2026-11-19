@@ -9,14 +9,12 @@ namespace TeamUno.Mario.Entities.Enemies
 {
     internal class Koopa : Enemy
     {
-        public const int KoopaWidth = 32;
-        public const int KoopaHeight = 48;
+        public const int KoopaWidth = 48;
+        public const int KoopaHeight = 72;
         private const float WalkSpeed = 45f;
-        private const float PatrolDistance = 150f;
         private readonly Func<Vector2, KoopaShell> _createShell;
+        private readonly bool _canFallOffLedges;
 
-        private readonly float _leftBound;
-        private readonly float _rightBound;
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _koopaAnimations;
         private const float RemoveOffsetY = 100000f;
 
@@ -36,14 +34,37 @@ namespace TeamUno.Mario.Entities.Enemies
             }
         }
 
-        public Koopa(ISprite sprite, Vector2 position, Func<Vector2, KoopaShell> createShell)
+        protected override bool TurnsAtLedges
+        {
+            get
+            {
+                return !_canFallOffLedges;
+            }
+        }
+
+        public override Rectangle CollisionBounds
+        {
+            get
+            {
+                return new Rectangle(
+                    (int)Position.X + 6,
+                    (int)Position.Y + KoopaHeight / 2,
+                    KoopaWidth - 12,
+                    KoopaHeight / 2);
+            }
+        }
+
+        public Koopa(
+            ISprite sprite,
+            Vector2 position,
+            Func<Vector2, KoopaShell> createShell,
+            bool canFallOffLedges = true)
             : base(sprite, position)
         {
             _koopaAnimations = KoopaSpriteFactory.CreateKoopaAnimations();
-            _leftBound = position.X - PatrolDistance;
-            _rightBound = position.X + PatrolDistance;
             Velocity.X = -WalkSpeed;
             _createShell = createShell;
+            _canFallOffLedges = canFallOffLedges;
 
             UpdateMovementAnimation(new GameTime(), _koopaAnimations);
         }
@@ -58,17 +79,6 @@ namespace TeamUno.Mario.Entities.Enemies
                 if (!TryWalk(elapsedSeconds))
                 {
                     Velocity.X = -Velocity.X;
-                }
-
-                if (Position.X <= _leftBound)
-                {
-                    Position = new Vector2(_leftBound, Position.Y);
-                    Velocity.X = WalkSpeed;
-                }
-                else if (Position.X >= _rightBound)
-                {
-                    Position = new Vector2(_rightBound, Position.Y);
-                    Velocity.X = -WalkSpeed;
                 }
             }
 

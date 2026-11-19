@@ -3,6 +3,7 @@ namespace TeamUno.Mario.Interfaces
     internal interface IPlayer
     {
         void Move(float movementDirection);
+        void SetSprinting(bool sprinting);
         void Climb(float direction);
         void Jump();
         void SetCrouching(bool crouching);

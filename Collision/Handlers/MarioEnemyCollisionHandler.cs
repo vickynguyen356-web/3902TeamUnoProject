@@ -33,12 +33,22 @@ namespace TeamUno.Mario.Collision.Handlers
                 return;
             }
 
-            // all enemies die in mario star state, except for Bowser
+            // Star-powered Mario defeats every enemy immediately.
             if (first.IsStarActive)
             {
-                if (second is Bowser)
+                if (second is Bowser bowser)
                 {
-                    // passes through Bowser
+                    while (!bowser.IsDead)
+                    {
+                        bowser.TakeDamage();
+                    }
+
+                    _progress.AddScore(100);
+                    return;
+                }
+
+                if (second is FireBarSegment || second is BulletBillCannon)
+                {
                     return;
                 }
 
@@ -52,13 +62,18 @@ namespace TeamUno.Mario.Collision.Handlers
                 return;
             }
             
-            Rectangle enemyBounds = second.Bounds;
-            bool isStomping = info.Side == CollisionSide.Bottom
-                && first.Velocity.Y > 0f
+            Rectangle enemyBounds = second.CollisionBounds;
+            bool isStomping = first.Velocity.Y > 0f
                 && info.FirstPreviousBounds.Bottom <= enemyBounds.Top
-                && first.Bounds.Bottom >= enemyBounds.Top;
+                && first.Bounds.Bottom >= enemyBounds.Top
+                && first.Bounds.Right > enemyBounds.Left
+                && first.Bounds.Left < enemyBounds.Right;
             // take damage if hitting enemy from the side/bottom, or enemy is Bowser/Piranha Plant
-            if (!isStomping || second is Bowser || second is PiranhaPlant) 
+            if (!isStomping || second is Bowser || second is PiranhaPlant
+                || second is Spiny
+                || (second is CheepCheep cheepCheep
+                    && cheepCheep.MovementMode == CheepCheepMovementMode.Swimming)
+                || second is FireBarSegment || second is BulletBillCannon)
             {
                 first.TakeDamage();
                 return;

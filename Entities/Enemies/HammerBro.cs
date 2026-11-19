@@ -10,8 +10,8 @@ namespace TeamUno.Mario.Entities.Enemies
     internal class HammerBro : Enemy
     {
         // sprite related fields
-        public const int HammerBroWidth = 32;
-        public const int HammerBroHeight = 48;
+        public const int HammerBroWidth = 48;
+        public const int HammerBroHeight = 72;
         private readonly IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> _hammerBroAnimations;
         // movement related fields
         private const float RunSpeed = 45f;

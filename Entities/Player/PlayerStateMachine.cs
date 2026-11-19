@@ -192,7 +192,15 @@ namespace TeamUno.Mario.Entities.Player
         }
 
         public void UpdateAnimationState(
+<<<<<<< Updated upstream
             bool isGrounded, Vector2 velocity, bool isClimbing = false, bool isSwimming = false)
+=======
+            bool isGrounded,
+            Vector2 velocity,
+            bool isClimbing = false,
+            bool isSwimming = false,
+            bool isDrifting = false)
+>>>>>>> Stashed changes
         {
             if (IsDead)
             {
@@ -214,9 +222,30 @@ namespace TeamUno.Mario.Entities.Player
             {
                 AnimationState = EntityAnimationState.ThrowFireball;
             }
+<<<<<<< Updated upstream
             else if (isSwimming)
             {
                 AnimationState = EntityAnimationState.Swim;
+=======
+            else if (isDrifting)
+            {
+                AnimationState = EntityAnimationState.Drift;
+            }
+            else if (isSwimming)
+            {
+                if (!isGrounded && velocity.Y < -MinimumRunningSpeed)
+                {
+                    AnimationState = EntityAnimationState.SwimJump;
+                }
+                else if (isGrounded && Math.Abs(velocity.X) > MinimumRunningSpeed)
+                {
+                    AnimationState = EntityAnimationState.SwimWalk;
+                }
+                else
+                {
+                    AnimationState = EntityAnimationState.Swim;
+                }
+>>>>>>> Stashed changes
             }
             else if (!isGrounded)
             {

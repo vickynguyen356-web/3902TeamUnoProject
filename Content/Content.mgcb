@@ -258,7 +258,24 @@
 /processorParam:Version=3.8.6.0
 /build:MyFont.spritefont
 
+<<<<<<< Updated upstream
 #begin Sprites/blocksspritesheetbg.png
+=======
+#begin Sprites/bricksobstacles.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=0,41,140,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/processorParam:Version=3.8.6.0
+/build:Sprites/bricksobstacles.png
+
+#begin Sprites/enemiesSprites.png
+>>>>>>> Stashed changes
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -269,12 +286,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /processorParam:Version=3.8.6.0
+<<<<<<< Updated upstream
 /build:Sprites/blocksspritesheetbg.png
 
 #begin Sprites/enemiesSprites.png
+=======
+/build:Sprites/enemiesSprites.png
+
+#begin Sprites/EnemyReferenceSheet.png
+>>>>>>> Stashed changes
 /importer:TextureImporter
 /processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyColor=147,187,236,255
 /processorParam:ColorKeyEnabled=True
 /processorParam:GenerateMipmaps=False
 /processorParam:PremultiplyAlpha=True
@@ -282,7 +305,11 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /processorParam:Version=3.8.6.0
+<<<<<<< Updated upstream
 /build:Sprites/enemiesSprites.png
+=======
+/build:Sprites/EnemyReferenceSheet.png;Sprites/EnemyReferenceSheet
+>>>>>>> Stashed changes
 
 #begin Sprites/items.png
 /importer:TextureImporter
@@ -322,3 +349,19 @@
 /processorParam:TextureFormat=Color
 /processorParam:Version=3.8.5.1
 /build:super-mario-bros-bg.png
+<<<<<<< Updated upstream
+=======
+
+#begin Sprites/BlockTileSheet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=147,187,236,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/processorParam:Version=3.8.6.0
+/build:Sprites/BlockTileSheet.png
+>>>>>>> Stashed changes

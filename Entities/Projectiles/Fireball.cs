@@ -7,8 +7,13 @@ namespace TeamUno.Mario.Entities.Projectiles
 {
     internal class Fireball : Projectile
     {
+<<<<<<< Updated upstream
         public const int FireballWidth = 16;
         public const int FireballHeight = 16;
+=======
+        public const int FireballWidth = 24;
+        public const int FireballHeight = 24;
+>>>>>>> Stashed changes
         public const float HorizontalSpeed = 400f;
         public const float BlockBounceSpeed = 240f;
         private const float Gravity = 1200f;

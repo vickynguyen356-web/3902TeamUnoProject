@@ -14,6 +14,13 @@
     <NoWarn>$(NoWarn);CA1812</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+<<<<<<< Updated upstream
+=======
+    <!-- The "World - Copy" folder is a manual backup of World; it must not be compiled. -->
+    <Compile Remove="World - Copy/**" />
+  </ItemGroup>
+  <ItemGroup>
+>>>>>>> Stashed changes
     <None Remove="Content\blocksspritesheetbg.png" />
     <None Remove="Content\bricksobstacles.png" />
     <None Remove="Content\enemiesSprites.png" />
@@ -22,6 +29,12 @@
     <None Remove="Content\spritesheet.png" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< Updated upstream
+=======
+    <None Update="World\LevelData\**\*.*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+>>>>>>> Stashed changes
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.*" />
   </ItemGroup>

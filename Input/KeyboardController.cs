@@ -10,9 +10,11 @@ namespace TeamUno.Mario.Input
     {
         private KeyboardState _previousKeyState;
         private bool _isJumpHeld;
+        private bool _isSprintHeld;
         private readonly Dictionary<Keys, ICommand> _heldCommands;
         private readonly Dictionary<Keys, ICommand> _pressedCommands;
         private readonly List<ICommand> _pendingCommands = new List<ICommand>();
+        private readonly IPlayer _player;
         private readonly IGameActions _gameActions;
         private readonly KeyBindings _bindings;
         private readonly ICommand _moveLeftCommand;
@@ -40,12 +42,24 @@ namespace TeamUno.Mario.Input
             }
         }
 
+<<<<<<< Updated upstream
+=======
+        public bool IsSprintHeld
+        {
+            get
+            {
+                return _isSprintHeld;
+            }
+        }
+
+>>>>>>> Stashed changes
         public KeyboardController(IPlayer player, IGameActions gameActions, KeyBindings bindings)
         {
             ArgumentNullException.ThrowIfNull(player);
             ArgumentNullException.ThrowIfNull(gameActions);
             ArgumentNullException.ThrowIfNull(bindings);
 
+            _player = player;
             _gameActions = gameActions;
             _bindings = bindings;
 
@@ -94,6 +108,7 @@ namespace TeamUno.Mario.Input
         public void Update(KeyboardState keyboardState)
         {
             ReadBindings(keyboardState);
+            _isSprintHeld = keyboardState.IsKeyDown(_bindings.Get(GameAction.Sprint));
             _previousKeyState = keyboardState;
             ExecuteCommands();
         }
@@ -102,6 +117,11 @@ namespace TeamUno.Mario.Input
         public void ResetInput()
         {
             _previousKeyState = Keyboard.GetState();
+<<<<<<< Updated upstream
+=======
+            _isJumpHeld = false;
+            _isSprintHeld = false;
+>>>>>>> Stashed changes
         }
 
         private void BuildMaps()

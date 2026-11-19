@@ -12,6 +12,10 @@ namespace TeamUno.Mario.Input
         private readonly GameSession _session;
         private GamePadState _previousState;
         private bool _isJumpHeld;
+<<<<<<< Updated upstream
+=======
+        private bool _isSprintHeld;
+>>>>>>> Stashed changes
 
         public bool IsJumpHeld
         {
@@ -21,6 +25,17 @@ namespace TeamUno.Mario.Input
             }
         }
 
+<<<<<<< Updated upstream
+=======
+        public bool IsSprintHeld
+        {
+            get
+            {
+                return _isSprintHeld;
+            }
+        }
+
+>>>>>>> Stashed changes
         public GamepadController(IPlayer player, GameSession session)
         {
             System.ArgumentNullException.ThrowIfNull(player);
@@ -60,6 +75,11 @@ namespace TeamUno.Mario.Input
             }
 
             _isJumpHeld = connected && state.IsButtonDown(Buttons.A);
+<<<<<<< Updated upstream
+=======
+            _isSprintHeld = _session.CanControlPlayer && connected
+                && state.Triggers.Right > StickDeadZone;
+>>>>>>> Stashed changes
             if (_session.CanControlPlayer && !resetRequested)
             {
                 float movement = 0f;
@@ -72,15 +92,23 @@ namespace TeamUno.Mario.Input
                     movement = moveLeft ? -1f : 1f;
                 }
 
+<<<<<<< Updated upstream
                 if (moveLeft || moveRight)
+=======
+                if (movement != 0f)
+>>>>>>> Stashed changes
                 {
                     _player.Move(movement);
                 }
 
+<<<<<<< Updated upstream
                 if (connected && state.IsButtonDown(Buttons.B))
                 {
                     _player.SetCrouching(true);
                 }
+=======
+                _player.SetCrouching(connected && state.IsButtonDown(Buttons.B));
+>>>>>>> Stashed changes
 
                 float verticalStick = connected ? -state.ThumbSticks.Left.Y : 0f;
                 if (System.Math.Abs(verticalStick) > StickDeadZone)
@@ -116,6 +144,10 @@ namespace TeamUno.Mario.Input
         {
             _previousState = GamePad.GetState(PlayerIndex.One, GamePadDeadZone.IndependentAxes);
             _isJumpHeld = false;
+<<<<<<< Updated upstream
+=======
+            _isSprintHeld = false;
+>>>>>>> Stashed changes
         }
 
         private bool WasPressed(GamePadState state, Buttons button)

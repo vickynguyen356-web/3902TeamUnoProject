@@ -1,0 +1,34 @@
+### CSV layers use reference tile IDs:
+# Foreground: 384 ground, 289 brick, 192 question block, 720 invisible block,
+# 150-151/198-199 pipe, 101/149 pole, 152 flag.
+# Collectibles.csv stores block contents; loose pickups are in overworld_Items.csv.
+PLAYER_START = (2, 10)
+CAMERA_START = (0, 0)
+CAMERA_MAX = 79
+
+LEVEL_TYPE = OVERWORLD
+NEXT_LEVEL = (0, 0)
+NEXT_AREA_ID = bowser-party
+BACKGROUND_COLOR = BLUE
+
+SPAWN_POINT=\
+	first-pipe (19, 7),\
+	second-pipe (41, 7),\
+	finish (65, 10)
+
+FLOATING_TEXT=\
+
+WARP_PIPE=\
+
+WARP_PIPE_AREA=\
+	(19, 8) underground entrance DOWN NONE FALSE BLACK UNDERGROUND,\
+	(41, 8) underground exit DOWN NONE FALSE BLACK UNDERGROUND
+
+MOVING_PLATFORM=\
+
+PLATFORM_LEVEL=\
+
+FIRE_BAR=\
+
+VINE=\
+	(15, 5) (15, 3) (0, 0) 10 (2, 10) 79 BLUE OVERWORLD

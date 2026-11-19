@@ -1,0 +1,33 @@
+READABILITY REVIEW
+
+Author of code review: Isha Roy
+Date of code review: 11/4/2026
+Sprint number: 4
+Name of .cs file reviewed: Entities/Projectiles/KoopaShell.cs
+Author of .cs file: Vy Nguyen
+Minutes taken to complete review: 20 min
+
+Comments: The class is well organized, with plenty of methods containing no significant duplicate code. Each method has intuitive naming conventions, making them easy to understand. The only suggestion I'd have is to fix the typo in the ResetIdleTimer method, and maybe add comments to explain the more vague parts of the class, but otherwise it looks good.
+
+
+CODE QUALITY REVIEW
+
+Author of review: Isha Roy
+Date: 11/15/26
+Sprint: 4
+File reviewed: MenuScreen.cs
+Author of code: Ishika
+
+The Page enum makes it clear which menu screen is active, and
+separate methods handle navigation and activating menu options.
+This keeps the different menu behaviors organized.
+
+When a player presses a reserved key while rebinding controls,
+UpdateRebinding keeps waiting but gives no indication that the key
+was rejected. The prompt still says "press a key", so the player
+may not know why nothing changed.
+
+Hypothetical change:
+Try to bind a reserved shortcut key. Showing a brief message such
+as "That key is reserved" would make it clear that the menu is
+waiting for a different key.

@@ -33,7 +33,7 @@ namespace TeamUno.Mario
 
         public MarioGame()
         {
-            _areas = LevelLayouts.CreateAreas();
+            _areas = LevelParser.LoadAreas();
             _graphicsDeviceManager = new GraphicsDeviceManager(this);
             _graphicsDeviceManager.PreferredBackBufferWidth = WindowWidth;
             _graphicsDeviceManager.PreferredBackBufferHeight = WindowHeight;
@@ -53,16 +53,24 @@ namespace TeamUno.Mario
 
             Texture2D marioTexture = Content.Load<Texture2D>("Sprites/mario");
             Texture2D enemyTexture = Content.Load<Texture2D>("Sprites/enemiesSprites");
+<<<<<<< Updated upstream
             Texture2D itemTexture = Content.Load<Texture2D>("Sprites/items");
             Texture2D titleBackgroundTexture = Content.Load<Texture2D>("super-mario-bros-bg");
             Texture2D blockTexture = Content.Load<Texture2D>("Sprites/blocksspritesheetbg");
+=======
+            Texture2D enemyIdTexture = Content.Load<Texture2D>("Sprites/EnemyReferenceSheet");
+            Texture2D itemTexture = Content.Load<Texture2D>("Sprites/items");
+            Texture2D titleBackgroundTexture = Content.Load<Texture2D>("super-mario-bros-bg");
+            Texture2D blockTexture = Content.Load<Texture2D>("Sprites/bricksobstacles");
+            Texture2D tileSheetTexture = Content.Load<Texture2D>("Sprites/BlockTileSheet");
+>>>>>>> Stashed changes
 
             ProjectileFactory.Initialize(enemyTexture, itemTexture);
-            EnemyFactory.Initialize(enemyTexture);
+            EnemyFactory.Initialize(enemyTexture, tileSheetTexture, enemyIdTexture);
             ItemFactory.Initialize(itemTexture);
             SoundPlayer.Initialize(Content);
 
-            LevelDefinition firstArea = _areas["overworld"];
+            LevelDefinition firstArea = _areas["World1-1"];
             Vector2 spawn = firstArea.GetSpawnPoint("start");
             MarioPlayer player = new MarioPlayer(
                 MarioSpriteFactory.Create(marioTexture),
@@ -70,7 +78,15 @@ namespace TeamUno.Mario
                 PlayerForm.Fire);
 
             Level level = new Level(firstArea);
+<<<<<<< Updated upstream
             Camera camera = new Camera(GraphicsDevice.Viewport.Width, level.Definition.Width);
+=======
+            Camera camera = new Camera(
+                GraphicsDevice.Viewport.Width,
+                GraphicsDevice.Viewport.Height,
+                level.Definition.Width,
+                level.Definition.Height);
+>>>>>>> Stashed changes
             MusicPlayer music = new MusicPlayer(Content);
             // the session updates and resets the level, including its items
             _gameSession = new GameSession(player, level, camera, _areas, music);
@@ -80,7 +96,11 @@ namespace TeamUno.Mario
             _gamepadController = new GamepadController(player, _gameSession);
             _menu = new MenuScreen(_gameSession, bindings, _gameSession.AreaIds);
             _gameRenderer = new GameRenderer(
+<<<<<<< Updated upstream
                 GraphicsDevice, titleBackgroundTexture, blockTexture);
+=======
+                GraphicsDevice, titleBackgroundTexture, blockTexture, tileSheetTexture);
+>>>>>>> Stashed changes
         }
 
         protected override void Update(GameTime gameTime)
@@ -100,7 +120,11 @@ namespace TeamUno.Mario
             }
             else if (_gameSession.State == GameSessionState.Menu)
             {
+<<<<<<< Updated upstream
                 _menu.Update(keys, gamePad);
+=======
+                _menu.Update(gameTime, keys, gamePad);
+>>>>>>> Stashed changes
                 _controller.ResetInput();
                 _gamepadController.ResetInput();
                 _titleScreen.ResetInput(keys, gamePad);
@@ -139,6 +163,13 @@ namespace TeamUno.Mario
             _previousKeys = keys;
             _previousGamePad = gamePad;
 
+<<<<<<< Updated upstream
+=======
+            _gameSession.Player.SetSprinting(
+                _gameSession.CanControlPlayer
+                    && (_controller.IsSprintHeld || _gamepadController.IsSprintHeld));
+
+>>>>>>> Stashed changes
             if (_gameSession.ShouldExit)
             {
                 Exit();
@@ -160,13 +191,21 @@ namespace TeamUno.Mario
                 _spriteBatch,
                 GraphicsDevice.Viewport.Bounds,
                 isTitleScreen: _gameSession.State == GameSessionState.Title,
+<<<<<<< Updated upstream
                 cameraX: _gameSession.Camera.Position.X);
+=======
+                backgroundColor: _gameSession.BackgroundColor);
+>>>>>>> Stashed changes
             _spriteBatch.End();
 
             if (_gameSession.State != GameSessionState.Title)
             {
                 _spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _gameSession.Camera.Transform);
+<<<<<<< Updated upstream
                 _gameRenderer.DrawWorld(_spriteBatch, _gameSession);
+=======
+                _gameRenderer.DrawWorld(_spriteBatch, _gameSession, GraphicsDevice.Viewport.Bounds);
+>>>>>>> Stashed changes
                 _spriteBatch.End();
             }
 
