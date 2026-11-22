@@ -37,16 +37,7 @@ namespace TeamUno.Mario.Entities.Blocks
     internal class QuestionBlockSprite : BlockSprite
     {
         private const float FrameDurationSeconds = 0.16f;
-<<<<<<< Updated upstream
-        private readonly Rectangle[] _frames =
-        {
-            new Rectangle(0, 78, 16, 15),
-            new Rectangle(17, 78, 16, 15),
-            new Rectangle(34, 78, 16, 15)
-        };
-=======
         private readonly Rectangle[] _frames;
->>>>>>> Stashed changes
         private float _elapsedSeconds;
         private int _frameIndex;
 

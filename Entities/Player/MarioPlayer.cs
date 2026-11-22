@@ -19,23 +19,6 @@ namespace TeamUno.Mario.Entities.Player
         private const float DamageFlashOpacity = 0.3f;
         private const float FireballCooldownSeconds = 0.3f;
         private const int MaximumActiveFireballs = 2;
-<<<<<<< Updated upstream
-        //private const string SwimSound = "Audio/SoundEffects/stompswim";
-        private const float SwimAcceleration = 700f;
-        private const float MaximumSwimSpeed = 140f;
-        private const float SwimFriction = 600f;
-        private const float SwimGravity = 300f;
-        private const float SwimStrokeVelocity = -180f;
-        private const float MaximumSwimFallSpeed = 140f;
-        private const int SmallHeight = 32;
-        private const int BodyWidth = 32;
-        private const int CrouchingHeight = 44;
-        private const float HorizontalAcceleration = 1400f;
-        private const float MaximumHorizontalSpeed = 260f;
-        private const float HorizontalFriction = 1800f;
-        private const float Gravity = 1500f;
-        private const float JumpVelocity = -700f;
-=======
         private const float SwimAcceleration = 700f;
         private const float MaximumSwimSpeed = 270f;
         private const float SwimGravity = 420f;
@@ -54,7 +37,6 @@ namespace TeamUno.Mario.Entities.Player
         private const float MaximumFallSpeed = 675f;
         private const float JumpVelocity = -657f;
         private const float JumpHoldAcceleration = -2225f;
->>>>>>> Stashed changes
         private const float FlagpoleClimbSpeed = 180f;
         private const float VineClimbSpeed = 180f;
 
@@ -86,11 +68,8 @@ namespace TeamUno.Mario.Entities.Player
         private FacingDirection _facingDirection = FacingDirection.Left;
         private float _movementDirection;
         private bool _jumpRequested;
-<<<<<<< Updated upstream
-=======
         private bool _isJumpHeld;
         private bool _isSprinting;
->>>>>>> Stashed changes
         private bool _playJumpSoundPending;
         private bool _fireballRequested;
         private bool _pipeEntryRequested;
@@ -476,13 +455,6 @@ namespace TeamUno.Mario.Entities.Player
 
             if (IsSwimming)
             {
-<<<<<<< Updated upstream
-                _velocity.Y = Math.Min(MaximumSwimFallSpeed, _velocity.Y + SwimGravity * elapsedSeconds);
-            }
-            else
-            {
-                _velocity.Y = _velocity.Y + Gravity * elapsedSeconds;
-=======
                 _velocity.Y = MathHelper.Clamp(
                     _velocity.Y + SwimGravity * elapsedSeconds,
                     -MaximumSwimRiseSpeed,
@@ -499,7 +471,6 @@ namespace TeamUno.Mario.Entities.Player
                 _velocity.Y = Math.Min(
                     MaximumFallSpeed,
                     _velocity.Y + gravity * elapsedSeconds);
->>>>>>> Stashed changes
             }
 
             ClearInputRequests();
@@ -535,23 +506,15 @@ namespace TeamUno.Mario.Entities.Player
         {
             float acceleration = HorizontalAcceleration;
             float maximumSpeed = MaximumHorizontalSpeed;
-<<<<<<< Updated upstream
-            float friction = HorizontalFriction;
-=======
->>>>>>> Stashed changes
             if (IsSwimming)
             {
                 acceleration = SwimAcceleration;
                 maximumSpeed = MaximumSwimSpeed;
-<<<<<<< Updated upstream
-                friction = SwimFriction;
-=======
             }
             else if (_isSprinting)
             {
                 acceleration = HorizontalAcceleration * SprintAccelerationMultiplier;
                 maximumSpeed = MaximumHorizontalSpeed * SprintSpeedMultiplier;
->>>>>>> Stashed changes
             }
 
             if (_movementDirection != 0)
@@ -568,16 +531,6 @@ namespace TeamUno.Mario.Entities.Player
 
             if (_movementDirection != 0 && !IsCrouching)
             {
-<<<<<<< Updated upstream
-                float acceleratedVelocityX = _velocity.X
-                    + _movementDirection * acceleration * elapsedSeconds;
-                _velocity.X = MathHelper.Clamp(acceleratedVelocityX, -maximumSpeed, maximumSpeed);
-                return;
-            }
-
-            float speedReduction = friction * elapsedSeconds;
-            if (_velocity.X > 0)
-=======
                 float accelerationMultiplier = 1f;
                 if (!IsGrounded && _isSprinting && _velocity.X * _movementDirection < 0f)
                 {
@@ -591,7 +544,6 @@ namespace TeamUno.Mario.Entities.Player
 
             _velocity.X *= (float)Math.Pow(HorizontalFrictionPerFrame, elapsedSeconds * 60f);
             if (Math.Abs(_velocity.X) < 1f)
->>>>>>> Stashed changes
             {
                 _velocity.X = 0f;
             }
@@ -626,12 +578,6 @@ namespace TeamUno.Mario.Entities.Player
             IsGrounded = isGrounded;
         }
 
-<<<<<<< Updated upstream
-        internal void EnterArea(Vector2 spawnFeet, bool isUnderwater = false)
-        {
-            IsSwimming = isUnderwater;
-            _activeFireballs.Clear();
-=======
         internal void BounceFromSpring()
         {
             Vector2 velocity = _velocity;
@@ -645,7 +591,6 @@ namespace TeamUno.Mario.Entities.Player
             _activeFireballs.Clear();
             _isSprinting = false;
             _isJumpHeld = false;
->>>>>>> Stashed changes
             _fireballCooldownTimeRemaining = 0f;
             StopVineClimb();
             _isLevelFinishWalking = false;
@@ -709,9 +654,6 @@ namespace TeamUno.Mario.Entities.Player
 
         internal void BeginLevelFinishWalk()
         {
-<<<<<<< Updated upstream
-            if (IsDead || IsChangingForm || IsSwimming || _vineRegrabLockoutRemaining > 0f || (_climbDirection == 0 && !_isClimbingVine))
-=======
             _isLevelFinishWalking = true;
             Position = new Vector2(Position.X + 34f, Position.Y);
             FacingDirection = FacingDirection.Right;
@@ -722,13 +664,10 @@ namespace TeamUno.Mario.Entities.Player
         internal void UpdateLevelFinishWalk(float elapsedSeconds)
         {
             if (!_isLevelFinishWalking)
->>>>>>> Stashed changes
             {
                 return;
             }
 
-<<<<<<< Updated upstream
-=======
             elapsedSeconds = Math.Max(0f, elapsedSeconds);
             _velocity.X = 180f;
             if (!IsGrounded)
@@ -755,7 +694,6 @@ namespace TeamUno.Mario.Entities.Player
                 return;
             }
 
->>>>>>> Stashed changes
             if (!_isClimbingVine)
             {
                 SoundPlayer.Play("Audio/SoundEffects/vine");
@@ -833,10 +771,6 @@ namespace TeamUno.Mario.Entities.Player
 
         internal void UpdateAnimation(GameTime gameTime)
         {
-<<<<<<< Updated upstream
-            _stateMachine.UpdateAnimationState(
-                IsGrounded, _velocity, IsSlidingOnFlagpole || _isClimbingVine, IsSwimming);
-=======
             bool isDrifting = IsGrounded
                 && !IsSwimming
                 && _movementDirection != 0f
@@ -847,7 +781,6 @@ namespace TeamUno.Mario.Entities.Player
                 IsSlidingOnFlagpole || _isClimbingVine,
                 IsSwimming,
                 isDrifting);
->>>>>>> Stashed changes
 
             if (_playJumpSoundPending)
             {
@@ -913,11 +846,8 @@ namespace TeamUno.Mario.Entities.Player
             _isDamageFlashDim = false;
             _fireballCooldownTimeRemaining = 0f;
             _activeFireballs.Clear();
-<<<<<<< Updated upstream
-=======
             _isSprinting = false;
             _isJumpHeld = false;
->>>>>>> Stashed changes
             IsSwimming = false;
             Position = _startingPosition;
             _velocity = Vector2.Zero;

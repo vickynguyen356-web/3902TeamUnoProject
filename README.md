@@ -17,6 +17,7 @@ The game opens on a title screen. Press Enter or Space to start in the overworld
 | D / Right Arrow | Move right |
 | W / Up Arrow / Space | Jump |
 | S / Down Arrow | Crouch, or enter a connected pipe while standing on top |
+| Shift | Sprint |
 | W / Up Arrow | Climb up a vine |
 | S / Down Arrow | Climb down a vine |
 | Z / N | Throw a fireball in Fire form |
@@ -50,11 +51,7 @@ With a gamepad, use the left stick or D-pad to move, A to jump or swim, X to thr
 
 ## Features
 
-<<<<<<< Updated upstream
-**Mario:** Mario can move, jump, fall, crouch, climb vines, and throw fireballs in Fire form. He speeds up while moving and slows down when movement keys are released. His animations change with his action, facing direction, and form. On land, Mario can only jump when grounded and not crouching. Underwater, pressing jump gives him an upward swim stroke, and he sinks when not swimming upward. Small Mario cannot crouch.
-=======
 **Mario:** Mario can move, jump, fall, crouch, climb vines, and throw fireballs in Fire form. He accelerates and brakes gradually, including when reversing or releasing sprint. Sprinting raises his top speed and uses a faster run cycle with the correct facing-direction sprites. His animations change with his action, facing direction, and form. Mario can only jump when grounded and not crouching. Small Mario cannot crouch.
->>>>>>> Stashed changes
 
 Mario lands on blocks and stops at their sides. A mushroom grows Small Mario without downgrading Fire Mario. A fire flower changes him to Fire Mario. Damage changes a larger Mario to Small Mario, and Small Mario dies when hit. After taking damage, Mario has 2.5 seconds of protection and flashes to show it is active. His walking animation is also faster than in Sprint 3.
 

@@ -9,11 +9,7 @@ namespace TeamUno.Mario.Entities.Player
 {
     internal static class MarioSpriteFactory
     {
-<<<<<<< Updated upstream
-        private const float WalkingFrameDurationSeconds = 0.12f;
-=======
         private const float WalkingFrameDurationSeconds = 0.125f;
->>>>>>> Stashed changes
 
         public static ISprite Create(Texture2D spriteSheetTexture)
         {
@@ -42,16 +38,7 @@ namespace TeamUno.Mario.Entities.Player
         internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreateSuperAnimations()
         {
             SpriteAnimation idle = new SpriteAnimation(0.80f, CreateStandingFrame(PlayerForm.Super));
-<<<<<<< Updated upstream
-
-            SpriteFrame[] walkingFrames = new SpriteFrame[3];
-            walkingFrames[0] = CreateFrame(150, 52, 16, 32, 239, 52);
-            walkingFrames[1] = CreateFrame(121, 52, 14, 31, 270, 52);
-            walkingFrames[2] = CreateFrame(90, 53, 16, 30, 299, 53);
-            SpriteAnimation run = new SpriteAnimation(WalkingFrameDurationSeconds, walkingFrames);
-=======
             SpriteAnimation run = CreateRunAnimation(PlayerForm.Super, WalkingFrameDurationSeconds);
->>>>>>> Stashed changes
 
             SpriteAnimation crouch = new SpriteAnimation(1f, CreateFrame(0, 57, 16, 22, 389, 57));
             SpriteAnimation jump = new SpriteAnimation(0.20f, CreateFrame(30, 52, 16, 32, 359, 52));
@@ -95,16 +82,7 @@ namespace TeamUno.Mario.Entities.Player
         internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreateSmallAnimations()
         {
             SpriteAnimation idle = new SpriteAnimation(0.80f, CreateStandingFrame(PlayerForm.Small));
-<<<<<<< Updated upstream
-
-            SpriteFrame[] walkingFrames = new SpriteFrame[3];
-            walkingFrames[0] = CreateFrame(150, 0, 14, 15, 241, 0);
-            walkingFrames[1] = CreateFrame(121, 0, 12, 16, 272, 0);
-            walkingFrames[2] = CreateFrame(89, 0, 16, 16, 300, 0);
-            SpriteAnimation run = new SpriteAnimation(WalkingFrameDurationSeconds, walkingFrames);
-=======
             SpriteAnimation run = CreateRunAnimation(PlayerForm.Small, WalkingFrameDurationSeconds);
->>>>>>> Stashed changes
 
             SpriteAnimation crouch = new SpriteAnimation(1f, CreateStandingFrame(PlayerForm.Small));
             SpriteAnimation jump = new SpriteAnimation(0.20f, CreateFrame(29, 0, 17, 16, 359, 0));
@@ -146,16 +124,7 @@ namespace TeamUno.Mario.Entities.Player
         internal static IReadOnlyDictionary<EntityAnimationState, SpriteAnimation> CreateFireAnimations()
         {
             SpriteAnimation idle = new SpriteAnimation(0.80f, CreateStandingFrame(PlayerForm.Fire));
-<<<<<<< Updated upstream
-
-            SpriteFrame[] walkingFrames = new SpriteFrame[3];
-            walkingFrames[0] = CreateFrame(152, 122, 16, 32, 237, 122);
-            walkingFrames[1] = CreateFrame(128, 122, 14, 31, 263, 122);
-            walkingFrames[2] = CreateFrame(102, 123, 16, 30, 287, 123);
-            SpriteAnimation run = new SpriteAnimation(WalkingFrameDurationSeconds, walkingFrames);
-=======
             SpriteAnimation run = CreateRunAnimation(PlayerForm.Fire, WalkingFrameDurationSeconds);
->>>>>>> Stashed changes
 
             SpriteAnimation crouch = new SpriteAnimation(1f, CreateFrame(0, 127, 16, 22, 389, 127));
             SpriteAnimation jump = new SpriteAnimation(0.20f, CreateFrame(27, 122, 16, 32, 362, 122));

@@ -42,8 +42,6 @@ namespace TeamUno.Mario.Input
             }
         }
 
-<<<<<<< Updated upstream
-=======
         public bool IsSprintHeld
         {
             get
@@ -52,7 +50,6 @@ namespace TeamUno.Mario.Input
             }
         }
 
->>>>>>> Stashed changes
         public KeyboardController(IPlayer player, IGameActions gameActions, KeyBindings bindings)
         {
             ArgumentNullException.ThrowIfNull(player);
@@ -117,11 +114,8 @@ namespace TeamUno.Mario.Input
         public void ResetInput()
         {
             _previousKeyState = Keyboard.GetState();
-<<<<<<< Updated upstream
-=======
             _isJumpHeld = false;
             _isSprintHeld = false;
->>>>>>> Stashed changes
         }
 
         private void BuildMaps()

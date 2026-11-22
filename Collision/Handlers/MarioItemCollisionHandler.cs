@@ -26,13 +26,9 @@ namespace TeamUno.Mario.Collision.Handlers
             switch (item.Type)
             {
                 case ItemType.Mushroom:
-<<<<<<< Updated upstream
-                    _progress.AddScore(1000);
-                    // only Small Mario needs to grow from a mushroom
-=======
                 case ItemType.FireFlowerMushroom:
                     _progress.AddScore(1000);
->>>>>>> Stashed changes
+                    // only Small Mario needs to grow from a mushroom
                     if (player.IsSmall)
                     {
                         SoundPlayer.Play("Audio/SoundEffects/powerup");
