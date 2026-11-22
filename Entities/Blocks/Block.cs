@@ -4,10 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using TeamUno.Mario.Entities.Items;
 using TeamUno.Mario.Interfaces;
 using TeamUno.Mario.Audio;
-<<<<<<< Updated upstream
-=======
 using TeamUno.Mario.World;
->>>>>>> Stashed changes
 
 namespace TeamUno.Mario.Entities.Blocks
 {
@@ -35,26 +32,19 @@ namespace TeamUno.Mario.Entities.Blocks
     {
         private const int DefaultWidth = 48;
         private const int DefaultHeight = 48;
-<<<<<<< Updated upstream
-        private const int FlagpoleSourceHeight = 153;
-        private const int FlagpoleBaseSize = 48;
-        private const float BreakAnimationDurationSeconds = 0.55f;
-        private const float DebrisGravity = 720f;
-        private static readonly Rectangle FlagpoleSource = new Rectangle(139, 0, 16, FlagpoleSourceHeight);
-        private static readonly Rectangle FlagpoleBaseSource = new Rectangle(51, 0, 16, 16);
-        private static readonly Rectangle BrickSource = new Rectangle(17, 0, 16, 16);
-=======
         private const float VineGrowthIntervalSeconds = 0.3f;
         private const float BreakAnimationDurationSeconds = 0.55f;
         private const float DebrisGravity = 720f;
         private const float FlagMovementSpeed = 180f;
+        private const int FlagpoleBaseSize = 48;
+        private static readonly Rectangle FlagpoleSource = new Rectangle(0, 600, 16, 176);
+        private static readonly Rectangle FlagpoleBaseSource = new Rectangle(16, 600, 16, 16);
         private static readonly Rectangle PipeTopSource = new Rectangle(112, 624, 32, 31);
         private static readonly Rectangle PipeBodySource = new Rectangle(112, 656, 32, 32);
         private static readonly Rectangle HorizontalPipeBodySource = new Rectangle(192, 656, 33, 32);
         private static readonly Rectangle HorizontalPipeEndSource = new Rectangle(224, 624, 32, 64);
         private static readonly Rectangle AttachedPipeTopSource = new Rectangle(224, 624, 32, 32);
         private static readonly Rectangle AttachedPipeBodySource = new Rectangle(224, 656, 32, 32);
->>>>>>> Stashed changes
 
         private BlockSprite _sprite;
         private BlockType _type;
@@ -630,12 +620,6 @@ namespace TeamUno.Mario.Entities.Blocks
                 {
                     SoundPlayer.Play("Audio/SoundEffects/coin");
                 }
-<<<<<<< Updated upstream
-                else
-                {
-                    SoundPlayer.Play("Audio/SoundEffects/item");
-                }
-=======
                 else if (_contents.HasValue)
                 {
                     SoundPlayer.Play("Audio/SoundEffects/item");
@@ -644,7 +628,6 @@ namespace TeamUno.Mario.Entities.Blocks
                 {
                     SoundPlayer.Play("Audio/SoundEffects/bump");
                 }
->>>>>>> Stashed changes
 
                 Type = BlockType.Used;
                 _sprite = BlockSpriteFactory.Create(
@@ -670,10 +653,7 @@ namespace TeamUno.Mario.Entities.Blocks
             else if (Type == BlockType.Brick && canBreak)
             {
                 SoundPlayer.Play("Audio/SoundEffects/brick");
-<<<<<<< Updated upstream
-=======
                 _pendingItem = _contents;
->>>>>>> Stashed changes
                 _isDeleted = true;
                 _isBreaking = true;
                 int fragmentWidth = Width / 2;
