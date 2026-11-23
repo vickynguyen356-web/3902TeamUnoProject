@@ -10,22 +10,22 @@ namespace TeamUno.Mario.World
 {
     internal class GameRenderer : IDisposable
     {
-        private const float UnderwaterOpacity = 0.85f;
+        private const float UnderwaterOpacity = 0.82f;
 
         private readonly Texture2D _titleBackgroundTexture;
         private readonly Texture2D _blockTexture;
+        private readonly Texture2D _tileSheetTexture;
         private readonly Texture2D _pixel;
-        private const float CloudParallax = 0.35f;
-        private const int CloudSpacing = 560;
-        private static readonly int[] CloudHeights = { 112, 208, 144, 256 };
 
         public GameRenderer(
             GraphicsDevice graphicsDevice,
             Texture2D titleBackgroundTexture,
-            Texture2D blockTexture)
+            Texture2D blockTexture,
+            Texture2D tileSheetTexture)
         {
             _titleBackgroundTexture = titleBackgroundTexture;
             _blockTexture = blockTexture;
+            _tileSheetTexture = tileSheetTexture;
             _pixel = new Texture2D(graphicsDevice, 1, 1);
             _pixel.SetData(new Color[] { Color.White });
         }
@@ -34,7 +34,7 @@ namespace TeamUno.Mario.World
             SpriteBatch spriteBatch,
             Rectangle viewport,
             bool isTitleScreen,
-            float cameraX)
+            Color backgroundColor)
         {
             if (isTitleScreen)
             {
@@ -42,45 +42,53 @@ namespace TeamUno.Mario.World
                 return;
             }
 
-            spriteBatch.Draw(_pixel, viewport, new Color(92, 148, 252));
-            DrawClouds(spriteBatch, viewport, cameraX);
+            spriteBatch.Draw(_pixel, viewport, backgroundColor);
         }
 
-        private void DrawClouds(SpriteBatch spriteBatch, Rectangle viewport, float cameraX)
+        public void DrawWorld(SpriteBatch spriteBatch, GameSession session, Rectangle viewport)
         {
-            float horizontalOffset = cameraX * CloudParallax % CloudSpacing;
-            float x = viewport.Left - horizontalOffset - CloudSpacing;
-            int cloudIndex = -1;
+            float cameraLeft = session.Camera.Position.X;
+            DrawTiles(
+                spriteBatch,
+                session.Level.Definition.BackgroundTiles,
+                cameraLeft,
+                viewport.Width);
 
-            while (x < viewport.Right)
-            {
-                cloudIndex = cloudIndex + 1;
-                int heightIndex = cloudIndex % CloudHeights.Length;
-                DrawCloud(spriteBatch, (int)x, CloudHeights[heightIndex]);
-                x = x + CloudSpacing;
-            }
-        }
-
-        private void DrawCloud(SpriteBatch spriteBatch, int x, int y)
-        {
-            Color cloudColor = new Color(250, 250, 255);
-            spriteBatch.Draw(_pixel, new Rectangle(x + 12, y + 24, 84, 24), cloudColor);
-            spriteBatch.Draw(_pixel, new Rectangle(x + 24, y + 12, 36, 36), cloudColor);
-            spriteBatch.Draw(_pixel, new Rectangle(x + 48, y, 36, 48), cloudColor);
-            spriteBatch.Draw(_pixel, new Rectangle(x + 72, y + 12, 36, 36), cloudColor);
-        }
-
-        public void DrawWorld(SpriteBatch spriteBatch, GameSession session)
-        {
-            if (session.Level.Definition.IsUnderwater)
+            if (session.IsUnderwater)
             {
                 Rectangle water = new Rectangle(0, 0, session.Level.Definition.Width, session.Level.Definition.Height);
-                spriteBatch.Draw(_pixel, water, new Color(16, 64, 144) * UnderwaterOpacity);
+                spriteBatch.Draw(
+                    _pixel,
+                    water,
+                    new Color(16, 64, 144) * UnderwaterOpacity);
             }
+
+            Rectangle pulleySource = LevelTile.GetSourceRectangle(391);
+            foreach (Rectangle rope in session.Level.PulleyRopes)
+            {
+                spriteBatch.Draw(_tileSheetTexture, rope, pulleySource, Color.White);
+            }
+
+            DrawTiles(
+                spriteBatch,
+                session.Level.Definition.ForegroundTiles,
+                cameraLeft,
+                viewport.Width);
 
             foreach (Block block in session.Level.Blocks)
             {
-                block.Draw(spriteBatch, _blockTexture);
+                if (block.Type == BlockType.Flag)
+                {
+                    spriteBatch.Draw(
+                        _tileSheetTexture,
+                        block.Bounds,
+                        LevelTile.GetSourceRectangle(152),
+                        Color.White);
+                }
+                else
+                {
+                    block.Draw(spriteBatch, _blockTexture, _tileSheetTexture);
+                }
             }
 
             foreach (IEnemy enemy in session.Level.Enemies)
@@ -99,6 +107,30 @@ namespace TeamUno.Mario.World
             {
                 projectile.Draw(spriteBatch);
             }
+
+            DrawTiles(
+                spriteBatch,
+                session.Level.Definition.AboveForegroundTiles,
+                cameraLeft,
+                viewport.Width);
+        }
+
+        private void DrawTiles(
+            SpriteBatch spriteBatch,
+            IReadOnlyList<LevelTile> tiles,
+            float cameraLeft,
+            int viewportWidth)
+        {
+            float cameraRight = cameraLeft + viewportWidth;
+            foreach (LevelTile tile in tiles)
+            {
+                if (tile.Bounds.Right <= cameraLeft || tile.Bounds.Left >= cameraRight)
+                {
+                    continue;
+                }
+
+                spriteBatch.Draw(_tileSheetTexture, tile.Bounds, tile.SourceRectangle, Color.White);
+            }
         }
 
         public void DrawHud(SpriteBatch spriteBatch, GameSession session, MenuScreen menu, SpriteFont font, Rectangle viewport)
@@ -114,7 +146,7 @@ namespace TeamUno.Mario.World
                 + "     Coins: " + session.Progress.Coins + " / 100"
                 + "     Lives: " + session.Progress.Lives
                 + "     Time: " + session.TimeRemaining.ToString("D3", CultureInfo.InvariantCulture);
-            string controls = "Move: A/D or arrows   Jump: W/Space or Pad A   Fire: Z/N or Pad X   Pipe: Down/B   Pause: Esc/Start";
+            string controls = "Move: A/D or arrows   Sprint: Shift/RT   Jump: W/Space or Pad A   Fire: Z/N or Pad X   Pipe: Down/B   Pause: Esc/Start";
             int panelHeight = 66;
             if (session.Level.Definition.Id == "test")
             {
@@ -125,7 +157,7 @@ namespace TeamUno.Mario.World
             DrawText(spriteBatch, font, progress, new Vector2(24, 14));
             DrawText(spriteBatch, font, controls, new Vector2(24, 42));
 
-            if (session.Level.Definition.IsUnderwater)
+            if (session.IsUnderwater)
             {
                 DrawText(spriteBatch, font, "Underwater: press jump repeatedly to swim upward", new Vector2(24, 80));
             }
@@ -134,6 +166,8 @@ namespace TeamUno.Mario.World
                 string spots = "F3: blocks   F4: items   F5: shells   F6: Bowser   F7: pipes   F9: gap   |   Repeat a key to reload";
                 DrawText(spriteBatch, font, spots, new Vector2(24, 70));
             }
+
+            DrawFloatingTexts(spriteBatch, font, session, viewport);
 
             if (session.State == GameSessionState.Menu)
             {
@@ -184,6 +218,52 @@ namespace TeamUno.Mario.World
                 viewport.Center.X - messageSize.X / 2f,
                 viewport.Center.Y - messageSize.Y / 2f);
             DrawText(spriteBatch, font, message, messagePosition);
+        }
+
+        private static void DrawFloatingTexts(
+            SpriteBatch spriteBatch,
+            SpriteFont font,
+            GameSession session,
+            Rectangle viewport)
+        {
+            const float FloatingTextScale = 2f;
+            if (session.Level.HasBowser && !session.Level.IsBowserDefeated)
+            {
+                return;
+            }
+
+            Vector2 cameraPosition = session.Camera.Position;
+            foreach (FloatingTextSpawnDefinition floatingText in session.Level.Definition.FloatingTexts)
+            {
+                Vector2 screenPosition = floatingText.Position - cameraPosition;
+                Vector2 textSize = font.MeasureString(floatingText.Text) * FloatingTextScale;
+                if (screenPosition.X + textSize.X < 0f || screenPosition.X > viewport.Width
+                    || screenPosition.Y + textSize.Y < 0f || screenPosition.Y > viewport.Height)
+                {
+                    continue;
+                }
+
+                spriteBatch.DrawString(
+                    font,
+                    floatingText.Text,
+                    screenPosition + new Vector2(2f, 2f),
+                    Color.Black,
+                    0f,
+                    Vector2.Zero,
+                    FloatingTextScale,
+                    SpriteEffects.None,
+                    0f);
+                spriteBatch.DrawString(
+                    font,
+                    floatingText.Text,
+                    screenPosition,
+                    Color.White,
+                    0f,
+                    Vector2.Zero,
+                    FloatingTextScale,
+                    SpriteEffects.None,
+                    0f);
+            }
         }
 
         public void DrawTransitionOverlay(SpriteBatch spriteBatch, GameSession session, Rectangle viewport)
@@ -268,6 +348,12 @@ namespace TeamUno.Mario.World
 
         private void DrawMenu(SpriteBatch spriteBatch, SpriteFont font, MenuScreen menu, Rectangle viewport)
         {
+            if (menu.IsLevelSelection && menu.LevelColumnCount > 0)
+            {
+                DrawLevelMenu(spriteBatch, font, menu, viewport);
+                return;
+            }
+
             List<string> lines = menu.GetLines();
             float widest = Math.Max(
                 font.MeasureString(menu.Title).X,
@@ -307,6 +393,81 @@ namespace TeamUno.Mario.World
 
             DrawCenteredText(
                 spriteBatch, font, menu.Instructions, viewport.Center.X, y + 6, Color.LightGray);
+        }
+
+        private void DrawLevelMenu(SpriteBatch spriteBatch, SpriteFont font, MenuScreen menu, Rectangle viewport)
+        {
+            const int padding = 20;
+            int columnCount = menu.LevelColumnCount;
+            int availableWidth = viewport.Width - 48 - padding * 2;
+            int columnWidth = Math.Max(72, availableWidth / columnCount);
+            int panelWidth = columnWidth * columnCount + padding * 2;
+            int rowHeight = font.LineSpacing + 6;
+            int maximumRows = 0;
+            for (int columnIndex = 0; columnIndex < columnCount; columnIndex++)
+            {
+                maximumRows = Math.Max(
+                    maximumRows,
+                    menu.GetLevelColumnIndices(columnIndex).Count);
+            }
+
+            int panelHeight = padding * 2 + rowHeight * (maximumRows + 4);
+            Rectangle panel = new Rectangle(
+                viewport.Center.X - panelWidth / 2,
+                viewport.Center.Y - panelHeight / 2,
+                panelWidth,
+                panelHeight);
+
+            spriteBatch.Draw(_pixel, viewport, Color.Black * 0.4f);
+            spriteBatch.Draw(_pixel, panel, Color.Black * 0.85f);
+            DrawCenteredText(spriteBatch, font, menu.Title, viewport.Center.X, panel.Y + padding, Color.White);
+
+            int headerY = panel.Y + padding + rowHeight;
+            int entriesY = headerY + rowHeight;
+            for (int columnIndex = 0; columnIndex < columnCount; columnIndex++)
+            {
+                int columnX = panel.X + padding + columnIndex * columnWidth;
+                DrawCenteredText(
+                    spriteBatch,
+                    font,
+                    menu.GetLevelColumnTitle(columnIndex),
+                    columnX + columnWidth / 2,
+                    headerY,
+                    Color.LightGray);
+
+                IReadOnlyList<int> areaIndices = menu.GetLevelColumnIndices(columnIndex);
+                for (int row = 0; row < areaIndices.Count; row++)
+                {
+                    int areaIndex = areaIndices[row];
+                    string label = menu.GetLevelLabel(areaIndex);
+                    Color color = areaIndex == menu.SelectedIndex ? Color.Yellow : Color.White;
+                    if (areaIndex == menu.SelectedIndex)
+                    {
+                        label = "> " + label;
+                    }
+
+                    spriteBatch.DrawString(
+                        font,
+                        label,
+                        new Vector2(columnX + 6, entriesY + row * rowHeight),
+                        color);
+                }
+            }
+
+            int backY = entriesY + maximumRows * rowHeight;
+            string backLabel = menu.SelectedIndex == menu.GetLines().Count - 1 ? "> Back" : "Back";
+            spriteBatch.DrawString(
+                font,
+                backLabel,
+                new Vector2(panel.X + padding + (columnCount - 1) * columnWidth + 6, backY),
+                menu.SelectedIndex == menu.GetLines().Count - 1 ? Color.Yellow : Color.White);
+            DrawCenteredText(
+                spriteBatch,
+                font,
+                menu.Instructions,
+                viewport.Center.X,
+                backY + rowHeight,
+                Color.LightGray);
         }
 
         // clean up _pixel

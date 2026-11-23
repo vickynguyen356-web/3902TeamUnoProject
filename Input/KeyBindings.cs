@@ -6,7 +6,7 @@ namespace TeamUno.Mario.Input
 {
     internal enum GameAction
     {
-        MoveLeft, MoveRight, Jump, Crouch, Fireball, Pause, Mute, Restart
+        MoveLeft, MoveRight, Jump, Crouch, Sprint, Fireball, Pause, Mute, Restart
     }
 
     internal class KeyBindings
@@ -25,6 +25,7 @@ namespace TeamUno.Mario.Input
             { GameAction.MoveRight, Keys.D },
             { GameAction.Jump, Keys.W },
             { GameAction.Crouch, Keys.S },
+            { GameAction.Sprint, Keys.LeftShift },
             { GameAction.Fireball, Keys.Z },
             { GameAction.Pause, Keys.P },
             { GameAction.Mute, Keys.M },

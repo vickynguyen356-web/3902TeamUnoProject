@@ -6,6 +6,7 @@ namespace TeamUno.Mario.Interfaces
     internal interface IEnemy : ICollidable
     {
         bool IsDead { get; }
+        Rectangle CollisionBounds { get; }
         Vector2 Position { get; set; }
         Vector2 Velocity { get; set; }
 

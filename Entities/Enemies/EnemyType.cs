@@ -6,6 +6,12 @@ namespace TeamUno.Mario.Entities.Enemies
         Koopa,
         PiranhaPlant,
         HammerBro,
-        Bowser
+        Bowser,
+        Lakitu,
+        Spiny,
+        Blooper,
+        CheepCheep,
+        BulletBill,
+        BulletBillCannon
     }
 }

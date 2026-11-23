@@ -6,8 +6,8 @@ namespace TeamUno.Mario.Entities.Projectiles
 {
     internal class BowserFire : Projectile
     {
-        public const int FireWidth = 48;
-        public const int FireHeight = 16;
+        public const int FireWidth = 72;
+        public const int FireHeight = 24;
         private readonly SpriteAnimation _fireAnimation;
 
         public override int Width

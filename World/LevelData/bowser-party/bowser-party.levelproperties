@@ -1,0 +1,26 @@
+### Layers use reference tile IDs:
+# Foreground: 384 ground, 609 platform, 101/149 pole, 152 flag.
+# Enemies: 61 Bowser. Loose items in bowser-party_Items.csv: 48 Fire Flower, 96 Star.
+PLAYER_START = (2, 10)
+CAMERA_START = (0, 0)
+CAMERA_MAX = 65
+
+LEVEL_TYPE = OVERWORLD
+NEXT_LEVEL = (0, 0)
+MUSIC_TRACK = Audio/Tracks/castleTheme
+BACKGROUND_COLOR = BLUE
+
+SPAWN_POINT=\
+	finish (60, 10)
+
+FLOATING_TEXT=\
+
+WARP_PIPE=\
+
+MOVING_PLATFORM=\
+
+PLATFORM_LEVEL=\
+
+FIRE_BAR=\
+
+VINE=\

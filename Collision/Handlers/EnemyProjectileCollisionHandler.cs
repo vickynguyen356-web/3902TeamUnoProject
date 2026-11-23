@@ -25,7 +25,8 @@ namespace TeamUno.Mario.Collision.Handlers
 
         public void Handle(IEnemy first, IProjectile second, CollisionInfo info)
         {
-            if (first.IsDead || second.IsDead)
+            if (first.IsDead || second.IsDead || first is FireBarSegment || first is BulletBill
+                || first is BulletBillCannon)
             {
                 return;
             }

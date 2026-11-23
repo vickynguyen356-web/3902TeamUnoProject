@@ -17,6 +17,7 @@ The game opens on a title screen. Press Enter or Space to start in the overworld
 | D / Right Arrow | Move right |
 | W / Up Arrow / Space | Jump |
 | S / Down Arrow | Crouch, or enter a connected pipe while standing on top |
+| Shift | Sprint |
 | W / Up Arrow | Climb up a vine |
 | S / Down Arrow | Climb down a vine |
 | Z / N | Throw a fireball in Fire form |
@@ -36,7 +37,9 @@ The game opens on a title screen. Press Enter or Space to start in the overworld
 
 The Controls page in the pause menu lets you change the main bindings.
 
-Hold the movement and climbing keys to move. Press jump, fireball, pause, reset, and area-selection keys once for each action. To enter a connected pipe, stand near the center of its top and press Down or S, but not every pipe has a destination.
+Hold the movement and climbing keys to move. Press jump, fireball, pause, reset, and area-selection keys once for each action. To enter a connected pipe, stand near the center of its top and press Down or S, or walk into a side-entry pipe in its authored direction. Not every pipe has a destination.
+
+The pause menu's level selector arranges levels in one column per world. Use arrows, WASD, or the gamepad directions to move by the displayed rows and columns; holding a direction repeats the selection more quickly.
 
 ## Pause Menu and Gamepad
 
@@ -48,7 +51,7 @@ With a gamepad, use the left stick or D-pad to move, A to jump or swim, X to thr
 
 ## Features
 
-**Mario:** Mario can move, jump, fall, crouch, climb vines, and throw fireballs in Fire form. He speeds up while moving and slows down when movement keys are released. His animations change with his action, facing direction, and form. On land, Mario can only jump when grounded and not crouching. Underwater, pressing jump gives him an upward swim stroke, and he sinks when not swimming upward. Small Mario cannot crouch.
+**Mario:** Mario can move, jump, fall, crouch, climb vines, and throw fireballs in Fire form. He accelerates and brakes gradually, including when reversing or releasing sprint. Sprinting raises his top speed and uses a faster run cycle with the correct facing-direction sprites. His animations change with his action, facing direction, and form. Mario can only jump when grounded and not crouching. Small Mario cannot crouch.
 
 Mario lands on blocks and stops at their sides. A mushroom grows Small Mario without downgrading Fire Mario. A fire flower changes him to Fire Mario. Damage changes a larger Mario to Small Mario, and Small Mario dies when hit. After taking damage, Mario has 2.5 seconds of protection and flashes to show it is active. His walking animation is also faster than in Sprint 3.
 
@@ -59,7 +62,7 @@ Mario lands on blocks and stops at their sides. A mushroom grows Small Mario wit
 - Star moves up and down, bounces on blocks, and turns at walls.
 - Block Coin moves up and down, then disappears after its short animation.
 
-Collected items disappear and apply their effect once. Coins add to the coin count, and 1-ups add a life. A block coin gives a coin when the block releases it, so touching its animation does not count it again.
+Collected items disappear and apply their effect once, including floating coins while Mario is swimming underwater. Coins add to the coin count, and 1-ups add a life. A block coin gives a coin when the block releases it, so touching its animation does not count it again.
 
 A star gives Mario 10 seconds of invincibility. He changes colors to signal it is active and defeats enemies when in contact. Another star restarts the timer. The effect ends when its timer runs out or the game resets. Items that leave the level are removed.
 
@@ -67,9 +70,9 @@ A star gives Mario 10 seconds of invincibility. He changes colors to signal it i
 
 Platforms can be landed on from above and passed through from below or the sides. Mario can climb vines with Up and Down. Connected pipes take Mario to another area. The flagpole has a climb and slide sequence that finishes the area.
 
-**Enemies:** The game includes Goomba, Koopa, Piranha Plant, Hammer Bro, and Bowser. Walking enemies turn at walls, ledges, and their patrol limits. They use gravity, land on blocks, and fall if their supporting block is removed. Dead enemies and enemies below the level are removed.
+**Enemies:** The game includes Goomba, Koopa, Piranha Plant, Hammer Bro, Bowser, Lakitu, Spiny, and Bullet Bill. Cannon tiles launch Bullet Bills while on camera, and authored Fire Bars rotate as hazards. Walking enemies turn at walls, ledges, and their patrol limits. They use gravity, land on blocks, and fall if their supporting block is removed. Dead enemies and enemies below the level are removed.
 
-Mario can stomp Goombas and Koopas and bounce afterward. Stomping a Koopa creates a shell. Mario can kick a stopped shell by touching its side, and stomping a moving shell stops it. Moving shells can hurt Mario after a short delay following a kick. Bowser and Piranha Plant cannot be safely stomped. Piranha Plant uses its open/closed animation and stays at its pipe position.
+Mario can stomp Goombas, Koopas, and Bullet Bills and bounce afterward. Stomping a Koopa creates a shell. Mario can kick a stopped shell by touching its side, and stomping a moving shell stops it. Moving shells can hurt Mario after a short delay following a kick. Bowser, Piranha Plant, and Fire Bars cannot be safely stomped. Piranha Plant moves into and out of its pipe between pauses.
 
 Hammer Bro can jump and stops to throw hammers before turning. Bowser fires during patrol and takes 3 fireball hits to defeat. Mario's fireballs and moving shells defeat enemies. Moving shells do not damage Bowser.
 
@@ -92,6 +95,14 @@ The project uses interfaces to define common actions for players, items, enemies
 The collision system checks object pairs and calls the matching handler. Handlers change the objects through their methods. Shared behavior stays in base classes, while each item or enemy keeps its own movement and animation behavior. Mario's state machine handles forms, transitions, and the star timer. A Draw overload lets Mario use changing colors while other objects keep their normal draw calls.
 
 The project uses Git/GitHub and MonoGame's Content Builder. Code reviews are stored in CodeReviews. The Documentation folder includes code analysis results and sprint reflections. The Sprint 4 reflection includes the board progress chart.
+
+Hold **Left Shift** or the gamepad **Right Trigger** while moving to sprint. Jump height varies with the jump button: releasing it during ascent shortens the jump. Character, enemy, item, and projectile sprites use the same 3× source-tile scale as the 48-pixel level tiles.
+
+## Imported Level Data
+
+`World/LevelParser.cs` loads the World1-1 through World8-4 folders in `World/LevelData` and starts the game in World1-1. CSV coordinates are scaled to the game's 48-pixel tile size. Level grids accept readable, layer-specific tile names as well as numeric atlas IDs; see [World/LevelData/README.md](World/LevelData/README.md) for the authoring guide. The parser reads foreground collision tiles, collectibles, enemy markers, start positions, next-level links, and warp-pipe destinations. It groups vertical and attached sideways pipe tiles into complete pipes, renders pipe tops and bodies from the block atlas, and uses authored targets, camera coordinates, and freeze-camera settings for pipe transitions. Same-level warps relocate Mario without rebuilding the active level; cross-level warps load the authored destination area. Collectible markers embedded in question, brick, and invisible blocks are released when the block is hit. It also exposes the authored moving-platform, fire-bar, pulley-platform, and floating-text records through spawn-definition classes.
+
+The renderer draws the CSV background, foreground, and above-foreground layers, as well as animated moving platforms and Fire Bars. The parser only turns recognized tile IDs into gameplay objects. Blocks, platforms, pipes, and flagpoles use the `Content/Sprites/bricksobstacles.png` atlas; underground block sprites use the atlas's horizontal palette offset. The level tile sheet color key matches the source image so transparent tile corners do not draw as solid backgrounds.
 
 ## Known Bugs and Limitations
 

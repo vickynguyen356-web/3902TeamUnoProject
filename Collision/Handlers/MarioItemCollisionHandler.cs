@@ -26,12 +26,19 @@ namespace TeamUno.Mario.Collision.Handlers
             switch (item.Type)
             {
                 case ItemType.Mushroom:
+                case ItemType.FireFlowerMushroom:
                     _progress.AddScore(1000);
                     // only Small Mario needs to grow from a mushroom
                     if (player.IsSmall)
                     {
                         SoundPlayer.Play("Audio/SoundEffects/powerup");
                         player.BeginFormTransition(PlayerForm.Super);
+                    }
+                    else if (item.Type == ItemType.FireFlowerMushroom
+                        && player.Form != PlayerForm.Fire)
+                    {
+                        SoundPlayer.Play("Audio/SoundEffects/powerup");
+                        player.BeginFormTransition(PlayerForm.Fire);
                     }
                     break;
                 case ItemType.FireFlower:

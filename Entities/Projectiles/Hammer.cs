@@ -6,8 +6,8 @@ namespace TeamUno.Mario.Entities.Projectiles
 {
     internal class Hammer : Projectile
     {
-        public const int HammerWidth = 16;
-        public const int HammerHeight = 32;
+        public const int HammerWidth = 24;
+        public const int HammerHeight = 48;
         private const float Gravity = 500f;
         private const float RotationSpeed = 8f;
         private readonly SpriteAnimation _hammerAnimation;

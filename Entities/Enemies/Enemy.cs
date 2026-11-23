@@ -83,6 +83,14 @@ namespace TeamUno.Mario.Entities.Enemies
             }
         }
 
+        public virtual Rectangle CollisionBounds
+        {
+            get
+            {
+                return Bounds;
+            }
+        }
+
         public bool IsDead
         {
             get
@@ -120,7 +128,7 @@ namespace TeamUno.Mario.Entities.Enemies
             }
         }
 
-        public void UpdateGravity(GameTime gameTime)
+        public virtual void UpdateGravity(GameTime gameTime)
         {
             if (IsDead || this is PiranhaPlant)
             {
@@ -131,6 +139,14 @@ namespace TeamUno.Mario.Entities.Enemies
             elapsedSeconds = Math.Min(elapsedSeconds, MaximumElapsedSeconds);
             Velocity.Y = Math.Min(Velocity.Y + Gravity * elapsedSeconds, MaximumFallSpeed);
             Position = new Vector2(Position.X, Position.Y + Velocity.Y * elapsedSeconds);
+        }
+
+        protected virtual bool TurnsAtLedges
+        {
+            get
+            {
+                return true;
+            }
         }
 
         public void SetWorldBlocks(IReadOnlyList<Block> blocks)
@@ -174,7 +190,7 @@ namespace TeamUno.Mario.Entities.Enemies
             {
                 if (block.IsDeleted || block.Type == BlockType.Empty || block.Type == BlockType.Invisible
                     || block.Type == BlockType.Vine
-                    || block.Type == BlockType.FlagPole)
+                    || block.Type == BlockType.FlagPole || block.Type == BlockType.Flag)
                 {
                     continue;
                 }
@@ -199,7 +215,7 @@ namespace TeamUno.Mario.Entities.Enemies
             }
 
             // turn before walking off the surface we are standing on
-            if (hasGroundBelow && !hasGroundAhead)
+            if (TurnsAtLedges && hasGroundBelow && !hasGroundAhead)
             {
                 return false;
             }

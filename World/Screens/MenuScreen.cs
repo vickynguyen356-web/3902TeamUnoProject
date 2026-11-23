@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -43,17 +45,42 @@ namespace TeamUno.Mario.World
         private readonly GameSession _session;
         private readonly KeyBindings _bindings;
         private readonly List<string> _areaIds;
+        private readonly List<LevelSelectionColumn> _levelColumns;
         private KeyboardState _previous;
         private GamePadState _previousGamePad;
         private Page _page = Page.Main;
         private int _selected;
         private bool _isRebinding;
+        private int _heldDirection;
+        private float _navigationRepeatRemaining;
+
+        private const float InitialNavigationRepeatDelay = 0.35f;
+        private const float NavigationRepeatInterval = 0.12f;
+
+        private sealed class LevelSelectionColumn
+        {
+            public string Title { get; }
+            public List<int> AreaIndices { get; } = new List<int>();
+
+            public LevelSelectionColumn(string title)
+            {
+                Title = title;
+            }
+        }
 
         public MenuScreen(GameSession session, KeyBindings bindings, IEnumerable<string> areaIds)
         {
             _session = session;
             _bindings = bindings;
             _areaIds = new List<string>(areaIds);
+            _areaIds.RemoveAll(areaId =>
+                !string.Equals(areaId, "World1-1", System.StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(areaId, "overworld", System.StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(areaId, "underground", System.StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(areaId, "underwater", System.StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(areaId, "test", System.StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(areaId, "bowser-party", System.StringComparison.OrdinalIgnoreCase));
+            _levelColumns = BuildLevelColumns(_areaIds);
         }
 
         public void Open(KeyboardState keys, GamePadState gamePad)
@@ -61,12 +88,14 @@ namespace TeamUno.Mario.World
             _page = Page.Main;
             _selected = 0;
             _isRebinding = false;
+            _heldDirection = 0;
+            _navigationRepeatRemaining = 0f;
             _previous = keys;
             _previousGamePad = gamePad;
             _session.OpenMenu();
         }
 
-        public void Update(KeyboardState keys, GamePadState gamePad)
+        public void Update(GameTime gameTime, KeyboardState keys, GamePadState gamePad)
         {
             if (_isRebinding)
             {
@@ -74,7 +103,7 @@ namespace TeamUno.Mario.World
             }
             else
             {
-                UpdateNavigation(keys, gamePad);
+                UpdateNavigation(gameTime, keys, gamePad);
             }
 
             _previous = keys;
@@ -112,7 +141,7 @@ namespace TeamUno.Mario.World
             }
         }
 
-        private void UpdateNavigation(KeyboardState keys, GamePadState gamePad)
+        private void UpdateNavigation(GameTime gameTime, KeyboardState keys, GamePadState gamePad)
         {
             Keys pauseKey = _bindings.Get(GameAction.Pause);
             bool pauseKeyIsNavigation = pauseKey == Keys.W || pauseKey == Keys.A
@@ -123,27 +152,22 @@ namespace TeamUno.Mario.World
                 return;
             }
 
-            int count = GetLines().Count;
-            bool downPressed = Pressed(keys, Keys.Down) || Pressed(keys, Keys.S)
-                || ButtonPressed(gamePad, Buttons.DPadDown)
-                || AxisCrossed(gamePad.ThumbSticks.Left.Y, _previousGamePad.ThumbSticks.Left.Y, -0.5f);
-            bool upPressed = Pressed(keys, Keys.Up) || Pressed(keys, Keys.W)
-                || ButtonPressed(gamePad, Buttons.DPadUp)
-                || AxisCrossed(gamePad.ThumbSticks.Left.Y, _previousGamePad.ThumbSticks.Left.Y, 0.5f);
-            if (downPressed)
-            {
-                SoundPlayer.Play("Audio/SoundEffects/beep");
-                _selected = (_selected + 1) % count;
-            }
-            else if (upPressed)
-            {
-                SoundPlayer.Play("Audio/SoundEffects/beep");
-                _selected = (_selected + count - 1) % count;
-            }
+            bool upHeld = keys.IsKeyDown(Keys.Up) || keys.IsKeyDown(Keys.W)
+                || gamePad.IsButtonDown(Buttons.DPadUp) || gamePad.ThumbSticks.Left.Y >= 0.5f;
+            bool downHeld = keys.IsKeyDown(Keys.Down) || keys.IsKeyDown(Keys.S)
+                || gamePad.IsButtonDown(Buttons.DPadDown) || gamePad.ThumbSticks.Left.Y <= -0.5f;
+            bool leftHeld = _page == Page.Levels
+                && (keys.IsKeyDown(Keys.Left) || keys.IsKeyDown(Keys.A)
+                    || gamePad.IsButtonDown(Buttons.DPadLeft) || gamePad.ThumbSticks.Left.X <= -0.5f);
+            bool rightHeld = _page == Page.Levels
+                && (keys.IsKeyDown(Keys.Right) || keys.IsKeyDown(Keys.D)
+                    || gamePad.IsButtonDown(Buttons.DPadRight) || gamePad.ThumbSticks.Left.X >= 0.5f);
+            int direction = upHeld ? -1 : downHeld ? 1 : leftHeld ? -2 : rightHeld ? 2 : 0;
+            UpdateNavigationRepeat(gameTime, direction);
 
             bool adjustingVolume = _page == Page.Volume && _selected < 2;
             if (Pressed(keys, Keys.Escape) || ButtonPressed(gamePad, Buttons.B)
-                || (!adjustingVolume && Pressed(keys, Keys.A)))
+                || (!adjustingVolume && _page != Page.Levels && Pressed(keys, Keys.A)))
             {
                 SoundPlayer.Play("Audio/SoundEffects/beep");
                 GoBack();
@@ -169,13 +193,194 @@ namespace TeamUno.Mario.World
             }
 
             if (Pressed(keys, Keys.Enter) || ButtonPressed(gamePad, Buttons.A)
-                || (!adjustingVolume && Pressed(keys, Keys.D)))
+                || (!adjustingVolume && _page != Page.Levels && Pressed(keys, Keys.D)))
             {
                 SoundPlayer.Play("Audio/SoundEffects/beep");
                 Activate();
             }
         }
 
+        private void UpdateNavigationRepeat(GameTime gameTime, int direction)
+        {
+            if (direction == 0)
+            {
+                _heldDirection = 0;
+                _navigationRepeatRemaining = 0f;
+                return;
+            }
+
+            bool shouldMove = direction != _heldDirection;
+            if (shouldMove)
+            {
+                _navigationRepeatRemaining = InitialNavigationRepeatDelay;
+            }
+            else
+            {
+                _navigationRepeatRemaining -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (_navigationRepeatRemaining <= 0f)
+                {
+                    shouldMove = true;
+                    _navigationRepeatRemaining = NavigationRepeatInterval;
+                }
+            }
+
+            _heldDirection = direction;
+            if (!shouldMove)
+            {
+                return;
+            }
+
+            SoundPlayer.Play("Audio/SoundEffects/beep");
+            if (_page == Page.Levels)
+            {
+                MoveLevelSelection(direction);
+                return;
+            }
+
+            int count = GetLines().Count;
+            _selected = direction < 0
+                ? (_selected + count - 1) % count
+                : (_selected + 1) % count;
+        }
+
+        private void MoveLevelSelection(int direction)
+        {
+            if (_levelColumns.Count == 0)
+            {
+                return;
+            }
+
+            if (_selected == _areaIds.Count)
+            {
+                if (direction == -1)
+                {
+                    List<int> lastColumn = _levelColumns[_levelColumns.Count - 1].AreaIndices;
+                    if (lastColumn.Count > 0)
+                    {
+                        _selected = lastColumn[lastColumn.Count - 1];
+                    }
+                }
+                else if (direction < 0 && _levelColumns.Count > 1)
+                {
+                    List<int> previousColumn = _levelColumns[_levelColumns.Count - 2].AreaIndices;
+                    if (previousColumn.Count > 0)
+                    {
+                        _selected = previousColumn[previousColumn.Count - 1];
+                    }
+                }
+                return;
+            }
+
+            int columnIndex = FindSelectedColumn();
+            List<int> column = _levelColumns[columnIndex].AreaIndices;
+            int row = column.IndexOf(_selected);
+            bool isHorizontal = direction == -2 || direction == 2;
+            if (isHorizontal)
+            {
+                int nextColumnIndex = columnIndex + (direction < 0 ? -1 : 1);
+                if (nextColumnIndex < 0 || nextColumnIndex >= _levelColumns.Count)
+                {
+                    return;
+                }
+
+                List<int> nextColumn = _levelColumns[nextColumnIndex].AreaIndices;
+                if (nextColumn.Count > 0)
+                {
+                    _selected = nextColumn[Math.Min(row, nextColumn.Count - 1)];
+                }
+                return;
+            }
+
+            if (direction > 0 && row == column.Count - 1
+                && columnIndex == _levelColumns.Count - 1)
+            {
+                _selected = _areaIds.Count;
+            }
+            else if (direction < 0 && row == 0)
+            {
+                _selected = column[column.Count - 1];
+            }
+            else if (direction > 0 && row == column.Count - 1)
+            {
+                _selected = column[0];
+            }
+            else
+            {
+                int nextRow = row + (direction < 0 ? -1 : 1);
+                _selected = column[nextRow];
+            }
+        }
+
+        private int FindSelectedColumn()
+        {
+            for (int columnIndex = 0; columnIndex < _levelColumns.Count; columnIndex++)
+            {
+                if (_levelColumns[columnIndex].AreaIndices.Contains(_selected))
+                {
+                    return columnIndex;
+                }
+            }
+
+            return _levelColumns.Count - 1;
+        }
+
+        private static List<LevelSelectionColumn> BuildLevelColumns(List<string> areaIds)
+        {
+            SortedDictionary<int, LevelSelectionColumn> worlds =
+                new SortedDictionary<int, LevelSelectionColumn>();
+            List<int> otherAreas = new List<int>();
+            for (int index = 0; index < areaIds.Count; index++)
+            {
+                string areaId = areaIds[index];
+                int separator = areaId.IndexOf('-', StringComparison.Ordinal);
+                int world;
+                if (!areaId.StartsWith("World", StringComparison.Ordinal)
+                    || separator <= 5
+                    || !int.TryParse(
+                        areaId.AsSpan(5, separator - 5),
+                        NumberStyles.Integer,
+                        CultureInfo.InvariantCulture,
+                        out world))
+                {
+                    otherAreas.Add(index);
+                    continue;
+                }
+
+                LevelSelectionColumn column;
+                if (!worlds.TryGetValue(world, out column))
+                {
+                    column = new LevelSelectionColumn("World " + world.ToString(CultureInfo.InvariantCulture));
+                    worlds.Add(world, column);
+                }
+                column.AreaIndices.Add(index);
+            }
+
+            List<LevelSelectionColumn> columns = new List<LevelSelectionColumn>(worlds.Values);
+            foreach (LevelSelectionColumn column in columns)
+            {
+                column.AreaIndices.Sort((first, second) =>
+                    GetAreaNumber(areaIds[first]).CompareTo(GetAreaNumber(areaIds[second])));
+            }
+            if (otherAreas.Count > 0)
+            {
+                columns.Add(new LevelSelectionColumn("Other"));
+                columns[columns.Count - 1].AreaIndices.AddRange(otherAreas);
+            }
+            return columns;
+        }
+
+        private static int GetAreaNumber(string areaId)
+        {
+            int separator = areaId.IndexOf('-', StringComparison.Ordinal);
+            int level;
+            return separator >= 0 && int.TryParse(
+                areaId.AsSpan(separator + 1),
+                NumberStyles.Integer,
+                CultureInfo.InvariantCulture,
+                out level)
+                ? level
+                : int.MaxValue;
+        }
         private bool ButtonPressed(GamePadState gamePad, Buttons button)
         {
             return gamePad.IsConnected
@@ -298,7 +503,10 @@ namespace TeamUno.Mario.World
                     break;
             }
 
-            _selected = 0;
+            _selected = _page == Page.Levels && _levelColumns.Count > 0
+                && _levelColumns[0].AreaIndices.Count > 0
+                ? _levelColumns[0].AreaIndices[0]
+                : 0;
         }
 
         // the renderer draws these, with ">" in front of the selected one
@@ -311,7 +519,10 @@ namespace TeamUno.Mario.World
                     lines.AddRange(MainMenuLines);
                     break;
                 case Page.Levels:
-                    lines.AddRange(_areaIds);
+                    foreach (string areaId in _areaIds)
+                    {
+                        lines.Add(GetLevelLabel(areaId));
+                    }
                     lines.Add("Back");
                     break;
                 case Page.TestSpots:
@@ -374,6 +585,11 @@ namespace TeamUno.Mario.World
                     return "W/S or arrows: choose   A/D or arrows: adjust   Esc / Pad B: back";
                 }
 
+                if (_page == Page.Levels)
+                {
+                    return "Arrows / WASD / Pad: move   Enter / Pad A: select   Esc / Pad B: back";
+                }
+
                 return "W/S or arrows: choose   D/Enter/Pad A: select   A/Esc/Pad B: back";
             }
         }
@@ -384,6 +600,38 @@ namespace TeamUno.Mario.World
             {
                 return _selected;
             }
+        }
+
+        public bool IsLevelSelection
+        {
+            get { return _page == Page.Levels; }
+        }
+
+        public int LevelColumnCount
+        {
+            get { return _levelColumns.Count; }
+        }
+
+        public IReadOnlyList<int> GetLevelColumnIndices(int columnIndex)
+        {
+            return _levelColumns[columnIndex].AreaIndices.AsReadOnly();
+        }
+
+        public string GetLevelColumnTitle(int columnIndex)
+        {
+            return _levelColumns[columnIndex].Title;
+        }
+
+        public string GetLevelLabel(int areaIndex)
+        {
+            return GetLevelLabel(_areaIds[areaIndex]);
+        }
+
+        private static string GetLevelLabel(string areaId)
+        {
+            return areaId.StartsWith("World", System.StringComparison.Ordinal)
+                ? areaId.Substring(5)
+                : areaId;
         }
     }
 }

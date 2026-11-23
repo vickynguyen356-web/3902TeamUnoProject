@@ -46,7 +46,7 @@ namespace TeamUno.Mario.World
             blocks.Add(new BlockSpawnDefinition(new Vector2(528, 336), BlockType.Invisible, contents: ItemType.OneUpMushroom));
             blocks.Add(new BlockSpawnDefinition(new Vector2(720, 240), BlockType.Vine, height: 288));
             blocks.Add(new BlockSpawnDefinition(new Vector2(336, 432), BlockType.Brick));
-            blocks.Add(new BlockSpawnDefinition(new Vector2(384, 432), BlockType.Question, contents: ItemType.Mushroom));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(384, 432), BlockType.Question, contents: ItemType.FireFlowerMushroom));
             blocks.Add(new BlockSpawnDefinition(new Vector2(432, 432), BlockType.Brick));
             blocks.Add(new BlockSpawnDefinition(new Vector2(912, 398), BlockType.Pipe, width: 64, height: 130,
                 destinationArea: "underground", destinationSpawn: "entrance"));
@@ -62,7 +62,7 @@ namespace TeamUno.Mario.World
 
             ItemSpawnDefinition[] items = new ItemSpawnDefinition[]
             {
-                new ItemSpawnDefinition(ItemType.Mushroom, new Vector2(224, FloorY - 32)),
+                new ItemSpawnDefinition(ItemType.FireFlowerMushroom, new Vector2(224, FloorY - 32)),
                 new ItemSpawnDefinition(ItemType.OneUpMushroom, new Vector2(304, FloorY - 32)),
                 new ItemSpawnDefinition(ItemType.Star, new Vector2(560, FloorY - 32)),
                 new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(400, 256)),
@@ -114,7 +114,7 @@ namespace TeamUno.Mario.World
 
             ItemSpawnDefinition[] items = new ItemSpawnDefinition[]
             {
-                new ItemSpawnDefinition(ItemType.Mushroom, new Vector2(304, FloorY - 32)),
+                new ItemSpawnDefinition(ItemType.FireFlowerMushroom, new Vector2(304, FloorY - 32)),
                 new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(448, 288)),
                 new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(496, 288)),
                 new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(544, 288)),
@@ -187,11 +187,11 @@ namespace TeamUno.Mario.World
             items.Add(new ItemSpawnDefinition(ItemType.FloatingCoin, new Vector2(872, 448)));
             AddBlockRows(blocks, BlockType.Solid, 1008, 432, columns: 1, rows: 2);
             AddBlockRows(blocks, BlockType.Solid, 1344, 432, columns: 1, rows: 2);
-            items.Add(new ItemSpawnDefinition(ItemType.Mushroom, new Vector2(1216, FloorY - 32)));
+            items.Add(new ItemSpawnDefinition(ItemType.FireFlowerMushroom, new Vector2(1216, FloorY - 32)));
             items.Add(new ItemSpawnDefinition(ItemType.Star, new Vector2(1120, FloorY - 32)));
             items.Add(new ItemSpawnDefinition(ItemType.OneUpMushroom, new Vector2(1072, FloorY - 32)));
             items.Add(new ItemSpawnDefinition(ItemType.FireFlower, new Vector2(936, FloorY - 32)));
-            blocks.Add(new BlockSpawnDefinition(new Vector2(1056, 336), BlockType.Question, contents: ItemType.Mushroom));
+            blocks.Add(new BlockSpawnDefinition(new Vector2(1056, 336), BlockType.Question, contents: ItemType.FireFlowerMushroom));
             blocks.Add(new BlockSpawnDefinition(new Vector2(1200, 336), BlockType.Question, contents: ItemType.FireFlower));
             blocks.Add(new BlockSpawnDefinition(new Vector2(1296, 336), BlockType.Question, contents: ItemType.Star));
             blocks.Add(new BlockSpawnDefinition(new Vector2(672, 384), BlockType.Platform, width: 144, height: 24));

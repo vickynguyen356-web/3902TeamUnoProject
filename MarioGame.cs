@@ -33,7 +33,7 @@ namespace TeamUno.Mario
 
         public MarioGame()
         {
-            _areas = LevelLayouts.CreateAreas();
+            _areas = LevelParser.LoadAreas();
             _graphicsDeviceManager = new GraphicsDeviceManager(this);
             _graphicsDeviceManager.PreferredBackBufferWidth = WindowWidth;
             _graphicsDeviceManager.PreferredBackBufferHeight = WindowHeight;
@@ -53,16 +53,18 @@ namespace TeamUno.Mario
 
             Texture2D marioTexture = Content.Load<Texture2D>("Sprites/mario");
             Texture2D enemyTexture = Content.Load<Texture2D>("Sprites/enemiesSprites");
+            Texture2D enemyIdTexture = Content.Load<Texture2D>("Sprites/EnemyReferenceSheet");
             Texture2D itemTexture = Content.Load<Texture2D>("Sprites/items");
             Texture2D titleBackgroundTexture = Content.Load<Texture2D>("super-mario-bros-bg");
-            Texture2D blockTexture = Content.Load<Texture2D>("Sprites/blocksspritesheetbg");
+            Texture2D blockTexture = Content.Load<Texture2D>("Sprites/bricksobstacles");
+            Texture2D tileSheetTexture = Content.Load<Texture2D>("Sprites/BlockTileSheet");
 
             ProjectileFactory.Initialize(enemyTexture, itemTexture);
-            EnemyFactory.Initialize(enemyTexture);
+            EnemyFactory.Initialize(enemyTexture, tileSheetTexture, enemyIdTexture);
             ItemFactory.Initialize(itemTexture);
             SoundPlayer.Initialize(Content);
 
-            LevelDefinition firstArea = _areas["overworld"];
+            LevelDefinition firstArea = _areas["World1-1"];
             Vector2 spawn = firstArea.GetSpawnPoint("start");
             MarioPlayer player = new MarioPlayer(
                 MarioSpriteFactory.Create(marioTexture),
@@ -70,7 +72,11 @@ namespace TeamUno.Mario
                 PlayerForm.Fire);
 
             Level level = new Level(firstArea);
-            Camera camera = new Camera(GraphicsDevice.Viewport.Width, level.Definition.Width);
+            Camera camera = new Camera(
+                GraphicsDevice.Viewport.Width,
+                GraphicsDevice.Viewport.Height,
+                level.Definition.Width,
+                level.Definition.Height);
             MusicPlayer music = new MusicPlayer(Content);
             // the session updates and resets the level, including its items
             _gameSession = new GameSession(player, level, camera, _areas, music);
@@ -80,7 +86,7 @@ namespace TeamUno.Mario
             _gamepadController = new GamepadController(player, _gameSession);
             _menu = new MenuScreen(_gameSession, bindings, _gameSession.AreaIds);
             _gameRenderer = new GameRenderer(
-                GraphicsDevice, titleBackgroundTexture, blockTexture);
+                GraphicsDevice, titleBackgroundTexture, blockTexture, tileSheetTexture);
         }
 
         protected override void Update(GameTime gameTime)
@@ -100,7 +106,7 @@ namespace TeamUno.Mario
             }
             else if (_gameSession.State == GameSessionState.Menu)
             {
-                _menu.Update(keys, gamePad);
+                _menu.Update(gameTime, keys, gamePad);
                 _controller.ResetInput();
                 _gamepadController.ResetInput();
                 _titleScreen.ResetInput(keys, gamePad);
@@ -139,6 +145,10 @@ namespace TeamUno.Mario
             _previousKeys = keys;
             _previousGamePad = gamePad;
 
+            _gameSession.Player.SetSprinting(
+                _gameSession.CanControlPlayer
+                    && (_controller.IsSprintHeld || _gamepadController.IsSprintHeld));
+
             if (_gameSession.ShouldExit)
             {
                 Exit();
@@ -160,13 +170,13 @@ namespace TeamUno.Mario
                 _spriteBatch,
                 GraphicsDevice.Viewport.Bounds,
                 isTitleScreen: _gameSession.State == GameSessionState.Title,
-                cameraX: _gameSession.Camera.Position.X);
+                backgroundColor: _gameSession.BackgroundColor);
             _spriteBatch.End();
 
             if (_gameSession.State != GameSessionState.Title)
             {
                 _spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _gameSession.Camera.Transform);
-                _gameRenderer.DrawWorld(_spriteBatch, _gameSession);
+                _gameRenderer.DrawWorld(_spriteBatch, _gameSession, GraphicsDevice.Viewport.Bounds);
                 _spriteBatch.End();
             }
 

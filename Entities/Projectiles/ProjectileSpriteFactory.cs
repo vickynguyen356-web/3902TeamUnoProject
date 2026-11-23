@@ -13,13 +13,13 @@ namespace TeamUno.Mario.Entities.Projectiles
             switch (type)
             {
                 case ProjectileType.Fireball:
-                    return new SpriteSheetSprite(itemTexture, 2f);
+                    return new SpriteSheetSprite(itemTexture, 3f);
                 case ProjectileType.BowserFire:
-                    return new SpriteSheetSprite(enemyTexture, 2f, useSpriteEffects: true);
+                    return new SpriteSheetSprite(enemyTexture, 3f, useSpriteEffects: true);
                 case ProjectileType.Hammer:
-                    return new SpriteSheetSprite(enemyTexture, 2f);
+                    return new SpriteSheetSprite(enemyTexture, 3f);
                 case ProjectileType.KoopaShell:
-                    return new SpriteSheetSprite(enemyTexture, 2f);
+                    return new SpriteSheetSprite(enemyTexture, 3f);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type));
             }

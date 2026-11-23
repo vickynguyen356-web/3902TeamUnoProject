@@ -1,0 +1,32 @@
+### CSV layers use reference tile IDs:
+# Foreground: 384 ground, 289 brick, 192 question block, 609 platform,
+# 150-151/198-199 pipe. Collectibles.csv stores block contents;
+# loose pickups are in underground_Items.csv.
+PLAYER_START = (5, 10)
+CAMERA_START = (0, 0)
+CAMERA_MAX = 39
+
+LEVEL_TYPE = UNDERGROUND
+NEXT_LEVEL = (0, 0)
+LEVEL_START_AREA_ID = overworld
+BACKGROUND_COLOR = BLACK
+
+SPAWN_POINT=\
+	entrance (2, 7),\
+	exit (36, 7)
+
+FLOATING_TEXT=\
+
+WARP_PIPE=\
+
+WARP_PIPE_AREA=\
+	(2, 8) overworld first-pipe DOWN NONE FALSE BLUE OVERWORLD,\
+	(36, 8) overworld second-pipe DOWN NONE FALSE BLUE OVERWORLD
+
+MOVING_PLATFORM=\
+
+PLATFORM_LEVEL=\
+
+FIRE_BAR=\
+
+VINE=\

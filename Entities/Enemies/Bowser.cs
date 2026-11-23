@@ -11,8 +11,8 @@ namespace TeamUno.Mario.Entities.Enemies
     internal class Bowser : Enemy
     {
         // sprite fields
-        public const int BowserWidth = 64;
-        public const int BowserHeight = 64;
+        public const int BowserWidth = 96;
+        public const int BowserHeight = 96;
         // animation fields
         private const float WalkSpeed = 45f;
         private const float PatrolDistance = 150f;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using TeamUno.Mario.Collision.Handlers;
 using TeamUno.Mario.Entities.Blocks;
+using TeamUno.Mario.Entities.Enemies;
 using TeamUno.Mario.Entities.Player;
 using TeamUno.Mario.Interfaces;
 using TeamUno.Mario.Collision;
@@ -125,13 +126,28 @@ namespace TeamUno.Mario.World
         {
             List<(TFirst First, TSecond Second)> pairs =
                 new List<(TFirst, TSecond)>();
+            List<TSecond> secondItems = new List<TSecond>(seconds);
 
             foreach (TFirst first in firsts)
             {
-                foreach (TSecond second in seconds)
+                if (!HasCollisionBounds(first))
                 {
+                    continue;
+                }
+
+                foreach (TSecond second in secondItems)
+                {
+                    if (!HasCollisionBounds(second))
+                    {
+                        continue;
+                    }
+
                     CollisionInfo info;
-                    if (TryDetect(first.Bounds, second.Bounds, firstPreviousBounds, out info))
+                    if (TryDetect(
+                        GetCollisionBounds(first),
+                        GetCollisionBounds(second),
+                        firstPreviousBounds,
+                        out info))
                     {
                         pairs.Add((first, second));
                     }
@@ -141,7 +157,11 @@ namespace TeamUno.Mario.World
             foreach ((TFirst First, TSecond Second) pair in pairs)
             {
                 CollisionInfo currentInfo;
-                if (TryDetect(pair.First.Bounds, pair.Second.Bounds, firstPreviousBounds, out currentInfo))
+                if (TryDetect(
+                    GetCollisionBounds(pair.First),
+                    GetCollisionBounds(pair.Second),
+                    firstPreviousBounds,
+                    out currentInfo))
                 {
                     handler.Handle(pair.First, pair.Second, currentInfo);
                 }
@@ -158,13 +178,40 @@ namespace TeamUno.Mario.World
                 {
                     T first = objects[firstIndex];
                     T second = objects[secondIndex];
+                    if (!HasCollisionBounds(first) || !HasCollisionBounds(second))
+                    {
+                        continue;
+                    }
+
                     CollisionInfo info;
-                    if (TryDetect(first.Bounds, second.Bounds, Rectangle.Empty, out info))
+                    if (TryDetect(
+                        GetCollisionBounds(first),
+                        GetCollisionBounds(second),
+                        Rectangle.Empty,
+                        out info))
                     {
                         handler.Handle(first, second, info);
                     }
                 }
             }
+        }
+
+        private static Rectangle GetCollisionBounds(ICollidable entity)
+        {
+            Block block = entity as Block;
+            if (block != null && block.Type == BlockType.Flag)
+            {
+                return Rectangle.Empty;
+            }
+
+            IEnemy enemy = entity as IEnemy;
+            return enemy == null ? entity.Bounds : enemy.CollisionBounds;
+        }
+
+        private static bool HasCollisionBounds(ICollidable entity)
+        {
+            Block block = entity as Block;
+            return block == null || block.Type != BlockType.Flag;
         }
 
         /// <summary>

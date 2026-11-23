@@ -8,8 +8,8 @@ namespace TeamUno.Mario.Entities.Items
 {
     internal static class ItemSpriteFactory
     {
-        // draw sprites at twice their original size
-        public const float SpriteScale = 2f;
+        // Level tiles use 48 world units for a 16-pixel source tile.
+        public const float SpriteScale = 3f;
         // each animation frame lasts 0.15 seconds
         private const float FrameDuration = 0.15f;
 
