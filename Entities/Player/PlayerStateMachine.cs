@@ -8,121 +8,28 @@ namespace TeamUno.Mario.Entities.Player
     {
         public const float FormTransitionDurationSeconds = 0.7f;
         private const float StarDuration = 10f;
-
-        private const float MinimumRunningSpeed = 15f;
         private const float FireballPoseDurationSeconds = 0.12f;
 
         private readonly PlayerForm _startingForm;
         private float _starTimeRemaining;
         private float _throwTimeRemaining;
         private float _transitionTimeRemaining;
-        private PlayerForm _transitionStartForm;
-        private PlayerForm _transitionTargetForm;
-        private EntityAnimationState _animationState = EntityAnimationState.Idle;
-        private PlayerForm _form;
-        private bool _isCrouching;
-        private bool _isDead;
+        public EntityAnimationState AnimationState { get; private set; } = EntityAnimationState.Idle;
+        public PlayerForm Form { get; private set; }
+        public bool IsCrouching { get; private set; }
+        public bool IsDead { get; private set; }
+        public PlayerForm TransitionStartForm { get; private set; }
+        public PlayerForm TransitionTargetForm { get; private set; }
 
-        public EntityAnimationState AnimationState
-        {
-            get
-            {
-                return _animationState;
-            }
-            private set
-            {
-                _animationState = value;
-            }
-        }
-
-        public PlayerForm Form
-        {
-            get
-            {
-                return _form;
-            }
-            private set
-            {
-                _form = value;
-            }
-        }
-
-        public bool IsSmall
-        {
-            get
-            {
-                return Form == PlayerForm.Small;
-            }
-        }
-
-        public bool IsCrouching
-        {
-            get
-            {
-                return _isCrouching;
-            }
-            private set
-            {
-                _isCrouching = value;
-            }
-        }
-
-        public bool IsDead
-        {
-            get
-            {
-                return _isDead;
-            }
-            private set
-            {
-                _isDead = value;
-            }
-        }
-
-        public bool IsStarActive
-        {
-            get
-            {
-                return _starTimeRemaining > 0f;
-            }
-        }
-
-        public bool IsThrowing
-        {
-            get
-            {
-                return _throwTimeRemaining > 0;
-            }
-        }
-
-        public bool IsChangingForm
-        {
-            get
-            {
-                return _transitionTimeRemaining > 0;
-            }
-        }
-
-        public PlayerForm TransitionStartForm
-        {
-            get
-            {
-                return _transitionStartForm;
-            }
-        }
-
-        public PlayerForm TransitionTargetForm
-        {
-            get
-            {
-                return _transitionTargetForm;
-            }
-        }
+        public bool IsSmall => Form == PlayerForm.Small;
+        public bool IsStarActive => _starTimeRemaining > 0f;
+        public bool IsThrowing => _throwTimeRemaining > 0;
+        public bool IsChangingForm => _transitionTimeRemaining > 0;
 
         public PlayerStateMachine(PlayerForm startingForm = PlayerForm.Super)
         {
             _startingForm = startingForm;
-            _form = startingForm;
+            Form = startingForm;
             ResetFormTransition();
         }
 
@@ -156,8 +63,8 @@ namespace TeamUno.Mario.Entities.Player
                 return false;
             }
 
-            _transitionStartForm = Form;
-            _transitionTargetForm = targetForm;
+            TransitionStartForm = Form;
+            TransitionTargetForm = targetForm;
             _transitionTimeRemaining = FormTransitionDurationSeconds;
             IsCrouching = false;
             _throwTimeRemaining = 0;
@@ -198,64 +105,7 @@ namespace TeamUno.Mario.Entities.Player
             bool isSwimming = false,
             bool isDrifting = false)
         {
-            if (IsDead)
-            {
-                AnimationState = EntityAnimationState.Dead;
-            }
-            else if (IsChangingForm)
-            {
-                AnimationState = EntityAnimationState.Transform;
-            }
-            else if (isClimbing)
-            {
-                AnimationState = EntityAnimationState.Climb;
-            }
-            else if (IsCrouching)
-            {
-                AnimationState = EntityAnimationState.Crouch;
-            }
-            else if (IsThrowing)
-            {
-                AnimationState = EntityAnimationState.ThrowFireball;
-            }
-            else if (isDrifting)
-            {
-                AnimationState = EntityAnimationState.Drift;
-            }
-            else if (isSwimming)
-            {
-                if (!isGrounded && velocity.Y < -MinimumRunningSpeed)
-                {
-                    AnimationState = EntityAnimationState.SwimJump;
-                }
-                else if (isGrounded && Math.Abs(velocity.X) > MinimumRunningSpeed)
-                {
-                    AnimationState = EntityAnimationState.SwimWalk;
-                }
-                else
-                {
-                    AnimationState = EntityAnimationState.Swim;
-                }
-            }
-            else if (!isGrounded)
-            {
-                if (velocity.Y < 0)
-                {
-                    AnimationState = EntityAnimationState.Jump;
-                }
-                else
-                {
-                    AnimationState = EntityAnimationState.Fall;
-                }
-            }
-            else if (Math.Abs(velocity.X) > MinimumRunningSpeed)
-            {
-                AnimationState = EntityAnimationState.Run;
-            }
-            else
-            {
-                AnimationState = EntityAnimationState.Idle;
-            }
+            AnimationState = PlayerAnimationSelector.Select(this, isGrounded, velocity, isClimbing, isSwimming, isDrifting);
         }
 
         public void Reset()
@@ -277,8 +127,8 @@ namespace TeamUno.Mario.Entities.Player
         private void ResetFormTransition()
         {
             _transitionTimeRemaining = 0;
-            _transitionStartForm = Form;
-            _transitionTargetForm = Form;
+            TransitionStartForm = Form;
+            TransitionTargetForm = Form;
         }
 
         public void TakeDamage()
