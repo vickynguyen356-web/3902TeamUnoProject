@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using TeamUno.Mario.Entities.Blocks;
 using TeamUno.Mario.Entities.Player;
+using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Collision.Handlers
 {
@@ -12,9 +13,9 @@ namespace TeamUno.Mario.Collision.Handlers
     /// Mark dead entities dead/expired at the top of Handle() because Level.Update()
     /// takes care of that (cleans it up). TryDetect() in CollisionSystem makes handlers fire for objects that touch so
     /// OverlapWidth and OverlapHeight can be 0.</summary>
-    internal class MarioBlockCollisionHandler : ICollisionHandler<MarioPlayer, Block>
+    internal class MarioBlockCollisionHandler : ICollisionHandler<MarioPlayer, IBlock>
     {
-        public void Handle(MarioPlayer player, Block block, CollisionInfo info)
+        public void Handle(MarioPlayer player, IBlock block, CollisionInfo info)
         {
             if (ShouldIgnoreCollision(player, block))
             {
@@ -80,7 +81,7 @@ namespace TeamUno.Mario.Collision.Handlers
             ResolveHorizontalCollision(player, blockBounds, info.FirstPreviousBounds);
         }
 
-        private static bool ShouldIgnoreCollision(MarioPlayer player, Block block)
+        private static bool ShouldIgnoreCollision(MarioPlayer player, IBlock block)
         {
             return player.IsDead
                 || block.IsDeleted
@@ -88,13 +89,13 @@ namespace TeamUno.Mario.Collision.Handlers
                 || (player.IsSlidingOnFlagpole && block.Type != BlockType.Ground);
         }
 
-        private static void HandleVineCollision(MarioPlayer player, Block vine)
+        private static void HandleVineCollision(MarioPlayer player, IBlock vine)
         {
             player.TryClimbVine(vine.Bounds);
             vine.RequestVineTravel(player.Bounds, player.IsClimbingVine);
         }
 
-        private static bool TryEnterPipe(MarioPlayer player, Block pipe, CollisionInfo info)
+        private static bool TryEnterPipe(MarioPlayer player, IBlock pipe, CollisionInfo info)
         {
             if (pipe.DestinationArea == null)
             {
@@ -172,7 +173,7 @@ namespace TeamUno.Mario.Collision.Handlers
 
         private static bool ResolveHitFromBelow(
             MarioPlayer player,
-            Block block,
+            IBlock block,
             Rectangle blockBounds,
             Rectangle previousPlayerBounds)
         {

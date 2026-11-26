@@ -14,9 +14,9 @@ namespace TeamUno.Mario.Collision.Handlers
     /// takes care of that (cleans it up).
     /// TryDetect() in CollisionSystem makes handlers fire for objects that touch so
     /// OverlapWidth and OverlapHeight can be 0.</summary>
-    internal class EnemyBlockCollisionHandler : ICollisionHandler<IEnemy, Block>
+    internal class EnemyBlockCollisionHandler : ICollisionHandler<IEnemy, IBlock>
     {
-        public void Handle(IEnemy first, Block second, CollisionInfo info)
+        public void Handle(IEnemy first, IBlock second, CollisionInfo info)
         {
             // TODO: Enemy update (turn around on side hit, deleted upon falling thru floor).
             // TODO: Block update.

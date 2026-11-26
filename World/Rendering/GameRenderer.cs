@@ -75,7 +75,7 @@ namespace TeamUno.Mario.World
                 cameraLeft,
                 viewport.Width);
 
-            foreach (Block block in session.Level.Blocks)
+            foreach (IBlock block in session.Level.Blocks)
             {
                 if (block.Type == BlockType.Flag)
                 {

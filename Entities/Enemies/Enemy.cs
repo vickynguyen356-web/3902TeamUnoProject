@@ -18,7 +18,7 @@ namespace TeamUno.Mario.Entities.Enemies
         protected readonly EnemyStateMachine StateMachine;
         protected readonly ISprite Sprite;
         protected Vector2 Velocity;
-        private IReadOnlyList<Block> _worldBlocks;
+        private IReadOnlyList<IBlock> _worldBlocks;
         private const float Gravity = 1500f;
         private const float MaximumFallSpeed = 700f;
         private const float DeathFallSpeed = -250f;
@@ -149,7 +149,7 @@ namespace TeamUno.Mario.Entities.Enemies
             }
         }
 
-        public void SetWorldBlocks(IReadOnlyList<Block> blocks)
+        public void SetWorldBlocks(IReadOnlyList<IBlock> blocks)
         {
             _worldBlocks = blocks;
         }
@@ -186,7 +186,7 @@ namespace TeamUno.Mario.Entities.Enemies
             bool hasGroundBelow = false;
             bool hasGroundAhead = false;
 
-            foreach (Block block in _worldBlocks)
+            foreach (IBlock block in _worldBlocks)
             {
                 if (block.IsDeleted || block.Type == BlockType.Empty || block.Type == BlockType.Invisible
                     || block.Type == BlockType.Vine

@@ -28,7 +28,7 @@ namespace TeamUno.Mario.Entities.Blocks
         Bridge
     }
 
-    internal class Block : ICollidable
+    internal class Block : IBlock
     {
         private const int DefaultWidth = 48;
         private const int DefaultHeight = 48;
@@ -140,7 +140,7 @@ namespace TeamUno.Mario.Entities.Blocks
             }
         }
 
-        internal Rectangle PreviousBounds
+        public Rectangle PreviousBounds
         {
             get
             {
@@ -152,7 +152,7 @@ namespace TeamUno.Mario.Entities.Blocks
             }
         }
 
-        internal Vector2 MovementDelta
+        public Vector2 MovementDelta
         {
             get
             {
@@ -168,7 +168,7 @@ namespace TeamUno.Mario.Entities.Blocks
             }
         }
 
-        internal bool IsUnderground
+        public bool IsUnderground
         {
             get
             {
@@ -176,7 +176,7 @@ namespace TeamUno.Mario.Entities.Blocks
             }
         }
 
-        internal int? TileId
+        public int? TileId
         {
             get
             {
@@ -184,7 +184,7 @@ namespace TeamUno.Mario.Entities.Blocks
             }
         }
 
-        internal bool IsRemovalReady
+        public bool IsRemovalReady
         {
             get
             {
@@ -501,7 +501,7 @@ namespace TeamUno.Mario.Entities.Blocks
                 : new Vector2(Position.X, nextPosition);
         }
 
-        internal void ActivateMovingPlatform()
+        public void ActivateMovingPlatform()
         {
             if (_isPlatformLevel)
             {
@@ -518,19 +518,19 @@ namespace TeamUno.Mario.Entities.Blocks
             }
         }
 
-        internal bool ConsumePlatformLevelContact()
+        public bool ConsumePlatformLevelContact()
         {
             bool wasContacted = _platformLevelContact;
             _platformLevelContact = false;
             return wasContacted;
         }
 
-        internal void MoveTo(Vector2 position)
+        public void MoveTo(Vector2 position)
         {
             _position = position;
         }
 
-        internal void BeginFlagpoleDescent(float poleBottom)
+        public void BeginFlagpoleDescent(float poleBottom)
         {
             _flagTargetY = poleBottom - Height;
             _isFlagMoving = Position.Y < _flagTargetY;
@@ -540,7 +540,7 @@ namespace TeamUno.Mario.Entities.Blocks
             }
         }
 
-        internal void UpdateFlagpoleDescent(float elapsedSeconds)
+        public void UpdateFlagpoleDescent(float elapsedSeconds)
         {
             if (!_isFlagMoving)
             {
@@ -557,22 +557,22 @@ namespace TeamUno.Mario.Entities.Blocks
             _position = new Vector2(Position.X, nextY);
         }
 
-        internal void RequestTravel()
+        public void RequestTravel()
         {
             IsTravelRequested = true;
         }
 
-        internal void ClearTravelRequest()
+        public void ClearTravelRequest()
         {
             IsTravelRequested = false;
         }
 
-        internal void MarkDeleted()
+        public void MarkDeleted()
         {
             _isDeleted = true;
         }
 
-        internal bool RequestVineTravel(Rectangle playerBounds, bool isClimbing)
+        public bool RequestVineTravel(Rectangle playerBounds, bool isClimbing)
         {
             if (_vineSpawn == null || _isVineGrowing || _vineTravelRequested
                 || !isClimbing || playerBounds.Top > Bounds.Top)
@@ -584,7 +584,7 @@ namespace TeamUno.Mario.Entities.Blocks
             return true;
         }
 
-        internal VineSpawnDefinition ConsumeVineTravelRequest()
+        public VineSpawnDefinition ConsumeVineTravelRequest()
         {
             if (!_vineTravelRequested)
             {
@@ -595,7 +595,7 @@ namespace TeamUno.Mario.Entities.Blocks
             return _vineSpawn;
         }
 
-        internal ItemType? CollectItem()
+        public ItemType? CollectItem()
         {
             ItemType? item = _pendingItem;
             _pendingItem = null;
@@ -612,7 +612,7 @@ namespace TeamUno.Mario.Entities.Blocks
             return _contents;
         }
 
-        internal void HitFromBelow(bool canBreak, bool isSmall = false)
+        public void HitFromBelow(bool canBreak, bool isSmall = false)
         {
             if (Type == BlockType.Question || Type == BlockType.Invisible)
             {

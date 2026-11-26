@@ -5,9 +5,9 @@ using TeamUno.Mario.Interfaces;
 
 namespace TeamUno.Mario.Collision.Handlers
 {
-    internal class ItemBlockCollisionHandler : ICollisionHandler<IItem, Block>
+    internal class ItemBlockCollisionHandler : ICollisionHandler<IItem, IBlock>
     {
-        public void Handle(IItem item, Block block, CollisionInfo info)
+        public void Handle(IItem item, IBlock block, CollisionInfo info)
         {
             if (item.IsExpired || block.IsDeleted || (item.Type != ItemType.Mushroom
                 && item.Type != ItemType.FireFlowerMushroom

@@ -15,26 +15,26 @@ namespace TeamUno.Mario.World
     /// </summary>
     internal class CollisionSystem
     {
-        private readonly ICollisionHandler<MarioPlayer, Block> _marioBlockHandler;
+        private readonly ICollisionHandler<MarioPlayer, IBlock> _marioBlockHandler;
         private readonly ICollisionHandler<MarioPlayer, IEnemy> _marioEnemyHandler;
         private readonly ICollisionHandler<MarioPlayer, IItem> _marioItemHandler;
         private readonly ICollisionHandler<MarioPlayer, IProjectile> _marioProjectileHandler;
-        private readonly ICollisionHandler<IEnemy, Block> _enemyBlockHandler;
-        private readonly ICollisionHandler<IItem, Block> _itemBlockHandler;
+        private readonly ICollisionHandler<IEnemy, IBlock> _enemyBlockHandler;
+        private readonly ICollisionHandler<IItem, IBlock> _itemBlockHandler;
         private readonly ICollisionHandler<IEnemy, IProjectile> _enemyProjectileHandler;
-        private readonly ICollisionHandler<IProjectile, Block> _projectileBlockHandler;
+        private readonly ICollisionHandler<IProjectile, IBlock> _projectileBlockHandler;
         private readonly ICollisionHandler<IEnemy, IEnemy> _enemyEnemyHandler;
         private readonly ICollisionHandler<IProjectile, IProjectile> _projectileProjectileHandler;
 
         public CollisionSystem(
-            ICollisionHandler<MarioPlayer, Block> marioBlockHandler,
+            ICollisionHandler<MarioPlayer, IBlock> marioBlockHandler,
             ICollisionHandler<MarioPlayer, IEnemy> marioEnemyHandler,
             ICollisionHandler<MarioPlayer, IItem> marioItemHandler,
             ICollisionHandler<MarioPlayer, IProjectile> marioProjectileHandler,
-            ICollisionHandler<IEnemy, Block> enemyBlockHandler,
-            ICollisionHandler<IItem, Block> itemBlockHandler,
+            ICollisionHandler<IEnemy, IBlock> enemyBlockHandler,
+            ICollisionHandler<IItem, IBlock> itemBlockHandler,
             ICollisionHandler<IEnemy, IProjectile> enemyProjectileHandler,
-            ICollisionHandler<IProjectile, Block> projectileBlockHandler,
+            ICollisionHandler<IProjectile, IBlock> projectileBlockHandler,
             ICollisionHandler<IEnemy, IEnemy> enemyEnemyHandler,
             ICollisionHandler<IProjectile, IProjectile> projectileProjectileHandler)
         {
@@ -198,7 +198,7 @@ namespace TeamUno.Mario.World
 
         private static Rectangle GetCollisionBounds(ICollidable entity)
         {
-            Block block = entity as Block;
+            IBlock block = entity as IBlock;
             if (block != null && block.Type == BlockType.Flag)
             {
                 return Rectangle.Empty;
@@ -210,7 +210,7 @@ namespace TeamUno.Mario.World
 
         private static bool HasCollisionBounds(ICollidable entity)
         {
-            Block block = entity as Block;
+            IBlock block = entity as IBlock;
             return block == null || block.Type != BlockType.Flag;
         }
 

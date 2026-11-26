@@ -13,9 +13,9 @@ namespace TeamUno.Mario.Collision.Handlers
     /// Mark dead entities dead/expired at the top of Handle() because Level.Update()
     /// takes care of that (cleans it up). TryDetect() in CollisionSystem makes handlers fire for objects that touch so
     /// OverlapWidth and OverlapHeight can be 0.</summary>
-    internal class ProjectileBlockCollisionHandler : ICollisionHandler<IProjectile, Block>
+    internal class ProjectileBlockCollisionHandler : ICollisionHandler<IProjectile, IBlock>
     {
-        public void Handle(IProjectile first, Block second, CollisionInfo info)
+        public void Handle(IProjectile first, IBlock second, CollisionInfo info)
         {
             if (first.IsDead
                 || second.IsDeleted
@@ -59,7 +59,7 @@ namespace TeamUno.Mario.Collision.Handlers
 
         private static void ResolveFireballCollision(
             Fireball fireball,
-            Block block,
+            IBlock block,
             CollisionSide side,
             Rectangle projectileBounds,
             Rectangle blockBounds,
@@ -114,7 +114,7 @@ namespace TeamUno.Mario.Collision.Handlers
 
         private static void ResolveShellCollision(
             KoopaShell shell,
-            Block block,
+            IBlock block,
             CollisionSide side,
             Rectangle projectileBounds,
             Rectangle blockBounds,

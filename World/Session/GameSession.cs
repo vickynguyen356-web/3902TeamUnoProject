@@ -250,7 +250,7 @@ namespace TeamUno.Mario.World
             }
 
             Level.RemoveDeletedBlocks();
-            Block pipe = Level.GetPipeTravelRequest();
+            IBlock pipe = Level.GetPipeTravelRequest();
             if (Player.Bounds.Top >= Level.Definition.Height)
             {
                 Player.DieFromFall();
@@ -289,7 +289,7 @@ namespace TeamUno.Mario.World
             Player.ClearPipeEntryRequest();
         }
 
-        private void BeginPipeTransition(Block pipe)
+        private void BeginPipeTransition(IBlock pipe)
         {
             _pipeDestinationArea = pipe.DestinationArea;
             _pipeDestinationSpawn = pipe.DestinationSpawn;
